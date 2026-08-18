@@ -1,0 +1,64 @@
+﻿origem,destino,tipo_relacao,descricao
+Luzbel,Padre Eterno,antagónica,Rivalidade com a própria divindade; a soberba formula-se como projecto de ocupar o lugar de Deus (L0039-L0041)
+Padre Eterno,São Miguel,hierárquica,Delegação implícita da justiça: Miguel sentencia sem que a ordem seja mostrada em cena
+São Miguel,Luzbel,antagónica,Executa a condenação em soneto simétrico ao da revolta (L0045-L0061)
+Padre Eterno,Adão,hierárquica,"Criação, preceito e julgamento; a relação estrutura todo o passo do Paraíso (L0097, L0105, L0123)"
+Padre Eterno,Eva,hierárquica,Interrogatório e sentença; a maldição de L0132 fixa a sua condição social e doméstica
+Padre Eterno,Serpente,hierárquica,Maldição que a rebaixa ao fundo da escala dos viventes (L0132)
+Adão,Eva,familiar,"Vínculo conjugal que a queda transforma em acusação («A mesma mulher que me destes por companheira», L0129) e depois em solidariedade no pranto"
+Eva,Adão,familiar,"Oferece o fruto e partilha o lamento em uníssono (L0118, L0159-L0160)"
+Serpente,Eva,antagónica,Tentação por pergunta e negação; único diálogo verdadeiramente persuasivo do primeiro terço (L0110-L0113)
+Anjo,Adão,hierárquica,Executa a expulsão em oitava e entrega o homem ao desengano do mundo (L0137-L0144)
+Anjo,Eva,hierárquica,"A mesma sentença de expulsão, dirigida ao par"
+Coro,Adão,coral,"Responde com uma palavra a cada pergunta, convertendo o destino em eco (L0216-L0221)"
+Coro,Eva,coral,"A mesma função de resposta sentenciosa, repartida entre os dois lamentos"
+Caim,Abel,antagónica,Fratricídio motivado por comparação de rebanhos; a inveja precede o golpe (L0233-L0239)
+Abel,Caim,familiar,"Responde à hostilidade com submissão declarada, sem defesa (L0234, L0238)"
+Padre Eterno,Caim,hierárquica,Interrogatório e condenação ao desamparo errante (L0244-L0248)
+Diabo,Caim,cómica,"Aliciamento em registo mundano: oferece chá, criados e companhia infernal (L0250-L0264)"
+Caim,Diabo,antagónica,"Recusa reiterada da amizade oferecida, que o Diabo trata como descortesia (L0259-L0261)"
+Padre Eterno,Noé,hierárquica,"Preceito da arca e bênção final; a relação mais consensual do eixo divino (L0283-L0285, L0311)"
+Noé,Sem,familiar,Pai que anuncia o retiro e conduz o agradecimento colectivo
+Noé,Jafé,familiar,"A mesma relação, com repartição coral do louvor"
+Sem,Noé,devocional,"Adesão filial ao preceito, formulada como pedido de comiseração pelos fiéis (L0293)"
+Jafé,Noé,devocional,"Rende graças em nome do grupo antes e depois do dilúvio (L0294, L0306)"
+Olofernes,1.º Capitão,hierárquica,"Comando militar exercido por tirada retórica, não por ordem concreta (L0326-L0364)"
+Olofernes,2.º Capitão,hierárquica,"O mesmo comando, dirigido ao par indistinto dos capitães"
+1.º Capitão,Olofernes,servil,"Obediência formulada em soneto, como se a disciplina tivesse métrica (L0368-L0380)"
+2.º Capitão,Olofernes,servil,Completa as réplicas do companheiro; nenhum dos dois se distingue do outro
+1.º Capitão,2.º Capitão,aliança,"Falam um soneto a dois, alternando quartetos e tercetos"
+Olofernes,Volante,hierárquica,"Envia o ultimato a Betúlia, gesto de piedade calculada para não parecer desumano (L0384-L0392)"
+Volante,Olofernes,servil,Repete literalmente a mensagem e traz a recusa (L0393-L0399)
+Olofernes,Mestre-Sala,hierárquica,Manda vir os manjares e os dançarinos; trata o criado como extensão da mesa (L0491-L0500)
+Mestre-Sala,Olofernes,servil,"Serve e comenta; a fidelidade é real, o respeito é nulo (L0467-L0468, L0573)"
+Olofernes,Judite,amorosa,Desejo como forma de guerra: oferece-lhe o exército e a destruição de Betúlia (L0564-L0606)
+Judite,Olofernes,antagónica,"Dissimulação calculada que culmina na decapitação; anuncia o desfecho antes de o executar (L0443-L0455, L0688-L0694)"
+Judite,Sacerdote,devocional,Pede orações para a empresa e submete a iniciativa individual à autoridade do templo (L0443-L0455)
+Sacerdote,Judite,devocional,Legitima a acção e mantém o clamor no templo durante a ausência dela (L0456-L0461)
+Judite,Velha,hierárquica,Relação de ama e criada; a Velha segue-a ao acampamento e recolhe a cabeça
+Velha,Judite,servil,"Cumplicidade prática no tiranicídio, rebaixada pelo avental (L0695-L0696)"
+Mestre-Sala,Velha,cómica,Galanteio grosseiro em latim de fantasia que degenera em injúria (L0619-L0654)
+Velha,Mestre-Sala,antagónica,Responde com ameaça física e reivindicação da autoridade da idade (L0632-L0650)
+Mestre-Sala,Preto (criado de Olofernes),hierárquica,Manda na cozinha exactamente como Olofernes manda nele; a cadeia servil duplica a cadeia militar
+Preto (criado de Olofernes),Mestre-Sala,servil,Nega sucessivamente cada pedido e acaba por o remeter à despensa do amo (L0661-L0674)
+Soldado,Mestre-Sala,cómica,Acorre ao alarme e recebe a notícia da decapitação em linguagem de insulto (L0704-L0708)
+Anjo,Alceto,devocional,Convocação a Belém dirigida aos pastores adormecidos (L0733-L0740)
+Anjo,Anfriso,devocional,"A mesma convocação, recebida como prodígio pelo grupo"
+Anjo,Amador,devocional,A mesma convocação; a dúvida sobre a sua natureza é resolvida por verificação
+Anjo,Florindo,devocional,"A mesma convocação, que o pastor traduz em pressa de partir (L0758)"
+Alceto,Anfriso,aliança,Companheirismo pastoril sem hierarquia; repartem entre si os modos de oferecer
+Amador,Florindo,aliança,Fecham a adoração em décimas sucessivas e no verso conjunto final (L0808)
+Chantre,Freira,amorosa,"Galanteio de grade, com soneto, canto e queixa de ausência; paródia do amor cortês transposto para o convento"
+Freira,Chantre,amorosa,"Corresponde com o mesmo vocabulário cortês e com censura pelo desacato ao seu respeito (L0952, L1013)"
+Chantre,Doutor,aliança,Amizade declarada que o Doutor retribui com troça permanente (L0869)
+Doutor,Chantre,cómica,"Alvo principal do escárnio: chama-lhe asno por silogismo e boneco por comparação (L0883, L0962)"
+Doutor,Freira,cómica,"Galanteio irónico em estilo cultista e contra-encómio da voz em soneto (L0958, L1048-L1063)"
+Freira,Doutor,cómica,"Solicita-lhe o canto e o cumprimento, dando-lhe o palco de que ele se serve para a ridicularizar"
+Doutor,Rodeira,cómica,"Insulto cortês sobre a idade, formulado como voto de vida longa (L0900-L0904)"
+Rodeira,Chantre,servil,Medeia o acesso à prima e informa do estado dela; guarda que franqueia a clausura (L0894)
+Galego,Chantre,servil,"Traz três vezes o recado da ama enferma, com urgência crescente e sem ser atendido"
+Chantre,Galego,hierárquica,Manda-o calar e afasta-o quando a notícia se torna comprometedora (L1009)
+Doutor,Galego,cómica,Usa o criado como matéria de piada sobre o amo (L0924)
+Preto (vendedor de cacau),Freira,comercial,Oferece cacau à grade e fica para louvar o canto; a mercadoria colonial entra no convento (L1065-L1088)
+Galego,Preto (vendedor de cacau),antagónica,"Altercação final entre criados, feita sobre os ofícios atribuídos a cada tipo (L1178-L1186)"
+Preto (vendedor de cacau),Galego,antagónica,Réplica simétrica; a peça acaba em conflito entre subalternos e não entre senhores
