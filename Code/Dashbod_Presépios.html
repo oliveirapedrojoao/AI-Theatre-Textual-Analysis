@@ -1,0 +1,907 @@
+<html lang="pt-PT" data-theme="light"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Entremez do Presépio da Graça (amostra) — análise</title>
+<style>
+:root{
+  color-scheme: light;
+  --surface-1:#fcfcfb; --plane:#f9f9f7;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hairline:rgba(11,11,11,0.10);
+  --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --seq-0:#cde2fb; --seq-1:#9ec5f4; --seq-2:#6da7ec; --seq-3:#3987e5;
+  --seq-4:#2a78d6; --seq-5:#256abf; --seq-6:#184f95;
+  --radius:10px;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --surface-1:#1a1a19; --plane:#0d0d0d;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --hairline:rgba(255,255,255,0.10);
+    --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+    --seq-0:#0d366b; --seq-1:#184f95; --seq-2:#256abf; --seq-3:#2a78d6;
+    --seq-4:#3987e5; --seq-5:#6da7ec; --seq-6:#9ec5f4;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --surface-1:#1a1a19; --plane:#0d0d0d;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --hairline:rgba(255,255,255,0.10);
+  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+  --seq-0:#0d366b; --seq-1:#184f95; --seq-2:#256abf; --seq-3:#2a78d6;
+  --seq-4:#3987e5; --seq-5:#6da7ec; --seq-6:#9ec5f4;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--plane); color:var(--text-primary);
+  font-family:var(--sans); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px}
+h1{font-size:26px; line-height:1.25; margin:0 0 6px; font-weight:600; letter-spacing:-0.01em}
+h2{font-size:17px; margin:0 0 2px; font-weight:600}
+h3{font-size:14px; margin:0 0 14px; font-weight:600; color:var(--text-secondary)}
+p{margin:0 0 10px}
+a{color:var(--series-1)}
+.sub{color:var(--text-secondary); font-size:13.5px; margin:0}
+.muted{color:var(--text-muted)}
+
+/* ---------- cabeçalho ---------- */
+header.top{display:flex; gap:18px; align-items:flex-start; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap}
+.meta-list{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:13px; color:var(--text-secondary); margin-top:8px}
+.meta-list b{font-weight:600; color:var(--text-primary)}
+button, select, input[type=search]{
+  font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-1);
+  border:1px solid var(--hairline); border-radius:8px; padding:7px 11px; cursor:pointer;
+  min-height:34px;
+}
+input[type=search]{cursor:text; min-width:190px}
+button:hover, select:hover{border-color:var(--axis)}
+button.ghost{background:transparent}
+button[aria-pressed="true"]{background:var(--series-1); border-color:var(--series-1); color:#fff}
+
+/* ---------- cartões ---------- */
+.grid{display:grid; gap:16px}
+.card{
+  background:var(--surface-1); border:1px solid var(--hairline);
+  border-radius:var(--radius); padding:18px 18px 16px;
+}
+.card header{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px}
+.card header .acts{display:flex; gap:6px; flex-shrink:0}
+.card header .acts button{padding:5px 9px; min-height:0; font-size:12px}
+
+/* ---------- tiles ---------- */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px}
+.tile{background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--radius); padding:14px 16px}
+.tile .lbl{font-size:12.5px; color:var(--text-secondary)}
+.tile .val{font-size:27px; font-weight:600; letter-spacing:-0.02em; margin-top:2px}
+.tile.hero .val{font-size:52px; line-height:1.05; margin-top:4px}
+.tile .note{font-size:12px; color:var(--text-muted); margin-top:2px}
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600}
+.badge .dot{width:9px; height:9px; border-radius:50%; display:inline-block}
+
+/* ---------- filtros ---------- */
+.filters{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  background:var(--surface-1); border:1px solid var(--hairline);
+  border-radius:var(--radius); padding:10px 12px; margin-bottom:16px;
+}
+.filters .lbl{font-size:12px; color:var(--text-muted); margin-right:2px}
+.filters .spacer{flex:1}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; font-size:12px;
+  border:1px solid var(--hairline); border-radius:999px; padding:4px 10px; background:transparent;
+}
+
+/* ---------- gráficos ---------- */
+svg{display:block; width:100%; height:auto; overflow:visible}
+.tick{fill:var(--text-muted); font-size:11px}
+.lbl-mark{fill:var(--text-secondary); font-size:11.5px}
+.val-mark{fill:var(--text-secondary); font-size:11.5px; font-weight:600}
+.gridline{stroke:var(--grid); stroke-width:1}
+.axisline{stroke:var(--axis); stroke-width:1}
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--text-secondary); margin-top:12px}
+.legend .key{display:inline-flex; align-items:center; gap:6px}
+.legend .swatch{width:11px; height:11px; border-radius:3px; display:inline-block}
+.scale{display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text-muted); margin-top:10px}
+.scale .steps{display:flex}
+.scale .steps i{width:22px; height:10px; display:block}
+
+/* ---------- tabelas ---------- */
+.tbl-wrap{overflow:auto; max-height:460px; border:1px solid var(--hairline); border-radius:8px}
+table{border-collapse:collapse; width:100%; font-size:13px}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--grid); vertical-align:top}
+th{position:sticky; top:0; background:var(--surface-1); font-weight:600; font-size:12px;
+   color:var(--text-secondary); z-index:1; white-space:nowrap; cursor:pointer}
+th:after{content:""; }
+tbody tr:hover{background:color-mix(in srgb, var(--series-1) 7%, transparent)}
+td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.loc{white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--text-secondary)}
+.cit{font-style:italic}
+.hidden{display:none !important}
+
+/* ---------- tooltip ---------- */
+#tip{
+  position:fixed; pointer-events:none; z-index:50; max-width:330px;
+  background:var(--surface-1); color:var(--text-primary);
+  border:1px solid var(--hairline); border-radius:8px; padding:9px 11px;
+  font-size:12.5px; line-height:1.45; box-shadow:0 6px 22px rgba(0,0,0,.16);
+  opacity:0; transition:opacity .1s;
+}
+#tip b{display:block; margin-bottom:3px}
+#tip .q{font-style:italic; color:var(--text-secondary)}
+
+/* ---------- prosa ---------- */
+.prosa{font-size:14.5px; max-width:74ch}
+.prosa h1,.prosa h2,.prosa h3,.prosa h4{margin:18px 0 8px; font-size:15px}
+.prosa ul{padding-left:20px; margin:0 0 12px}
+.prosa code{background:var(--plane); padding:1px 5px; border-radius:4px; font-size:12.5px}
+details{border-top:1px solid var(--grid); padding:12px 0}
+details summary{cursor:pointer; font-weight:600; font-size:14px}
+.aviso-list{margin:8px 0 0; padding-left:18px; font-size:13px; color:var(--text-secondary)}
+footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--grid);
+       font-size:12px; color:var(--text-muted)}
+@media print{
+  body{background:#fff}
+  .filters,.card header .acts,button{display:none !important}
+  .card{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 id="titulo">Entremez do Presépio da Graça (amostra)</h1>
+    <p class="sub" id="subtitulo">presépio teatral · c. 1760–1780 (fictícia)</p>
+    <div class="meta-list" id="meta"><span><b>Proveniência:</b> Amostra sintética — não é uma peça de arquivo</span><span><b>Transcrição:</b> entremez_exemplo.txt</span><span><b>Linhas:</b> 81</span><span><b>Modelo:</b> (reutilizado)</span><span><b>Análise:</b> 2026-08-18 13:58</span></div>
+  </div>
+  <div style="display:flex; gap:8px">
+    <button id="tema" class="ghost" title="Alternar tema claro/escuro">Tema</button>
+    <button id="imprimir" class="ghost">Imprimir</button>
+  </div>
+</header>
+
+<section class="tiles" id="tiles"><div class="tile hero"><div class="lbl">Ocorrências de recursos expressivos</div><div class="val">32</div><div class="note">39.51 por 100 linhas</div></div><div class="tile "><div class="lbl">Tipos de recurso</div><div class="val">8</div></div><div class="tile "><div class="lbl">Personagens</div><div class="val">5</div></div><div class="tile "><div class="lbl">Relações mapeadas</div><div class="val">14</div><div class="note">5 tipos</div></div><div class="tile "><div class="lbl">Entradas de vernáculo</div><div class="val">8</div></div><div class="tile "><div class="lbl">Citações verificadas</div><div class="val">93.8%</div><div class="note"><span class="badge"><span style="color:#fab219">◐</span>rever as citações assinaladas</span></div></div></section>
+
+<div class="filters" role="group" aria-label="Filtros aplicados a todos os gráficos e tabelas">
+  <span class="lbl">Filtrar:</span>
+  <select id="f-personagem" aria-label="Personagem"><option value="">Todas as personagens</option><option value="ANJO">ANJO</option><option value="BRAZ">BRAZ</option><option value="GIL">GIL</option><option value="MARIANNA">MARIANNA</option><option value="SACRISTÃO">SACRISTÃO</option></select>
+  <select id="f-tipo" aria-label="Tipo de recurso"><option value="">Todos os recursos</option><option value="antítese">antítese</option><option value="comparação">comparação</option><option value="hipérbole">hipérbole</option><option value="ironia">ironia</option><option value="metáfora">metáfora</option><option value="personificação">personificação</option><option value="sátira">sátira</option><option value="trocadilho">trocadilho</option></select>
+  <select id="f-relacao" aria-label="Tipo de relação"><option value="">Todas as relações</option><option value="antagónica">antagónica</option><option value="cómica">cómica</option><option value="devocional">devocional</option><option value="familiar">familiar</option><option value="hierárquica">hierárquica</option></select>
+  <select id="f-certeza" aria-label="Grau de certeza"><option value="">Todos os graus</option><option value="provável">provável</option><option value="seguro">seguro</option></select>
+  <input type="search" id="f-texto" placeholder="Pesquisar citação, termo…" aria-label="Pesquisa livre">
+  <span class="spacer"></span>
+  <span class="chip" id="contador">32 ocorrências · 14 relações · 8 termos</span>
+  <button id="limpar" class="ghost">Limpar</button>
+</div>
+
+<section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(430px,1fr))">
+  <div class="card" id="card-freq">
+    <header>
+      <div><h2>Frequência dos recursos expressivos</h2><h3>ocorrências registadas por tipo</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Gráfico</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="freq" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart"><svg id="svg-freq" role="img" aria-label="Gráfico de barras da frequência dos recursos expressivos" viewBox="0 0 600 274" style="max-height: 342.5px;"><line x1="150" x2="150" y1="8" y2="248" class="gridline"></line><text x="150" y="266" class="tick" text-anchor="middle">0</text><line x1="330" x2="330" y1="8" y2="248" class="gridline"></line><text x="330" y="266" class="tick" text-anchor="middle">5</text><line x1="510" x2="510" y1="8" y2="248" class="gridline"></line><text x="510" y="266" class="tick" text-anchor="middle">10</text><line x1="150" x2="150" y1="8" y2="248" class="axisline"></line><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,13 H542 a4,4 0 0 1 4,4 V29 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="27" class="lbl-mark" text-anchor="end">metáfora</text><text x="554" y="27" class="val-mark">11</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,43 H434 a4,4 0 0 1 4,4 V59 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="57" class="lbl-mark" text-anchor="end">antítese</text><text x="446" y="57" class="val-mark">8</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,73 H362 a4,4 0 0 1 4,4 V89 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="87" class="lbl-mark" text-anchor="end">comparação</text><text x="374" y="87" class="val-mark">6</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,103 H218 a4,4 0 0 1 4,4 V119 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="117" class="lbl-mark" text-anchor="end">ironia</text><text x="230" y="117" class="val-mark">2</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,133 H218 a4,4 0 0 1 4,4 V149 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="147" class="lbl-mark" text-anchor="end">sátira</text><text x="230" y="147" class="val-mark">2</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,163 H182 a4,4 0 0 1 4,4 V179 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="177" class="lbl-mark" text-anchor="end">personificação</text><text x="194" y="177" class="val-mark">1</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,193 H182 a4,4 0 0 1 4,4 V209 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="207" class="lbl-mark" text-anchor="end">hipérbole</text><text x="194" y="207" class="val-mark">1</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><path d="M150,223 H182 a4,4 0 0 1 4,4 V239 a4,4 0 0 1 -4,4 H150 Z" fill="#2a78d6"></path><text x="140" y="237" class="lbl-mark" text-anchor="end">trocadilho</text><text x="194" y="237" class="val-mark">1</text></g></svg></div>
+    <div class="view-table hidden" id="tbl-freq"><div class="tbl-wrap"><table><thead><tr><th data-k="tipo_recurso">Tipo de recurso</th><th data-k="n_ocorrencias">Ocorrências</th></tr></thead><tbody><tr><td class="">metáfora</td><td class="num">11</td></tr><tr><td class="">antítese</td><td class="num">8</td></tr><tr><td class="">comparação</td><td class="num">6</td></tr><tr><td class="">ironia</td><td class="num">2</td></tr><tr><td class="">sátira</td><td class="num">2</td></tr><tr><td class="">personificação</td><td class="num">1</td></tr><tr><td class="">hipérbole</td><td class="num">1</td></tr><tr><td class="">trocadilho</td><td class="num">1</td></tr></tbody></table></div></div>
+  </div>
+
+  <div class="card" id="card-vern">
+    <header>
+      <div><h2>Vernáculo mais recorrente</h2><h3>expressões, regionalismos e arcaísmos por nº de ocorrências</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Gráfico</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="vern" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart"><svg id="svg-vern" role="img" aria-label="Gráfico de barras das expressões vernaculares mais frequentes" viewBox="0 0 600 274" style="max-height: 342.5px;"><line x1="180" x2="180" y1="8" y2="248" class="gridline"></line><text x="180" y="266" class="tick" text-anchor="middle">0</text><line x1="363" x2="363" y1="8" y2="248" class="gridline"></line><text x="363" y="266" class="tick" text-anchor="middle">1</text><line x1="546" x2="546" y1="8" y2="248" class="gridline"></line><text x="546" y="266" class="tick" text-anchor="middle">2</text><line x1="180" x2="180" y1="8" y2="248" class="axisline"></line><g tabindex="0" role="listitem"><path d="M180,13 H542 a4,4 0 0 1 4,4 V29 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="27" class="lbl-mark" text-anchor="end">tronco</text><text x="554" y="27" class="val-mark">2</text></g><g tabindex="0" role="listitem"><path d="M180,43 H359 a4,4 0 0 1 4,4 V59 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="57" class="lbl-mark" text-anchor="end">bucho</text><text x="371" y="57" class="val-mark">1</text></g><g tabindex="0" role="listitem"><path d="M180,73 H359 a4,4 0 0 1 4,4 V89 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="87" class="lbl-mark" text-anchor="end">carrejar</text><text x="371" y="87" class="val-mark">1</text></g><g tabindex="0" role="listitem"><path d="M180,103 H359 a4,4 0 0 1 4,4 V119 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="117" class="lbl-mark" text-anchor="end">villaons</text><text x="371" y="117" class="val-mark">1</text></g><g tabindex="0" role="listitem"><path d="M180,133 H359 a4,4 0 0 1 4,4 V149 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="147" class="lbl-mark" text-anchor="end">alfaia</text><text x="371" y="147" class="val-mark">1</text></g><g tabindex="0" role="listitem"><path d="M180,163 H359 a4,4 0 0 1 4,4 V179 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="177" class="lbl-mark" text-anchor="end">thuribulo</text><text x="371" y="177" class="val-mark">1</text></g><g tabindex="0" role="listitem"><path d="M180,193 H359 a4,4 0 0 1 4,4 V209 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="207" class="lbl-mark" text-anchor="end">folia</text><text x="371" y="207" class="val-mark">1</text></g><g tabindex="0" role="listitem"><path d="M180,223 H359 a4,4 0 0 1 4,4 V239 a4,4 0 0 1 -4,4 H180 Z" fill="#2a78d6"></path><text x="170" y="237" class="lbl-mark" text-anchor="end">candeas de sebo</text><text x="371" y="237" class="val-mark">1</text></g></svg></div>
+    <div class="view-table hidden" id="tbl-vern"><div class="tbl-wrap"><table><thead><tr><th data-k="expressao">Expressão</th><th data-k="n_ocorrencias">Ocorrências</th></tr></thead><tbody><tr><td class="">tronco</td><td class="num">2</td></tr><tr><td class="">bucho</td><td class="num">1</td></tr><tr><td class="">carrejar</td><td class="num">1</td></tr><tr><td class="">villaons</td><td class="num">1</td></tr><tr><td class="">alfaia</td><td class="num">1</td></tr><tr><td class="">thuribulo</td><td class="num">1</td></tr><tr><td class="">folia</td><td class="num">1</td></tr><tr><td class="">candeas de sebo</td><td class="num">1</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card" id="card-heat">
+    <header>
+      <div><h2>Distribuição dos recursos por personagem</h2><h3>quantas ocorrências de cada tipo cabem a cada personagem</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Mapa</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="heat" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart">
+      <svg id="svg-heat" role="img" aria-label="Mapa de calor da distribuição dos recursos expressivos por personagem" viewBox="0 0 534 318" style="max-height: 365.7px;"><text x="173" y="68" class="tick" text-anchor="start" transform="rotate(-42 173 68)">metáfora</text><text x="219" y="68" class="tick" text-anchor="start" transform="rotate(-42 219 68)">antítese</text><text x="265" y="68" class="tick" text-anchor="start" transform="rotate(-42 265 68)">comparação</text><text x="311" y="68" class="tick" text-anchor="start" transform="rotate(-42 311 68)">ironia</text><text x="357" y="68" class="tick" text-anchor="start" transform="rotate(-42 357 68)">sátira</text><text x="403" y="68" class="tick" text-anchor="start" transform="rotate(-42 403 68)">personificação</text><text x="449" y="68" class="tick" text-anchor="start" transform="rotate(-42 449 68)">hipérbole</text><text x="495" y="68" class="tick" text-anchor="start" transform="rotate(-42 495 68)">trocadilho</text><text x="140" y="105" class="lbl-mark" text-anchor="end">BRAZ</text><g tabindex="0"><rect x="151" y="79" width="44" height="44" rx="3" fill="#6da7ec" stroke="none" stroke-width="1"></rect><text x="173" y="105" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">2</text></g><g tabindex="0"><rect x="197" y="79" width="44" height="44" rx="3" fill="#6da7ec" stroke="none" stroke-width="1"></rect><text x="219" y="105" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">2</text></g><g tabindex="0"><rect x="243" y="79" width="44" height="44" rx="3" fill="#2a78d6" stroke="none" stroke-width="1"></rect><text x="265" y="105" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">3</text></g><g tabindex="-1"><rect x="289" y="79" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="335" y="79" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="0"><rect x="381" y="79" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="403" y="105" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="427" y="79" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="473" y="79" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><text x="140" y="151" class="lbl-mark" text-anchor="end">GIL</text><g tabindex="0"><rect x="151" y="125" width="44" height="44" rx="3" fill="#2a78d6" stroke="none" stroke-width="1"></rect><text x="173" y="151" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">3</text></g><g tabindex="0"><rect x="197" y="125" width="44" height="44" rx="3" fill="#6da7ec" stroke="none" stroke-width="1"></rect><text x="219" y="151" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">2</text></g><g tabindex="0"><rect x="243" y="125" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="265" y="151" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="0"><rect x="289" y="125" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="311" y="151" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="0"><rect x="335" y="125" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="357" y="151" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="381" y="125" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="427" y="125" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="473" y="125" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><text x="140" y="197" class="lbl-mark" text-anchor="end">MARIANNA</text><g tabindex="0"><rect x="151" y="171" width="44" height="44" rx="3" fill="#2a78d6" stroke="none" stroke-width="1"></rect><text x="173" y="197" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">3</text></g><g tabindex="0"><rect x="197" y="171" width="44" height="44" rx="3" fill="#6da7ec" stroke="none" stroke-width="1"></rect><text x="219" y="197" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">2</text></g><g tabindex="0"><rect x="243" y="171" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="265" y="197" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="289" y="171" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="335" y="171" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="381" y="171" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="427" y="171" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="0"><rect x="473" y="171" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="495" y="197" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><text x="140" y="243" class="lbl-mark" text-anchor="end">ANJO</text><g tabindex="0"><rect x="151" y="217" width="44" height="44" rx="3" fill="#6da7ec" stroke="none" stroke-width="1"></rect><text x="173" y="243" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">2</text></g><g tabindex="0"><rect x="197" y="217" width="44" height="44" rx="3" fill="#6da7ec" stroke="none" stroke-width="1"></rect><text x="219" y="243" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">2</text></g><g tabindex="0"><rect x="243" y="217" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="265" y="243" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="289" y="217" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="335" y="217" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="381" y="217" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="427" y="217" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="473" y="217" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><text x="140" y="289" class="lbl-mark" text-anchor="end">SACRISTÃO</text><g tabindex="0"><rect x="151" y="263" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="173" y="289" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="197" y="263" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="-1"><rect x="243" y="263" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="0"><rect x="289" y="263" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="311" y="289" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="0"><rect x="335" y="263" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="357" y="289" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="381" y="263" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g><g tabindex="0"><rect x="427" y="263" width="44" height="44" rx="3" fill="#cde2fb" stroke="none" stroke-width="1"></rect><text x="449" y="289" text-anchor="middle" font-size="11.5" font-weight="600" fill="#0b0b0b">1</text></g><g tabindex="-1"><rect x="473" y="263" width="44" height="44" rx="3" fill="transparent" stroke="#e1e0d9" stroke-width="1"></rect></g></svg>
+      <div class="scale" id="escala-heat"><span>menos</span><span class="steps"><i style="background:#cde2fb"></i><i style="background:#9ec5f4"></i><i style="background:#6da7ec"></i><i style="background:#3987e5"></i><i style="background:#2a78d6"></i><i style="background:#256abf"></i><i style="background:#184f95"></i></span><span>mais (máx. 3)</span></div>
+    </div>
+    <div class="view-table hidden" id="tbl-heat"><div class="tbl-wrap"><table><thead><tr><th data-k="personagem">Personagem</th><th data-k="tipo_recurso">Tipo de recurso</th><th data-k="n">Ocorrências</th></tr></thead><tbody><tr><td class="">BRAZ</td><td class="">comparação</td><td class="num">3</td></tr><tr><td class="">GIL</td><td class="">metáfora</td><td class="num">3</td></tr><tr><td class="">MARIANNA</td><td class="">metáfora</td><td class="num">3</td></tr><tr><td class="">GIL</td><td class="">antítese</td><td class="num">2</td></tr><tr><td class="">BRAZ</td><td class="">metáfora</td><td class="num">2</td></tr><tr><td class="">MARIANNA</td><td class="">antítese</td><td class="num">2</td></tr><tr><td class="">BRAZ</td><td class="">antítese</td><td class="num">2</td></tr><tr><td class="">ANJO</td><td class="">metáfora</td><td class="num">2</td></tr><tr><td class="">ANJO</td><td class="">antítese</td><td class="num">2</td></tr><tr><td class="">BRAZ</td><td class="">personificação</td><td class="num">1</td></tr><tr><td class="">GIL</td><td class="">comparação</td><td class="num">1</td></tr><tr><td class="">GIL</td><td class="">ironia</td><td class="num">1</td></tr><tr><td class="">GIL</td><td class="">sátira</td><td class="num">1</td></tr><tr><td class="">SACRISTÃO</td><td class="">hipérbole</td><td class="num">1</td></tr><tr><td class="">MARIANNA</td><td class="">trocadilho</td><td class="num">1</td></tr><tr><td class="">MARIANNA</td><td class="">comparação</td><td class="num">1</td></tr><tr><td class="">ANJO</td><td class="">comparação</td><td class="num">1</td></tr><tr><td class="">SACRISTÃO</td><td class="">metáfora</td><td class="num">1</td></tr><tr><td class="">SACRISTÃO</td><td class="">ironia</td><td class="num">1</td></tr><tr><td class="">SACRISTÃO</td><td class="">sátira</td><td class="num">1</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card" id="card-rede">
+    <header>
+      <div><h2>Rede de relações entre personagens</h2><h3>nós dimensionados pelo número de relações; passa o cursor sobre uma aresta para ler o tipo</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Grafo</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="rede" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart">
+      <svg id="svg-rede" role="img" aria-label="Grafo das relações entre personagens" viewBox="0 0 820 380" style="max-height: 399px;"><g><line x1="634.5083027456318" y1="175.18650191375278" x2="620.0062293858248" y2="328" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="634.5083027456318" y1="175.18650191375278" x2="620.0062293858248" y2="328" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="620.0062293858248" y1="328" x2="634.5083027456318" y2="175.18650191375278" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="620.0062293858248" y1="328" x2="634.5083027456318" y2="175.18650191375278" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="634.5083027456318" y1="175.18650191375278" x2="185.49169725436835" y2="287.62304334919014" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="634.5083027456318" y1="175.18650191375278" x2="185.49169725436835" y2="287.62304334919014" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="185.49169725436835" y1="287.62304334919014" x2="634.5083027456318" y2="175.18650191375278" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="185.49169725436835" y1="287.62304334919014" x2="634.5083027456318" y2="175.18650191375278" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="243.85047702283376" y1="137.53182310315347" x2="634.5083027456318" y2="175.18650191375278" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="243.85047702283376" y1="137.53182310315347" x2="634.5083027456318" y2="175.18650191375278" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="243.85047702283376" y1="137.53182310315347" x2="620.0062293858248" y2="328" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="243.85047702283376" y1="137.53182310315347" x2="620.0062293858248" y2="328" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="243.85047702283376" y1="137.53182310315347" x2="185.49169725436835" y2="287.62304334919014" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="243.85047702283376" y1="137.53182310315347" x2="185.49169725436835" y2="287.62304334919014" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="185.49169725436835" y1="287.62304334919014" x2="243.85047702283376" y2="137.53182310315347" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="185.49169725436835" y1="287.62304334919014" x2="243.85047702283376" y2="137.53182310315347" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="620.0062293858248" y1="328" x2="243.85047702283376" y2="137.53182310315347" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="620.0062293858248" y1="328" x2="243.85047702283376" y2="137.53182310315347" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="634.5083027456318" y1="175.18650191375278" x2="243.85047702283376" y2="137.53182310315347" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="634.5083027456318" y1="175.18650191375278" x2="243.85047702283376" y2="137.53182310315347" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="472.32033966648794" y1="52" x2="243.85047702283376" y2="137.53182310315347" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="472.32033966648794" y1="52" x2="243.85047702283376" y2="137.53182310315347" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="472.32033966648794" y1="52" x2="634.5083027456318" y2="175.18650191375278" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="472.32033966648794" y1="52" x2="634.5083027456318" y2="175.18650191375278" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="472.32033966648794" y1="52" x2="620.0062293858248" y2="328" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="472.32033966648794" y1="52" x2="620.0062293858248" y2="328" stroke="transparent" stroke-width="14" tabindex="0"></line><line x1="472.32033966648794" y1="52" x2="185.49169725436835" y2="287.62304334919014" stroke="#c3c2b7" stroke-width="1.25" stroke-linecap="round"></line><line x1="472.32033966648794" y1="52" x2="185.49169725436835" y2="287.62304334919014" stroke="transparent" stroke-width="14" tabindex="0"></line></g><g><g tabindex="0" role="listitem" style="cursor: pointer;"><circle cx="634.5083027456318" cy="175.18650191375278" r="16" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"></circle><text x="634.5083027456318" y="153.18650191375278" text-anchor="middle" class="lbl-mark">BRAZ</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><circle cx="620.0062293858248" cy="328" r="14.451542547285166" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"></circle><text x="620.0062293858248" y="307.54845745271484" text-anchor="middle" class="lbl-mark">GIL</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><circle cx="185.49169725436835" cy="287.62304334919014" r="14.451542547285166" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"></circle><text x="185.49169725436835" y="267.171500801905" text-anchor="middle" class="lbl-mark">MARIANNA</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><circle cx="243.85047702283376" cy="137.53182310315347" r="16" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"></circle><text x="243.85047702283376" y="115.53182310315347" text-anchor="middle" class="lbl-mark">SACRISTÃO</text></g><g tabindex="0" role="listitem" style="cursor: pointer;"><circle cx="472.32033966648794" cy="52" r="13.559289460184544" fill="#2a78d6" stroke="#fcfcfb" stroke-width="2"></circle><text x="472.32033966648794" y="32.440710539815456" text-anchor="middle" class="lbl-mark">ANJO</text></g></g></svg>
+      <div class="legend" id="leg-rede"><button class="chip" type="button" aria-pressed="false">hierárquica · 4</button><button class="chip" type="button" aria-pressed="false">antagónica · 3</button><button class="chip" type="button" aria-pressed="false">devocional · 3</button><button class="chip" type="button" aria-pressed="false">cómica · 2</button><button class="chip" type="button" aria-pressed="false">familiar · 2</button><span class="key muted">escolhe um tipo para o destacar no grafo</span></div>
+    </div>
+    <div class="view-table hidden" id="tbl-rede"><div class="tbl-wrap"><table><thead><tr><th data-k="origem">Origem</th><th data-k="destino">Destino</th><th data-k="tipo_relacao">Tipo</th><th data-k="descricao">Interpretação</th></tr></thead><tbody><tr><td class="">BRAZ</td><td class="">GIL</td><td class="">cómica</td><td class="">Compadrio horizontal; a divergência entre visão e fome move o diálogo da Cena I</td></tr><tr><td class="">GIL</td><td class="">BRAZ</td><td class="">cómica</td><td class="">Contradita sistemática que rebaixa o companheiro sem o hostilizar</td></tr><tr><td class="">BRAZ</td><td class="">MARIANNA</td><td class="">familiar</td><td class="">Deferência afectuosa marcada pelo tratamento «Tia» (L0030)</td></tr><tr><td class="">MARIANNA</td><td class="">BRAZ</td><td class="">familiar</td><td class="">Aceitação do convite; adesão da velha ao grupo dos pastores</td></tr><tr><td class="">SACRISTÃO</td><td class="">BRAZ</td><td class="">hierárquica</td><td class="">Autoridade eclesiástica que interpela e ameaça (L0045, L0052)</td></tr><tr><td class="">SACRISTÃO</td><td class="">GIL</td><td class="">hierárquica</td><td class="">Mesma interpelação depreciativa dirigida ao colectivo dos «villaons»</td></tr><tr><td class="">SACRISTÃO</td><td class="">MARIANNA</td><td class="">hierárquica</td><td class="">Superioridade institucional exercida sobre a mulher idosa e pobre</td></tr><tr><td class="">MARIANNA</td><td class="">SACRISTÃO</td><td class="">antagónica</td><td class="">Acusação ascendente de venalidade (L0053-L0054); ponto alto da inversão</td></tr><tr><td class="">GIL</td><td class="">SACRISTÃO</td><td class="">antagónica</td><td class="">Sátira do clérigo como galo de campanário (L0047-L0048)</td></tr><tr><td class="">BRAZ</td><td class="">SACRISTÃO</td><td class="">antagónica</td><td class="">Refutação doutrinal: as chaves que não abrem (L0050-L0051)</td></tr><tr><td class="">ANJO</td><td class="">SACRISTÃO</td><td class="">hierárquica</td><td class="">Juízo celeste que suspende a autoridade eclesiástica terrena</td></tr><tr><td class="">ANJO</td><td class="">BRAZ</td><td class="">devocional</td><td class="">Convocação ao presépio dirigida aos pastores</td></tr><tr><td class="">ANJO</td><td class="">GIL</td><td class="">devocional</td><td class="">Mesma convocação; a fome é aceite como oferta</td></tr><tr><td class="">ANJO</td><td class="">MARIANNA</td><td class="">devocional</td><td class="">Confirmação da sentença moral enunciada pela velha</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card">
+    <header><div><h2>Ocorrências de recursos expressivos</h2><h3>tabela integral, com cotejo automático de cada citação com a transcrição</h3></div>
+      <div class="acts"><button data-csv="recursos" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-recursos"><div class="tbl-wrap"><table><thead><tr><th data-k="id">Id</th><th data-k="tipo_recurso">Recurso</th><th data-k="personagem">Personagem</th><th data-k="localizacao">Local</th><th data-k="citacao">Citação</th><th data-k="interpretacao">Interpretação</th><th data-k="verificacao">Cotejo</th></tr></thead><tbody><tr><td class="">R001</td><td class="">comparação</td><td class="">BRAZ</td><td class="loc">L0012-L0013</td><td class=""><span class="cit">o ceo se abrio como bolsa de rico em dia de festa</span></td><td class="">Abertura do céu medida por unidade económica: o sobrenatural entra pela imagem do dinheiro, e a devoção começa já contaminada de crítica social.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R002</td><td class="">metáfora</td><td class="">GIL</td><td class="loc">L0014</td><td class=""><span class="cit">os teus olhos sam candeas de sebo</span></td><td class="">Rebaixamento cómico do companheiro pela iluminação dos pobres; a candeia de sebo opõe-se implicitamente à cera do altar.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R003</td><td class="">antítese</td><td class="">GIL</td><td class="loc">L0015</td><td class=""><span class="cit">alumiam pouco e fumegam muito</span></td><td class="">Fórmula proverbial que condensa a crítica à aparência sem substância — matriz de toda a sátira ao Sacristão.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R004</td><td class="">metáfora</td><td class="">BRAZ</td><td class="loc">L0019</td><td class=""><span class="cit">Deos fez-se cordeiro</span></td><td class="">Metáfora doutrinal corrente, aqui em boca de pastor: o vocabulário do ofício serve a exposição teológica.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R005</td><td class="">personificação</td><td class="">BRAZ</td><td class="loc">L0020</td><td class=""><span class="cit">para que o lobo se envergonhasse de ser lobo</span></td><td class="">Atribui vergonha ao predador; a conversão é apresentada como efeito moral, não como poder.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R006</td><td class="">comparação</td><td class="">GIL</td><td class="loc">L0022</td><td class=""><span class="cit">vazio como cofre de fidalgo pobre</span></td><td class="">Comparação de duplo alvo: nomeia a fome do pastor e denuncia a insolvência dissimulada da fidalguia.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R007</td><td class="">ironia</td><td class="">GIL</td><td class="loc">L0021</td><td class=""><span class="cit">o meu bucho nam entende de theologias</span></td><td class="">O corpo como instância de verificação do discurso alto; o cómico protege a objecção material.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R008</td><td class="">metáfora</td><td class="">MARIANNA</td><td class="loc">L0028-L0029</td><td class=""><span class="cit">a velhice he serra que se sobe sem nunca se descer</span></td><td class="">Imagem orográfica da irreversibilidade; a paisagem alentejana fornece o termo da comparação.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R009</td><td class="">antítese</td><td class="">MARIANNA</td><td class="loc">L0032</td><td class=""><span class="cit">he o que menos pesa e mais custa</span></td><td class="">Inversão entre peso físico e valor moral, preparando a doutrina da oferta pobre.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R010</td><td class="">metáfora</td><td class="">GIL</td><td class="loc">L0033</td><td class=""><span class="cit">A tia tem na boca hum açucareiro</span></td><td class="">Elogio hiperbólico da fala da velha; introduz o motivo da boca como recipiente.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R011</td><td class="">metáfora</td><td class="">MARIANNA</td><td class="loc">L0034</td><td class=""><span class="cit">Tenho na boca o que a vida me poz: sal, filho, muito sal</span></td><td class="">Resposta que corrige a metáfora anterior: o sal da experiência substitui o açúcar da lisonja.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R012</td><td class="">comparação</td><td class="">BRAZ</td><td class="loc">L0036</td><td class=""><span class="cit">como o iman chama o ferro</span></td><td class="">Comparação de matriz naturalista/escolar para explicar a atracção dos pobres pela Encarnação.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R013</td><td class="">sátira</td><td class="">GIL</td><td class="loc">L0047-L0048</td><td class=""><span class="cit">o gallo do campanario, que canta por relogio e nam por alvorada</span></td><td class="">Retrato satírico do clérigo como autómato litúrgico: canta por obrigação horária e não por impulso natural.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R014</td><td class="">antítese</td><td class="">BRAZ</td><td class="loc">L0050-L0051</td><td class=""><span class="cit">com todas as suas chaves, nam abrio a porta a ninguem</span></td><td class="">Núcleo ideológico da peça: a posse dos instrumentos de acesso contraposta à recusa do acesso.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R015</td><td class="">hipérbole</td><td class="">SACRISTÃO</td><td class="loc">L0052</td><td class=""><span class="cit">Havia de vos meter no tronco</span></td><td class="">Ameaça desproporcionada que expõe a fragilidade da autoridade que a profere.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R016</td><td class="">trocadilho</td><td class="">MARIANNA</td><td class="loc">L0053</td><td class=""><span class="cit">No tronco meteis vós as moedas</span></td><td class="">Retoma o termo do adversário e desloca-lhe o sentido — do cepo de prisão ao cofre das esmolas.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R017</td><td class="">comparação</td><td class="">MARIANNA</td><td class="loc">L0054</td><td class=""><span class="cit">a caixa das almas estâ mais gorda que as almas</span></td><td class="">Comparação de corpulência entre o cofre e os fiéis; acusação de acumulação à custa da devoção.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R018</td><td class="">metáfora</td><td class="">GIL</td><td class="loc">L0055</td><td class=""><span class="cit">Foi pedrada em olho de vidro</span></td><td class="">Comentário metadramático que sublinha o golpe verbal e a falsidade do visado.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R019</td><td class="">antítese</td><td class="">BRAZ</td><td class="loc">L0057-L0058</td><td class=""><span class="cit">nella coube quem nam cabe nos ceos</span></td><td class="">Formulação do paradoxo da Encarnação pela oposição de continentes.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R020</td><td class="">metáfora</td><td class="">ANJO</td><td class="loc">L0065</td><td class=""><span class="cit">a noite de hoje he porta e nam parede</span></td><td class="">Requalifica o tempo em arquitectura; prepara a imagem final da casa sem chave.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R021</td><td class="">antítese</td><td class="">ANJO</td><td class="loc">L0066</td><td class=""><span class="cit">que pesas incensos e nam pesas culpas</span></td><td class="">Sentença angélica construída sobre a repetição do verbo com objectos de ordem oposta.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R022</td><td class="">comparação</td><td class="">ANJO</td><td class="loc">L0067</td><td class=""><span class="cit">o thuribulo sem fogo he cesto sem pam</span></td><td class="">Aproxima o objecto litúrgico do utensílio doméstico, medindo o culto pela utilidade.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R023</td><td class="">metáfora</td><td class="">SACRISTÃO</td><td class="loc">L0068</td><td class=""><span class="cit">o ceo me tomou as contas</span></td><td class="">Linguagem de escrituração aplicada ao juízo divino, coerente com a caracterização venal da personagem.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R024</td><td class="">antítese</td><td class="">MARIANNA</td><td class="loc">L0069</td><td class=""><span class="cit">Tambem o mais alto se dobra, quando o menor se levanta</span></td><td class="">Enunciado da inversão hierárquica que a peça encena; eco do Magnificat.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R025</td><td class="">comparação</td><td class="">BRAZ</td><td class="loc">L0070-L0071</td><td class=""><span class="cit">jâ me arde o peito como forno de padeiro em vespera de Natal</span></td><td class="">O fervor devoto traduzido em imagem de ofício, com marcação calendárica explícita.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R026</td><td class="">antítese</td><td class="">GIL</td><td class="loc">L0073</td><td class=""><span class="cit">a offerta que mais cheia se dâ e mais vazia se leva</span></td><td class="">Paradoxo da oferta da fome: a carência convertida em dádiva.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R027</td><td class="">metáfora</td><td class="">MARIANNA</td><td class="loc">L0074</td><td class=""><span class="cit">a esperança sempre foi vasilha</span></td><td class="">Fecha o motivo do cesto: a esperança como recipiente à espera de conteúdo.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R028</td><td class="">ironia</td><td class="">SACRISTÃO</td><td class="loc">L0075</td><td class=""><span class="cit">a unica alfaia que me fica</span></td><td class="">Auto-ironia final que converte a vergonha em objecto litúrgico — sinal de contrição cómica.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R029</td><td class="">metáfora</td><td class="">ANJO</td><td class="loc">L0076</td><td class=""><span class="cit">o presepio he casa sem chave</span></td><td class="">Resolve a antítese das chaves (L0050-L0051) pela abolição do próprio mecanismo.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R030</td><td class="">antítese</td><td class="">ANJO</td><td class="loc">L0077</td><td class=""><span class="cit">quem entra pobre sahe rico</span></td><td class="">Sentença conclusiva que estabiliza a inversão social como doutrina.</td><td class=""><span class="badge" title="citação localizada na transcrição, na posição indicada"><span style="color:#0ca30c">●</span>verificada</span></td></tr><tr><td class="">R031</td><td class="">metáfora</td><td class="">BRAZ</td><td class="loc">L0090</td><td class=""><span class="cit">o menino he sol de inverno que aquenta sem queimar</span></td><td class="">Entrada deliberadamente errada nesta amostra: a citação não existe na transcrição e a linha excede a peça.</td><td class=""><span class="badge" title="citação não encontrada na transcrição — rever manualmente"><span style="color:#d03b3b">✕</span>não encontrada</span></td></tr><tr><td class="">R032</td><td class="">sátira</td><td class="">SACRISTÃO</td><td class="loc">L0012</td><td class=""><span class="cit">heresias de palha</span></td><td class="">Entrada com localização errada nesta amostra: a expressão existe, mas em L0056.</td><td class=""><span class="badge" title="citação existe no texto, mas fora da localização declarada"><span style="color:#fab219">◐</span>deslocada</span></td></tr></tbody></table></div></div>
+  </div>
+  <div class="card">
+    <header><div><h2>Personagens</h2><h3>função dramática e carga simbólica</h3></div>
+      <div class="acts"><button data-csv="personagens" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-pers"><div class="tbl-wrap"><table><thead><tr><th data-k="personagem">Personagem</th><th data-k="funcao_dramatica">Função dramática</th><th data-k="simbologia">Carga simbólica</th></tr></thead><tbody><tr><td class="">BRAZ</td><td class="">Protagonista pastoril; testemunha da Natividade e condutor da acção</td><td class="">O pobre vidente: a lucidez teológica atribuída a quem não tem letras</td></tr><tr><td class="">GIL</td><td class="">Gracioso; contraponto material e cómico de Braz</td><td class="">A fome como instância crítica; o riso que autoriza a denúncia social</td></tr><tr><td class="">MARIANNA</td><td class="">Figura sapiencial; enuncia as sentenças morais da peça</td><td class="">A velhice como saber e a pobreza como oferta; voz feminina de autoridade moral</td></tr><tr><td class="">SACRISTÃO</td><td class="">Bloqueador cómico; antagonista da devoção espontânea</td><td class="">O clero subalterno como guardião que não abre; a instituição contra o carisma</td></tr><tr><td class="">ANJO</td><td class="">Deus ex machina; instância de juízo e convocação</td><td class="">A mediação celeste que confirma a leitura dos pobres contra a do clérigo</td></tr></tbody></table></div></div>
+  </div>
+  <div class="card">
+    <header><div><h2>Vernáculo</h2><h3>significado de época e grau de certeza</h3></div>
+      <div class="acts"><button data-csv="vernaculo" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-vernaculo"><div class="tbl-wrap"><table><thead><tr><th data-k="expressao">Expressão</th><th data-k="significado_epoca">Significado de época</th><th data-k="grau_certeza">Certeza</th><th data-k="localizacao">Local</th><th data-k="n_ocorrencias">N.º</th></tr></thead><tbody><tr><td class="">bucho</td><td class="">Estômago, ventre; registo popular com uso jocoso aplicado ao homem (Bluteau regista o termo para o ventre dos animais)</td><td class="">seguro</td><td class="loc">L0021</td><td class="num">1</td></tr><tr><td class="">carrejar</td><td class="">Transportar às costas; variante meridional de carregar, corrente no Alentejo</td><td class="">provável</td><td class="loc">L0030</td><td class="num">1</td></tr><tr><td class="">villaons</td><td class="">Plural arcaico de villão: habitante do campo, com carga depreciativa de rústico</td><td class="">seguro</td><td class="loc">L0045</td><td class="num">1</td></tr><tr><td class="">tronco</td><td class="">Cepo de prisão pública onde se prendiam os presos pelos pés; sentido divergente do actual</td><td class="">seguro</td><td class="loc">L0052-L0053</td><td class="num">2</td></tr><tr><td class="">alfaia</td><td class="">Utensílio litúrgico ou doméstico de valor; aqui em sentido irónico</td><td class="">seguro</td><td class="loc">L0075</td><td class="num">1</td></tr><tr><td class="">thuribulo</td><td class="">Turíbulo, incensário; grafia etimológica coeva</td><td class="">seguro</td><td class="loc">L0067</td><td class="num">1</td></tr><tr><td class="">folia</td><td class="">Dança e canto festivo de romaria, típica dos autos de Natal peninsulares</td><td class="">provável</td><td class="loc">L0079</td><td class="num">1</td></tr><tr><td class="">candeas de sebo</td><td class="">Candeias alimentadas a gordura animal; iluminação dos pobres, oposta à cera do altar</td><td class="">seguro</td><td class="loc">L0014</td><td class="num">1</td></tr></tbody></table></div></div>
+  </div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>Análise em prosa</h2>
+  <h3>texto integral produzido na primeira ronda</h3>
+  <div id="prosa"><details open=""><summary>Personagens, simbologia e relações</summary><div class="prosa"><h4>Elenco</h4><p><strong>BRAZ</strong> — pastor. Função dramática: protagonista devoto e porta-voz da</p><p>teologia popular; é ele quem vê o Menino («vi o que tu nam viste», L0016) e</p><p>quem arrasta o grupo para o presépio. Carga simbólica: o pobre que enxerga o</p><p>que o letrado não vê; encarna a inversão evangélica que estrutura a peça.</p><p>Grau de certeza: seguro.</p><p><strong>GIL</strong> — compadre de Braz. Função: <em>gracioso</em>, contraponto cómico e material.</p><p>A sua fome é o eixo do riso («o meu bucho nam entende de theologias», L0021) e</p><p>também o veículo da crítica social, já que a comparação com o «cofre de fidalgo</p><p>pobre» (L0022) desloca a carência do camponês para o fidalgo. Grau: seguro.</p><p><strong>MARIANNA</strong> — velha. Função: figura sapiencial; formula as sentenças morais da</p><p>peça (L0069). Carga simbólica: a velhice como saber acumulado e a pobreza como</p><p>oferta («a esperança sempre foi vasilha», L0074). É ela quem desfere a acusação</p><p>mais dura ao Sacristão (L0053-L0054). Grau: seguro.</p><p><strong>O SACRISTÃO</strong> — clero subalterno. Função: <em>bloqueador</em> cómico; antagonista da</p><p>devoção espontânea dos pastores. Carga simbólica: a instituição que possui as</p><p>chaves mas não abre a porta (L0050-L0051). O seu arco fecha-se na humilhação</p><p>(L0075). Grau: seguro.</p><p><strong>HUM ANJO</strong> — Função: <em>deus ex machina</em> e voz da autoridade divina; resolve o</p><p>conflito por sentença, não por acção. Carga simbólica: a mediação celeste que</p><p>valida a leitura dos pobres contra a do clérigo. Grau: seguro.</p><h4>Relações</h4><ul><li>BRAZ ↔ GIL: relação de compadrio, horizontal e cómica; a divergência entre</li></ul><p>  os dois (visão / fome) é o motor dialógico da Cena I.</p><ul><li>BRAZ → MARIANNA: relação de deferência afectuosa («Tia Marianna», L0030),</li></ul><p>  reforçando a rede de solidariedade dos pobres.</p><ul><li>SACRISTÃO → BRAZ, GIL, MARIANNA: relação hierárquica e antagónica, marcada</li></ul><p>  pelo vocativo depreciativo «villaons» (L0045) e pela ameaça do tronco (L0052).</p><ul><li>MARIANNA → SACRISTÃO: antagónica ascendente; a subalterna acusa o superior.</li><li>ANJO → SACRISTÃO: relação de juízo, hierarquia invertida face à autoridade</li></ul><p>  eclesiástica terrena.</p><ul><li>ANJO → pastores: relação devocional, de convocação.</li></ul></div></details><details><summary>Vernáculo e recursos expressivos</summary><div class="prosa"><h4>Vernáculo, regionalismos e arcaísmos</h4><ul><li><strong>bucho</strong> (L0021) — estômago, ventre; registo popular, ainda corrente no</li></ul><p>  Alentejo. Bluteau regista «bucho» como ventre dos animais, com extensão</p><p>  jocosa ao homem. Grau: seguro.</p><ul><li><strong>carrejar</strong> (L0030, «carreja») — transportar às costas; forma dialectal de</li></ul><p>  <em>carregar</em>, frequente no português meridional. Grau: provável.</p><ul><li><strong>villaons</strong> (L0045) — plural arcaico de <em>villão</em>, habitante da vila/campo,</li></ul><p>  com carga depreciativa de rústico. Grau: seguro.</p><ul><li><strong>tronco</strong> (L0052-L0053) — cepo de prisão pública; sentido divergente do</li></ul><p>  actual. Grau: seguro.</p><ul><li><strong>alfaia</strong> (L0075) — utensílio litúrgico ou doméstico de valor; aqui em</li></ul><p>  sentido irónico. Grau: seguro.</p><ul><li><strong>thuribulo</strong> (L0067) — turíbulo, incensário. Grafia etimológica coeva.</li></ul><p>  Grau: seguro.</p><ul><li><strong>folia</strong> (L0079) — dança e canto festivo de romaria, típico dos autos de</li></ul><p>  Natal peninsulares. Grau: provável.</p><ul><li><strong>candeas de sebo</strong> (L0014) — candeias de gordura animal, iluminação dos</li></ul><p>  pobres. Grau: seguro.</p><h4>Recursos expressivos</h4><p>A peça constrói-se sobre uma armação de <strong>antíteses</strong> (pobre/rico,</p><p>palha/céu, chave/porta) servida por <strong>comparações</strong> de extracção doméstica e</p><p>agrícola. A ironia recai quase toda sobre o Sacristão. Ver a sistematização na</p><p>tarefa seguinte.</p></div></details></div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>Limitações e validação</h2>
+  <h3>lacunas assinaladas pela análise e verificações automáticas</h3>
+  <div id="limitacoes" class="prosa"><ul><li>A transcrição não conserva indicação de música ou tom para a folia final</li></ul><p>  (L0079), pelo que a leitura performativa fica em aberto.</p><ul><li>«Sahe O SACRISTÃO, muito composto» (L0043): «composto» admite duas leituras</li></ul><p>  de época — <em>bem-arranjado</em> ou <em>afectado</em>. Adopta-se a segunda pelo contexto</p><p>  satírico, mas a primeira não fica excluída.</p><ul><li>Não há elementos internos que fixem a datação; a atribuição depende de dados</li></ul><p>  externos ao texto.</p><ul><li>Duas entradas de <code>recursos_expressivos.csv</code> (R031 e R032) foram incluídas</li></ul><p>  propositadamente com defeito nesta amostra, para demonstrar o cotejo</p><p>  automático: R031 não existe na transcrição e aponta para uma linha inexistente;</p><p>  R032 existe mas em L0056, não em L0012.</p><ul><li>A classificação de R026 oscila entre antítese e paradoxo; optou-se por</li></ul><p>  antítese para manter o vocabulário controlado.</p><ul><li>«composto» (L0043) admite duas leituras de época e não foi registado como</li></ul><p>  recurso por não ser seguro o valor irónico.</p></div>
+  <div id="validacao"><details><summary>Erros de validação (1)</summary><ul class="aviso-list"><li>✗ 1 citação(ões) não foram encontradas na transcrição e exigem revisão manual: R031</li></ul></details><details><summary>Avisos (2)</summary><ul class="aviso-list"><li>! `R031`: localização L0090 aponta para linha(s) inexistente(s) [90] (a peça tem 81 linhas).</li><li>! 1 citação(ões) existem no texto mas fora da localização declarada: R032</li></ul></details><details><summary>Normalizações aplicadas (1)</summary><ul class="aviso-list"><li>· `frequencias_recursos.csv` foi recalculada a partir de `recursos_expressivos.csv` (metáfora: declarado 9, real 11).</li></ul></details></div>
+</section>
+
+<footer id="rodape">Gerado por <b>presepios</b> a partir de entremez_exemplo.txt. As tabelas e os gráficos derivam exclusivamente dos CSVs validados; as citações foram cotejadas automaticamente com a transcrição. Toda a leitura interpretativa carece de confirmação por especialista.</footer>
+</div>
+
+<div id="tip" role="tooltip" style="opacity: 0; left: 697px; top: 451px;"><b>MARIANNA · antítese</b>2 ocorrências</div>
+
+<script id="dados" type="application/json">{"meta":{"titulo":"Entremez do Presépio da Graça (amostra)","datacao":"c. 1760–1780 (fictícia)","proveniencia":"Amostra sintética — não é uma peça de arquivo","genero":"presépio teatral","slug":"entremez-do-presepio-da-graca-amostra","data_execucao":"2026-08-18 13:58","modelo":"(reutilizado)","ficheiro":"entremez_exemplo.txt","n_linhas":81},"metricas":{"citacoes_testadas":32,"citacoes_verificadas":30,"citacoes_deslocadas":1,"citacoes_nao_encontradas":1,"citacoes_sem_localizacao":0,"citacoes_verificadas_pct":93.8,"n_recursos":32,"n_tipos_recurso":8,"n_personagens":5,"n_relacoes":14,"n_vernaculo":8,"n_tipos_relacao":5,"n_linhas_peca":81,"densidade_recursos_por_100_linhas":39.51},"recursos":[{"id":"R001","tipo_recurso":"comparação","citacao":"o ceo se abrio como bolsa de rico em dia de festa","localizacao":"L0012-L0013","personagem":"BRAZ","interpretacao":"Abertura do céu medida por unidade económica: o sobrenatural entra pela imagem do dinheiro, e a devoção começa já contaminada de crítica social.","verificacao":"verificada","linha":"12"},{"id":"R002","tipo_recurso":"metáfora","citacao":"os teus olhos sam candeas de sebo","localizacao":"L0014","personagem":"GIL","interpretacao":"Rebaixamento cómico do companheiro pela iluminação dos pobres; a candeia de sebo opõe-se implicitamente à cera do altar.","verificacao":"verificada","linha":"14"},{"id":"R003","tipo_recurso":"antítese","citacao":"alumiam pouco e fumegam muito","localizacao":"L0015","personagem":"GIL","interpretacao":"Fórmula proverbial que condensa a crítica à aparência sem substância — matriz de toda a sátira ao Sacristão.","verificacao":"verificada","linha":"15"},{"id":"R004","tipo_recurso":"metáfora","citacao":"Deos fez-se cordeiro","localizacao":"L0019","personagem":"BRAZ","interpretacao":"Metáfora doutrinal corrente, aqui em boca de pastor: o vocabulário do ofício serve a exposição teológica.","verificacao":"verificada","linha":"19"},{"id":"R005","tipo_recurso":"personificação","citacao":"para que o lobo se envergonhasse de ser lobo","localizacao":"L0020","personagem":"BRAZ","interpretacao":"Atribui vergonha ao predador; a conversão é apresentada como efeito moral, não como poder.","verificacao":"verificada","linha":"20"},{"id":"R006","tipo_recurso":"comparação","citacao":"vazio como cofre de fidalgo pobre","localizacao":"L0022","personagem":"GIL","interpretacao":"Comparação de duplo alvo: nomeia a fome do pastor e denuncia a insolvência dissimulada da fidalguia.","verificacao":"verificada","linha":"22"},{"id":"R007","tipo_recurso":"ironia","citacao":"o meu bucho nam entende de theologias","localizacao":"L0021","personagem":"GIL","interpretacao":"O corpo como instância de verificação do discurso alto; o cómico protege a objecção material.","verificacao":"verificada","linha":"21"},{"id":"R008","tipo_recurso":"metáfora","citacao":"a velhice he serra que se sobe sem nunca se descer","localizacao":"L0028-L0029","personagem":"MARIANNA","interpretacao":"Imagem orográfica da irreversibilidade; a paisagem alentejana fornece o termo da comparação.","verificacao":"verificada","linha":"28"},{"id":"R009","tipo_recurso":"antítese","citacao":"he o que menos pesa e mais custa","localizacao":"L0032","personagem":"MARIANNA","interpretacao":"Inversão entre peso físico e valor moral, preparando a doutrina da oferta pobre.","verificacao":"verificada","linha":"32"},{"id":"R010","tipo_recurso":"metáfora","citacao":"A tia tem na boca hum açucareiro","localizacao":"L0033","personagem":"GIL","interpretacao":"Elogio hiperbólico da fala da velha; introduz o motivo da boca como recipiente.","verificacao":"verificada","linha":"33"},{"id":"R011","tipo_recurso":"metáfora","citacao":"Tenho na boca o que a vida me poz: sal, filho, muito sal","localizacao":"L0034","personagem":"MARIANNA","interpretacao":"Resposta que corrige a metáfora anterior: o sal da experiência substitui o açúcar da lisonja.","verificacao":"verificada","linha":"34"},{"id":"R012","tipo_recurso":"comparação","citacao":"como o iman chama o ferro","localizacao":"L0036","personagem":"BRAZ","interpretacao":"Comparação de matriz naturalista/escolar para explicar a atracção dos pobres pela Encarnação.","verificacao":"verificada","linha":"36"},{"id":"R013","tipo_recurso":"sátira","citacao":"o gallo do campanario, que canta por relogio e nam por alvorada","localizacao":"L0047-L0048","personagem":"GIL","interpretacao":"Retrato satírico do clérigo como autómato litúrgico: canta por obrigação horária e não por impulso natural.","verificacao":"verificada","linha":"47"},{"id":"R014","tipo_recurso":"antítese","citacao":"com todas as suas chaves, nam abrio a porta a ninguem","localizacao":"L0050-L0051","personagem":"BRAZ","interpretacao":"Núcleo ideológico da peça: a posse dos instrumentos de acesso contraposta à recusa do acesso.","verificacao":"verificada","linha":"50"},{"id":"R015","tipo_recurso":"hipérbole","citacao":"Havia de vos meter no tronco","localizacao":"L0052","personagem":"SACRISTÃO","interpretacao":"Ameaça desproporcionada que expõe a fragilidade da autoridade que a profere.","verificacao":"verificada","linha":"52"},{"id":"R016","tipo_recurso":"trocadilho","citacao":"No tronco meteis vós as moedas","localizacao":"L0053","personagem":"MARIANNA","interpretacao":"Retoma o termo do adversário e desloca-lhe o sentido — do cepo de prisão ao cofre das esmolas.","verificacao":"verificada","linha":"53"},{"id":"R017","tipo_recurso":"comparação","citacao":"a caixa das almas estâ mais gorda que as almas","localizacao":"L0054","personagem":"MARIANNA","interpretacao":"Comparação de corpulência entre o cofre e os fiéis; acusação de acumulação à custa da devoção.","verificacao":"verificada","linha":"54"},{"id":"R018","tipo_recurso":"metáfora","citacao":"Foi pedrada em olho de vidro","localizacao":"L0055","personagem":"GIL","interpretacao":"Comentário metadramático que sublinha o golpe verbal e a falsidade do visado.","verificacao":"verificada","linha":"55"},{"id":"R019","tipo_recurso":"antítese","citacao":"nella coube quem nam cabe nos ceos","localizacao":"L0057-L0058","personagem":"BRAZ","interpretacao":"Formulação do paradoxo da Encarnação pela oposição de continentes.","verificacao":"verificada","linha":"57"},{"id":"R020","tipo_recurso":"metáfora","citacao":"a noite de hoje he porta e nam parede","localizacao":"L0065","personagem":"ANJO","interpretacao":"Requalifica o tempo em arquitectura; prepara a imagem final da casa sem chave.","verificacao":"verificada","linha":"65"},{"id":"R021","tipo_recurso":"antítese","citacao":"que pesas incensos e nam pesas culpas","localizacao":"L0066","personagem":"ANJO","interpretacao":"Sentença angélica construída sobre a repetição do verbo com objectos de ordem oposta.","verificacao":"verificada","linha":"66"},{"id":"R022","tipo_recurso":"comparação","citacao":"o thuribulo sem fogo he cesto sem pam","localizacao":"L0067","personagem":"ANJO","interpretacao":"Aproxima o objecto litúrgico do utensílio doméstico, medindo o culto pela utilidade.","verificacao":"verificada","linha":"67"},{"id":"R023","tipo_recurso":"metáfora","citacao":"o ceo me tomou as contas","localizacao":"L0068","personagem":"SACRISTÃO","interpretacao":"Linguagem de escrituração aplicada ao juízo divino, coerente com a caracterização venal da personagem.","verificacao":"verificada","linha":"68"},{"id":"R024","tipo_recurso":"antítese","citacao":"Tambem o mais alto se dobra, quando o menor se levanta","localizacao":"L0069","personagem":"MARIANNA","interpretacao":"Enunciado da inversão hierárquica que a peça encena; eco do Magnificat.","verificacao":"verificada","linha":"69"},{"id":"R025","tipo_recurso":"comparação","citacao":"jâ me arde o peito como forno de padeiro em vespera de Natal","localizacao":"L0070-L0071","personagem":"BRAZ","interpretacao":"O fervor devoto traduzido em imagem de ofício, com marcação calendárica explícita.","verificacao":"verificada","linha":"70"},{"id":"R026","tipo_recurso":"antítese","citacao":"a offerta que mais cheia se dâ e mais vazia se leva","localizacao":"L0073","personagem":"GIL","interpretacao":"Paradoxo da oferta da fome: a carência convertida em dádiva.","verificacao":"verificada","linha":"73"},{"id":"R027","tipo_recurso":"metáfora","citacao":"a esperança sempre foi vasilha","localizacao":"L0074","personagem":"MARIANNA","interpretacao":"Fecha o motivo do cesto: a esperança como recipiente à espera de conteúdo.","verificacao":"verificada","linha":"74"},{"id":"R028","tipo_recurso":"ironia","citacao":"a unica alfaia que me fica","localizacao":"L0075","personagem":"SACRISTÃO","interpretacao":"Auto-ironia final que converte a vergonha em objecto litúrgico — sinal de contrição cómica.","verificacao":"verificada","linha":"75"},{"id":"R029","tipo_recurso":"metáfora","citacao":"o presepio he casa sem chave","localizacao":"L0076","personagem":"ANJO","interpretacao":"Resolve a antítese das chaves (L0050-L0051) pela abolição do próprio mecanismo.","verificacao":"verificada","linha":"76"},{"id":"R030","tipo_recurso":"antítese","citacao":"quem entra pobre sahe rico","localizacao":"L0077","personagem":"ANJO","interpretacao":"Sentença conclusiva que estabiliza a inversão social como doutrina.","verificacao":"verificada","linha":"77"},{"id":"R031","tipo_recurso":"metáfora","citacao":"o menino he sol de inverno que aquenta sem queimar","localizacao":"L0090","personagem":"BRAZ","interpretacao":"Entrada deliberadamente errada nesta amostra: a citação não existe na transcrição e a linha excede a peça.","verificacao":"não encontrada","linha":"90"},{"id":"R032","tipo_recurso":"sátira","citacao":"heresias de palha","localizacao":"L0012","personagem":"SACRISTÃO","interpretacao":"Entrada com localização errada nesta amostra: a expressão existe, mas em L0056.","verificacao":"deslocada","linha":"12"}],"personagens":[{"personagem":"BRAZ","funcao_dramatica":"Protagonista pastoril; testemunha da Natividade e condutor da acção","simbologia":"O pobre vidente: a lucidez teológica atribuída a quem não tem letras"},{"personagem":"GIL","funcao_dramatica":"Gracioso; contraponto material e cómico de Braz","simbologia":"A fome como instância crítica; o riso que autoriza a denúncia social"},{"personagem":"MARIANNA","funcao_dramatica":"Figura sapiencial; enuncia as sentenças morais da peça","simbologia":"A velhice como saber e a pobreza como oferta; voz feminina de autoridade moral"},{"personagem":"SACRISTÃO","funcao_dramatica":"Bloqueador cómico; antagonista da devoção espontânea","simbologia":"O clero subalterno como guardião que não abre; a instituição contra o carisma"},{"personagem":"ANJO","funcao_dramatica":"Deus ex machina; instância de juízo e convocação","simbologia":"A mediação celeste que confirma a leitura dos pobres contra a do clérigo"}],"relacoes":[{"origem":"BRAZ","destino":"GIL","tipo_relacao":"cómica","descricao":"Compadrio horizontal; a divergência entre visão e fome move o diálogo da Cena I"},{"origem":"GIL","destino":"BRAZ","tipo_relacao":"cómica","descricao":"Contradita sistemática que rebaixa o companheiro sem o hostilizar"},{"origem":"BRAZ","destino":"MARIANNA","tipo_relacao":"familiar","descricao":"Deferência afectuosa marcada pelo tratamento «Tia» (L0030)"},{"origem":"MARIANNA","destino":"BRAZ","tipo_relacao":"familiar","descricao":"Aceitação do convite; adesão da velha ao grupo dos pastores"},{"origem":"SACRISTÃO","destino":"BRAZ","tipo_relacao":"hierárquica","descricao":"Autoridade eclesiástica que interpela e ameaça (L0045, L0052)"},{"origem":"SACRISTÃO","destino":"GIL","tipo_relacao":"hierárquica","descricao":"Mesma interpelação depreciativa dirigida ao colectivo dos «villaons»"},{"origem":"SACRISTÃO","destino":"MARIANNA","tipo_relacao":"hierárquica","descricao":"Superioridade institucional exercida sobre a mulher idosa e pobre"},{"origem":"MARIANNA","destino":"SACRISTÃO","tipo_relacao":"antagónica","descricao":"Acusação ascendente de venalidade (L0053-L0054); ponto alto da inversão"},{"origem":"GIL","destino":"SACRISTÃO","tipo_relacao":"antagónica","descricao":"Sátira do clérigo como galo de campanário (L0047-L0048)"},{"origem":"BRAZ","destino":"SACRISTÃO","tipo_relacao":"antagónica","descricao":"Refutação doutrinal: as chaves que não abrem (L0050-L0051)"},{"origem":"ANJO","destino":"SACRISTÃO","tipo_relacao":"hierárquica","descricao":"Juízo celeste que suspende a autoridade eclesiástica terrena"},{"origem":"ANJO","destino":"BRAZ","tipo_relacao":"devocional","descricao":"Convocação ao presépio dirigida aos pastores"},{"origem":"ANJO","destino":"GIL","tipo_relacao":"devocional","descricao":"Mesma convocação; a fome é aceite como oferta"},{"origem":"ANJO","destino":"MARIANNA","tipo_relacao":"devocional","descricao":"Confirmação da sentença moral enunciada pela velha"}],"vernaculo":[{"expressao":"bucho","significado_epoca":"Estômago, ventre; registo popular com uso jocoso aplicado ao homem (Bluteau regista o termo para o ventre dos animais)","grau_certeza":"seguro","localizacao":"L0021","n_ocorrencias":"1"},{"expressao":"carrejar","significado_epoca":"Transportar às costas; variante meridional de carregar, corrente no Alentejo","grau_certeza":"provável","localizacao":"L0030","n_ocorrencias":"1"},{"expressao":"villaons","significado_epoca":"Plural arcaico de villão: habitante do campo, com carga depreciativa de rústico","grau_certeza":"seguro","localizacao":"L0045","n_ocorrencias":"1"},{"expressao":"tronco","significado_epoca":"Cepo de prisão pública onde se prendiam os presos pelos pés; sentido divergente do actual","grau_certeza":"seguro","localizacao":"L0052-L0053","n_ocorrencias":"2"},{"expressao":"alfaia","significado_epoca":"Utensílio litúrgico ou doméstico de valor; aqui em sentido irónico","grau_certeza":"seguro","localizacao":"L0075","n_ocorrencias":"1"},{"expressao":"thuribulo","significado_epoca":"Turíbulo, incensário; grafia etimológica coeva","grau_certeza":"seguro","localizacao":"L0067","n_ocorrencias":"1"},{"expressao":"folia","significado_epoca":"Dança e canto festivo de romaria, típica dos autos de Natal peninsulares","grau_certeza":"provável","localizacao":"L0079","n_ocorrencias":"1"},{"expressao":"candeas de sebo","significado_epoca":"Candeias alimentadas a gordura animal; iluminação dos pobres, oposta à cera do altar","grau_certeza":"seguro","localizacao":"L0014","n_ocorrencias":"1"}],"frequencias":[{"tipo_recurso":"metáfora","n_ocorrencias":"11"},{"tipo_recurso":"antítese","n_ocorrencias":"8"},{"tipo_recurso":"comparação","n_ocorrencias":"6"},{"tipo_recurso":"ironia","n_ocorrencias":"2"},{"tipo_recurso":"sátira","n_ocorrencias":"2"},{"tipo_recurso":"hipérbole","n_ocorrencias":"1"},{"tipo_recurso":"personificação","n_ocorrencias":"1"},{"tipo_recurso":"trocadilho","n_ocorrencias":"1"}],"validacao":{"valido":false,"erros":["1 citação(ões) não foram encontradas na transcrição e exigem revisão manual: R031"],"avisos":["`R031`: localização L0090 aponta para linha(s) inexistente(s) [90] (a peça tem 81 linhas).","1 citação(ões) existem no texto mas fora da localização declarada: R032"],"notas":["`frequencias_recursos.csv` foi recalculada a partir de `recursos_expressivos.csv` (metáfora: declarado 9, real 11)."],"metricas":{"citacoes_testadas":32,"citacoes_verificadas":30,"citacoes_deslocadas":1,"citacoes_nao_encontradas":1,"citacoes_sem_localizacao":0,"citacoes_verificadas_pct":93.8,"n_recursos":32,"n_tipos_recurso":8,"n_personagens":5,"n_relacoes":14,"n_vernaculo":8,"n_tipos_relacao":5,"n_linhas_peca":81,"densidade_recursos_por_100_linhas":39.51}},"analise":{"personagens":"## Elenco\n\n**BRAZ** — pastor. Função dramática: protagonista devoto e porta-voz da\nteologia popular; é ele quem vê o Menino («vi o que tu nam viste», L0016) e\nquem arrasta o grupo para o presépio. Carga simbólica: o pobre que enxerga o\nque o letrado não vê; encarna a inversão evangélica que estrutura a peça.\nGrau de certeza: seguro.\n\n**GIL** — compadre de Braz. Função: *gracioso*, contraponto cómico e material.\nA sua fome é o eixo do riso («o meu bucho nam entende de theologias», L0021) e\ntambém o veículo da crítica social, já que a comparação com o «cofre de fidalgo\npobre» (L0022) desloca a carência do camponês para o fidalgo. Grau: seguro.\n\n**MARIANNA** — velha. Função: figura sapiencial; formula as sentenças morais da\npeça (L0069). Carga simbólica: a velhice como saber acumulado e a pobreza como\noferta («a esperança sempre foi vasilha», L0074). É ela quem desfere a acusação\nmais dura ao Sacristão (L0053-L0054). Grau: seguro.\n\n**O SACRISTÃO** — clero subalterno. Função: *bloqueador* cómico; antagonista da\ndevoção espontânea dos pastores. Carga simbólica: a instituição que possui as\nchaves mas não abre a porta (L0050-L0051). O seu arco fecha-se na humilhação\n(L0075). Grau: seguro.\n\n**HUM ANJO** — Função: *deus ex machina* e voz da autoridade divina; resolve o\nconflito por sentença, não por acção. Carga simbólica: a mediação celeste que\nvalida a leitura dos pobres contra a do clérigo. Grau: seguro.\n\n## Relações\n\n- BRAZ ↔ GIL: relação de compadrio, horizontal e cómica; a divergência entre\n  os dois (visão / fome) é o motor dialógico da Cena I.\n- BRAZ → MARIANNA: relação de deferência afectuosa («Tia Marianna», L0030),\n  reforçando a rede de solidariedade dos pobres.\n- SACRISTÃO → BRAZ, GIL, MARIANNA: relação hierárquica e antagónica, marcada\n  pelo vocativo depreciativo «villaons» (L0045) e pela ameaça do tronco (L0052).\n- MARIANNA → SACRISTÃO: antagónica ascendente; a subalterna acusa o superior.\n- ANJO → SACRISTÃO: relação de juízo, hierarquia invertida face à autoridade\n  eclesiástica terrena.\n- ANJO → pastores: relação devocional, de convocação.","vernaculo_recursos":"## Vernáculo, regionalismos e arcaísmos\n\n- **bucho** (L0021) — estômago, ventre; registo popular, ainda corrente no\n  Alentejo. Bluteau regista «bucho» como ventre dos animais, com extensão\n  jocosa ao homem. Grau: seguro.\n- **carrejar** (L0030, «carreja») — transportar às costas; forma dialectal de\n  *carregar*, frequente no português meridional. Grau: provável.\n- **villaons** (L0045) — plural arcaico de *villão*, habitante da vila/campo,\n  com carga depreciativa de rústico. Grau: seguro.\n- **tronco** (L0052-L0053) — cepo de prisão pública; sentido divergente do\n  actual. Grau: seguro.\n- **alfaia** (L0075) — utensílio litúrgico ou doméstico de valor; aqui em\n  sentido irónico. Grau: seguro.\n- **thuribulo** (L0067) — turíbulo, incensário. Grafia etimológica coeva.\n  Grau: seguro.\n- **folia** (L0079) — dança e canto festivo de romaria, típico dos autos de\n  Natal peninsulares. Grau: provável.\n- **candeas de sebo** (L0014) — candeias de gordura animal, iluminação dos\n  pobres. Grau: seguro.\n\n## Recursos expressivos\n\nA peça constrói-se sobre uma armação de **antíteses** (pobre/rico,\npalha/céu, chave/porta) servida por **comparações** de extracção doméstica e\nagrícola. A ironia recai quase toda sobre o Sacristão. Ver a sistematização na\ntarefa seguinte.","limitacoes":"- A transcrição não conserva indicação de música ou tom para a folia final\n  (L0079), pelo que a leitura performativa fica em aberto.\n- «Sahe O SACRISTÃO, muito composto» (L0043): «composto» admite duas leituras\n  de época — *bem-arranjado* ou *afectado*. Adopta-se a segunda pelo contexto\n  satírico, mas a primeira não fica excluída.\n- Não há elementos internos que fixem a datação; a atribuição depende de dados\n  externos ao texto.\n\n- Duas entradas de `recursos_expressivos.csv` (R031 e R032) foram incluídas\n  propositadamente com defeito nesta amostra, para demonstrar o cotejo\n  automático: R031 não existe na transcrição e aponta para uma linha inexistente;\n  R032 existe mas em L0056, não em L0012.\n- A classificação de R026 oscila entre antítese e paradoxo; optou-se por\n  antítese para manter o vocabulário controlado.\n- «composto» (L0043) admite duas leituras de época e não foi registado como\n  recurso por não ser seguro o valor irónico."}}</script>
+<script>
+(function(){
+"use strict";
+const D = JSON.parse(document.getElementById("dados").textContent);
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a) => { const e = document.createElementNS(NS, n);
+  for (const k in (a||{})) e.setAttribute(k, a[k]); return e; };
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ------------------------------------------------------------------ estado */
+const F = {personagem:"", tipo:"", relacao:"", certeza:"", texto:""};
+let selNo = null;
+
+/* --------------------------------------------------------------- filtragem */
+function passaTexto(campos){
+  if (!F.texto) return true;
+  const q = F.texto.toLowerCase();
+  return campos.some(c => String(c||"").toLowerCase().includes(q));
+}
+function recursosFiltrados(){
+  return D.recursos.filter(r =>
+    (!F.personagem || r.personagem === F.personagem) &&
+    (!F.tipo || r.tipo_recurso === F.tipo) &&
+    passaTexto([r.citacao, r.interpretacao, r.personagem, r.tipo_recurso, r.localizacao]));
+}
+function relacoesFiltradas(){
+  return D.relacoes.filter(r =>
+    (!F.relacao || r.tipo_relacao === F.relacao) &&
+    (!F.personagem || r.origem === F.personagem || r.destino === F.personagem) &&
+    passaTexto([r.origem, r.destino, r.tipo_relacao, r.descricao]));
+}
+function vernaculoFiltrado(){
+  return D.vernaculo.filter(v =>
+    (!F.certeza || v.grau_certeza === F.certeza) &&
+    passaTexto([v.expressao, v.significado_epoca, v.localizacao]));
+}
+function personagensFiltradas(){
+  return D.personagens.filter(p =>
+    (!F.personagem || p.personagem === F.personagem) &&
+    passaTexto([p.personagem, p.funcao_dramatica, p.simbologia]));
+}
+
+/* ---------------------------------------------------------------- tooltip */
+const tip = $("#tip");
+function mostrarTip(ev, html){
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function esconderTip(){ tip.style.opacity = 0; }
+function ligarTip(node, html){
+  node.addEventListener("mousemove", e => mostrarTip(e, html));
+  node.addEventListener("mouseleave", esconderTip);
+  node.addEventListener("focus", e => {
+    const b = node.getBoundingClientRect();
+    mostrarTip({clientX:b.left+b.width/2, clientY:b.top+b.height/2}, html);
+  });
+  node.addEventListener("blur", esconderTip);
+}
+
+/* ------------------------------------------------------- barras horizontais
+   Marca: ≤24px de espessura, extremidade arredondada a 4px do lado do valor,
+   assente numa única linha de base; rótulo do valor na ponta.              */
+function barras(svgSel, dados, opts){
+  opts = opts || {};
+  const svg = $(svgSel);
+  svg.textContent = "";
+  if (!dados.length){
+    svg.setAttribute("viewBox", "0 0 600 60");
+    const t = el("text", {x:12, y:34, class:"lbl-mark"});
+    t.textContent = "Sem dados para os filtros activos.";
+    svg.appendChild(t); return;
+  }
+  const W = 600, ML = opts.margemEsq || 150, MR = 54, MT = 8, MB = 26;
+  const passo = 30, esp = Math.min(24, passo - 10);
+  const H = MT + dados.length * passo + MB;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.maxHeight = (H * 1.25) + "px";
+  const max = Math.max.apply(null, dados.map(d => d.valor)) || 1;
+  const x = v => ML + (v / max) * (W - ML - MR);
+
+  // grelha: hairline sólida, recessiva
+  const ticks = escalaBonita(max, 4);
+  ticks.forEach(t => {
+    svg.appendChild(el("line", {x1:x(t), x2:x(t), y1:MT, y2:MT + dados.length*passo, class:"gridline"}));
+    const tx = el("text", {x:x(t), y:H - 8, class:"tick", "text-anchor":"middle"});
+    tx.textContent = t; svg.appendChild(tx);
+  });
+  svg.appendChild(el("line", {x1:ML, x2:ML, y1:MT, y2:MT + dados.length*passo, class:"axisline"}));
+
+  dados.forEach((d, i) => {
+    const y = MT + i*passo + (passo - esp)/2;
+    const larg = Math.max(2, x(d.valor) - ML);
+    const g = el("g", {tabindex:"0", role:"listitem"});
+    // extremidade do valor arredondada (4px), base quadrada
+    const r = Math.min(4, larg);
+    g.appendChild(el("path", {
+      d:`M${ML},${y} H${ML+larg-r} a${r},${r} 0 0 1 ${r},${r} V${y+esp-r} a${r},${r} 0 0 1 ${-r},${r} H${ML} Z`,
+      fill: opts.cor || cssv("--series-1")
+    }));
+    const lab = el("text", {x:ML-10, y:y+esp/2+4, class:"lbl-mark", "text-anchor":"end"});
+    lab.textContent = truncar(d.rotulo, opts.maxRotulo || 22);
+    g.appendChild(lab);
+    const val = el("text", {x:ML+larg+8, y:y+esp/2+4, class:"val-mark"});
+    val.textContent = d.valor; g.appendChild(val);
+    ligarTip(g, `<b>${esc(d.rotulo)}</b>${d.valor} ${d.valor===1?"ocorrência":"ocorrências"}` +
+      (d.extra ? `<div class="q">${esc(d.extra)}</div>` : ""));
+    if (opts.aoClicar) { g.style.cursor = "pointer"; g.addEventListener("click", () => opts.aoClicar(d)); }
+    svg.appendChild(g);
+  });
+}
+function escalaBonita(max, n){
+  // contagens são inteiras: nunca produzir marcas fraccionárias (0,5 / 1,5 …)
+  const bruto = Math.max(1, max / n), mag = Math.pow(10, Math.floor(Math.log10(bruto)));
+  let passo = [1,2,2.5,5,10].map(m => m*mag).find(p => p >= bruto) || mag*10;
+  passo = Math.max(1, Math.round(passo));
+  const out = []; for (let v = 0; v <= max + 1e-9; v += passo) out.push(v);
+  return out;
+}
+function truncar(s, n){ s = String(s||""); return s.length > n ? s.slice(0, n-1) + "…" : s; }
+
+/* ------------------------------------------------------------------ heatmap
+   Escala sequencial de um só matiz, clara→escura (invertida em tema escuro);
+   2px de folga da cor da superfície entre células.                          */
+const RAMPA = () => [0,1,2,3,4,5,6].map(i => cssv("--seq-"+i));
+function luminancia(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex).trim());
+  if (!m) return 1;
+  const n = parseInt(m[1], 16);
+  const c = [(n>>16)&255, (n>>8)&255, n&255].map(v => {
+    v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+  });
+  return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+}
+function heatmap(){
+  const svg = $("#svg-heat"); svg.textContent = "";
+  const recs = recursosFiltrados();
+  const pers = [...new Set(recs.map(r => r.personagem).filter(Boolean))]
+    .sort((a,b) => recs.filter(r=>r.personagem===b).length - recs.filter(r=>r.personagem===a).length)
+    .slice(0, 22);
+  const tipos = [...new Set(recs.map(r => r.tipo_recurso).filter(Boolean))]
+    .sort((a,b) => recs.filter(r=>r.tipo_recurso===b).length - recs.filter(r=>r.tipo_recurso===a).length)
+    .slice(0, 18);
+  $("#escala-heat").innerHTML = "";
+  if (!pers.length || !tipos.length){
+    svg.setAttribute("viewBox","0 0 600 60");
+    const t = el("text",{x:12,y:34,class:"lbl-mark"});
+    t.textContent = "Sem dados para os filtros activos."; svg.appendChild(t); return;
+  }
+  const ML = 150, MT = 78, cel = Math.max(26, Math.min(46, Math.floor(700/tipos.length)));
+  const W = ML + tipos.length*cel + 16, H = MT + pers.length*cel + 10;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.maxHeight = (H*1.15) + "px";
+  const conta = (p,t) => recs.filter(r => r.personagem===p && r.tipo_recurso===t).length;
+  let max = 0; pers.forEach(p => tipos.forEach(t => { max = Math.max(max, conta(p,t)); }));
+  const rampa = RAMPA();
+  const cor = v => v === 0 ? "transparent" : rampa[Math.min(rampa.length-1,
+      Math.floor((v-1)/Math.max(1,max) * (rampa.length-1) + 0.5))];
+
+  tipos.forEach((t,j) => {
+    const x = ML + j*cel + cel/2;
+    const tx = el("text", {x:x, y:MT-10, class:"tick", "text-anchor":"start",
+                           transform:`rotate(-42 ${x} ${MT-10})`});
+    tx.textContent = truncar(t, 16); svg.appendChild(tx);
+  });
+  pers.forEach((p,i) => {
+    const y = MT + i*cel;
+    const lab = el("text", {x:ML-10, y:y+cel/2+4, class:"lbl-mark", "text-anchor":"end"});
+    lab.textContent = truncar(p, 20); svg.appendChild(lab);
+    tipos.forEach((t,j) => {
+      const v = conta(p,t), x = ML + j*cel;
+      const g = el("g", {tabindex: v ? "0" : "-1"});
+      g.appendChild(el("rect", {x:x+1, y:y+1, width:cel-2, height:cel-2, rx:3,
+        fill: cor(v), stroke: v ? "none" : cssv("--grid"), "stroke-width":1}));
+      if (v && cel >= 28){
+        // cor do rótulo escolhida pela luminância do próprio preenchimento
+        const t2 = el("text", {x:x+cel/2, y:y+cel/2+4, "text-anchor":"middle",
+          "font-size":"11.5", "font-weight":"600",
+          fill: luminancia(cor(v)) < 0.5 ? "#ffffff" : "#0b0b0b"});
+        t2.textContent = v; g.appendChild(t2);
+      }
+      if (v) ligarTip(g, `<b>${esc(p)} · ${esc(t)}</b>${v} ${v===1?"ocorrência":"ocorrências"}`);
+      svg.appendChild(g);
+    });
+  });
+  // legenda de escala
+  const passos = rampa.map(c => `<i style="background:${c}"></i>`).join("");
+  $("#escala-heat").innerHTML =
+    `<span>menos</span><span class="steps">${passos}</span><span>mais (máx. ${max})</span>`;
+}
+
+/* --------------------------------------------------------------------- rede
+   Layout determinístico (semente fixa): a mesma peça produz sempre o mesmo
+   grafo, condição para o usar como figura reproduzível.                     */
+function prng(semente){ let s = semente >>> 0;
+  return () => { s = (s*1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+function rede(){
+  const svg = $("#svg-rede"); svg.textContent = "";
+  const arestas = relacoesFiltradas().filter(r => r.origem && r.destino && r.origem !== r.destino);
+  const nomes = [...new Set(arestas.flatMap(r => [r.origem, r.destino]))];
+  $("#leg-rede").innerHTML = "";
+  if (nomes.length < 2){
+    svg.setAttribute("viewBox","0 0 600 60");
+    const t = el("text",{x:12,y:34,class:"lbl-mark"});
+    t.textContent = "Sem relações suficientes para os filtros activos."; svg.appendChild(t); return;
+  }
+  const W = 820, H = Math.max(380, Math.min(620, 240 + nomes.length*22));
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.maxHeight = (H*1.05) + "px";
+
+  const grau = {}; nomes.forEach(n => grau[n] = 0);
+  arestas.forEach(a => { grau[a.origem]++; grau[a.destino]++; });
+  const rnd = prng(20260818);
+  const nos = nomes.map((n,i) => {
+    const ang = (i/nomes.length) * Math.PI*2;
+    return {id:n, x: W/2 + Math.cos(ang)*W/4 + (rnd()-0.5)*20,
+                  y: H/2 + Math.sin(ang)*H/4 + (rnd()-0.5)*20, grau:grau[n]};
+  });
+  const idx = {}; nos.forEach((n,i) => idx[n.id] = i);
+
+  // Fruchterman–Reingold com gravidade central (evita nós colados às margens)
+  const PADX = 96, PADY = 52, ITS = 400;
+  const k = Math.sqrt(((W-2*PADX)*(H-2*PADY))/nos.length) * 0.85;
+  const peso = {};   // arestas paralelas contam uma vez para a força
+  arestas.forEach(e => { const c = e.origem < e.destino ? e.origem+"|"+e.destino : e.destino+"|"+e.origem;
+    peso[c] = (peso[c]||0)+1; });
+  const pares = Object.keys(peso).map(c => c.split("|"));
+  for (let it = 0; it < ITS; it++){
+    const t = k * Math.pow(1 - it/ITS, 1.5) * 0.15 + 0.5;
+    nos.forEach(a => { a.dx = 0; a.dy = 0; });
+    for (let i=0;i<nos.length;i++) for (let j=i+1;j<nos.length;j++){
+      const a=nos[i], b=nos[j];
+      let dx=a.x-b.x, dy=a.y-b.y, d=Math.hypot(dx,dy)||0.01;
+      const f = (k*k)/(d*d);            // magnitude efectiva k²/d
+      dx*=f; dy*=f; a.dx+=dx; a.dy+=dy; b.dx-=dx; b.dy-=dy;
+    }
+    pares.forEach(([o,de]) => {
+      const a=nos[idx[o]], b=nos[idx[de]];
+      if (!a||!b) return;
+      let dx=a.x-b.x, dy=a.y-b.y, d=Math.hypot(dx,dy)||0.01;
+      const f = (d*d)/k;
+      dx=dx/d*f; dy=dy/d*f; a.dx-=dx; a.dy-=dy; b.dx+=dx; b.dy+=dy;
+    });
+    nos.forEach(n => {                   // gravidade suave para o centro
+      n.dx += (W/2 - n.x) * 0.06;
+      n.dy += (H/2 - n.y) * 0.06;
+      n.x += Math.max(-t, Math.min(t, n.dx));
+      n.y += Math.max(-t, Math.min(t, n.dy));
+      n.x = Math.max(PADX, Math.min(W-PADX, n.x));
+      n.y = Math.max(PADY, Math.min(H-PADY, n.y));
+    });
+  }
+  // ajusta a caixa envolvente ao espaço disponível: o desenho ocupa a área
+  // toda em vez de depender do afinamento das constantes da simulação
+  (function ajustar(){
+    const xs = nos.map(n => n.x), ys = nos.map(n => n.y);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs);
+    const y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const largura = Math.max(1, x1-x0), altura = Math.max(1, y1-y0);
+    let ex = Math.min((W-2*PADX)/largura, 3), ey = Math.min((H-2*PADY)/altura, 3);
+    const ANISO = 1.7;                 // estica, mas nunca ao ponto de deformar
+    if (ex/ey > ANISO) ex = ey*ANISO;
+    if (ey/ex > ANISO) ey = ex*ANISO;
+    nos.forEach(n => {
+      n.x = W/2 + (n.x - (x0+x1)/2) * ex;
+      n.y = H/2 + (n.y - (y0+y1)/2) * ey;
+    });
+  })();
+
+  const gArestas = el("g", {}), gNos = el("g", {});
+  const destacado = a => F.relacao && a.tipo_relacao === F.relacao;
+  arestas.forEach(a => {
+    const s = nos[idx[a.origem]], d = nos[idx[a.destino]];
+    if (!s || !d) return;
+    const linha = el("line", {x1:s.x, y1:s.y, x2:d.x, y2:d.y,
+      stroke: destacado(a) ? cssv("--series-1") : cssv("--axis"),
+      "stroke-width": destacado(a) ? 2 : 1.25, "stroke-linecap":"round"});
+    const alvo = el("line", {x1:s.x, y1:s.y, x2:d.x, y2:d.y,
+      stroke:"transparent", "stroke-width":14, tabindex:"0"});
+    ligarTip(alvo, `<b>${esc(a.origem)} → ${esc(a.destino)}</b>` +
+      `<div>${esc(a.tipo_relacao)}</div>` +
+      (a.descricao ? `<div class="q">${esc(a.descricao)}</div>` : ""));
+    gArestas.appendChild(linha); gArestas.appendChild(alvo);
+  });
+  const rmax = Math.max.apply(null, nos.map(n => n.grau)) || 1;
+  nos.forEach(n => {
+    const r = 6 + 10 * Math.sqrt(n.grau / rmax);
+    const sel = selNo === n.id || F.personagem === n.id;
+    const g = el("g", {tabindex:"0", role:"listitem"});
+    g.appendChild(el("circle", {cx:n.x, cy:n.y, r:r,
+      fill: sel ? cssv("--series-2") : cssv("--series-1"),
+      stroke: cssv("--surface-1"), "stroke-width":2}));
+    const t = el("text", {x:n.x, y:n.y - r - 6, "text-anchor":"middle", class:"lbl-mark"});
+    t.textContent = truncar(n.id, 18); g.appendChild(t);
+    ligarTip(g, `<b>${esc(n.id)}</b>${n.grau} ${n.grau===1?"relação":"relações"}` +
+      `<div class="q">clique para filtrar por esta personagem</div>`);
+    g.style.cursor = "pointer";
+    g.addEventListener("click", () => {
+      $("#f-personagem").value = (F.personagem === n.id) ? "" : n.id;
+      lerFiltros(); render();
+    });
+    gNos.appendChild(g);
+  });
+  svg.appendChild(gArestas); svg.appendChild(gNos);
+
+  // O tipo de relação não é codificado por cor (todas as arestas são hairlines
+  // neutras): estes são botões de filtro que destacam o tipo escolhido.
+  const tipos = {};
+  arestas.forEach(a => tipos[a.tipo_relacao] = (tipos[a.tipo_relacao]||0)+1);
+  const leg = $("#leg-rede");
+  leg.innerHTML = "";
+  Object.entries(tipos).sort((a,b) => b[1]-a[1]).forEach(([t,n]) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button";
+    b.setAttribute("aria-pressed", String(F.relacao === t));
+    b.textContent = `${t} · ${n}`;
+    b.addEventListener("click", () => {
+      $("#f-relacao").value = (F.relacao === t) ? "" : t; lerFiltros(); render();
+    });
+    leg.appendChild(b);
+  });
+  const nota = document.createElement("span");
+  nota.className = "key muted";
+  nota.textContent = "escolhe um tipo para o destacar no grafo";
+  leg.appendChild(nota);
+}
+
+/* ------------------------------------------------------------------ tabelas */
+function tabela(alvo, colunas, linhas, opts){
+  opts = opts || {};
+  const cab = colunas.map(c => `<th data-k="${c.k}">${esc(c.t)}</th>`).join("");
+  const corpo = linhas.map(l => "<tr>" + colunas.map(c => {
+    const v = c.render ? c.render(l) : esc(l[c.k]);
+    return `<td class="${c.cls||""}">${v}</td>`;
+  }).join("") + "</tr>").join("");
+  $(alvo).innerHTML = linhas.length
+    ? `<div class="tbl-wrap"><table><thead><tr>${cab}</tr></thead><tbody>${corpo}</tbody></table></div>`
+    : `<p class="muted" style="font-size:13px">Sem registos para os filtros activos.</p>`;
+  // ordenação por clique no cabeçalho
+  $$(alvo + " th").forEach(th => th.addEventListener("click", () => {
+    const k = th.dataset.k;
+    opts.estado = opts.estado || {};
+    const asc = opts.estado.k === k ? !opts.estado.asc : true;
+    opts.estado = {k, asc};
+    linhas.sort((a,b) => {
+      const va = a[k], vb = b[k];
+      const na = parseFloat(va), nb = parseFloat(vb);
+      const cmp = (!isNaN(na) && !isNaN(nb)) ? na-nb : String(va||"").localeCompare(String(vb||""), "pt");
+      return asc ? cmp : -cmp;
+    });
+    tabela(alvo, colunas, linhas, opts);
+  }));
+}
+
+const SIMBOLO_VERIF = {
+  "verificada":  ["●", "--good", "citação localizada na transcrição, na posição indicada"],
+  "deslocada":   ["◐", "--warning", "citação existe no texto, mas fora da localização declarada"],
+  "não encontrada": ["✕", "--critical", "citação não encontrada na transcrição — rever manualmente"],
+  "sem localização": ["○", "--text-muted", "sem marcador de linha utilizável"]
+};
+function marcaVerificacao(v){
+  const s = SIMBOLO_VERIF[v]; if (!s) return "";
+  return `<span class="badge" title="${esc(s[2])}"><span style="color:${cssv(s[1])}">${s[0]}</span>${esc(v)}</span>`;
+}
+
+/* -------------------------------------------------------------------- render */
+function render(){
+  const recs = recursosFiltrados();
+  const vern = vernaculoFiltrado();
+  const rels = relacoesFiltradas();
+
+  // contador do filtro
+  $("#contador").textContent =
+    `${recs.length} ocorrências · ${rels.length} relações · ${vern.length} termos`;
+
+  // barras de frequência
+  const freq = {};
+  recs.forEach(r => { if (r.tipo_recurso) freq[r.tipo_recurso] = (freq[r.tipo_recurso]||0)+1; });
+  const dadosFreq = Object.entries(freq).sort((a,b) => b[1]-a[1])
+    .map(([t,n]) => ({rotulo:t, valor:n}));
+  barras("#svg-freq", dadosFreq, {aoClicar: d => {
+    $("#f-tipo").value = (F.tipo === d.rotulo) ? "" : d.rotulo; lerFiltros(); render();
+  }});
+  tabela("#tbl-freq", [{k:"tipo_recurso",t:"Tipo de recurso"},{k:"n_ocorrencias",t:"Ocorrências",cls:"num"}],
+    dadosFreq.map(d => ({tipo_recurso:d.rotulo, n_ocorrencias:d.valor})));
+
+  // barras de vernáculo
+  const dadosVern = vern.map(v => ({rotulo:v.expressao, valor:+v.n_ocorrencias||1, extra:v.significado_epoca}))
+    .sort((a,b) => b.valor-a.valor).slice(0,15);
+  barras("#svg-vern", dadosVern, {margemEsq:180, maxRotulo:26});
+  tabela("#tbl-vern", [{k:"expressao",t:"Expressão"},{k:"n_ocorrencias",t:"Ocorrências",cls:"num"}],
+    dadosVern.map(d => ({expressao:d.rotulo, n_ocorrencias:d.valor})));
+
+  heatmap();
+  // tabela-gémea do mapa de calor
+  const parPers = {};
+  recs.forEach(r => { const k = (r.personagem||"—") + "\u0001" + (r.tipo_recurso||"—");
+    parPers[k] = (parPers[k]||0)+1; });
+  tabela("#tbl-heat",
+    [{k:"personagem",t:"Personagem"},{k:"tipo_recurso",t:"Tipo de recurso"},{k:"n",t:"Ocorrências",cls:"num"}],
+    Object.entries(parPers).map(([k,n]) => {
+      const [p,t] = k.split("\u0001"); return {personagem:p, tipo_recurso:t, n:n};
+    }).sort((a,b) => b.n-a.n));
+
+  rede();
+  tabela("#tbl-rede",
+    [{k:"origem",t:"Origem"},{k:"destino",t:"Destino"},{k:"tipo_relacao",t:"Tipo"},{k:"descricao",t:"Interpretação"}],
+    rels.slice());
+
+  tabela("#tbl-recursos", [
+    {k:"id", t:"Id"},
+    {k:"tipo_recurso", t:"Recurso"},
+    {k:"personagem", t:"Personagem"},
+    {k:"localizacao", t:"Local", cls:"loc"},
+    {k:"citacao", t:"Citação", render: r => `<span class="cit">${esc(r.citacao)}</span>`},
+    {k:"interpretacao", t:"Interpretação"},
+    {k:"verificacao", t:"Cotejo", render: r => marcaVerificacao(r.verificacao)}
+  ], recs.slice());
+
+  tabela("#tbl-pers", [
+    {k:"personagem", t:"Personagem"},
+    {k:"funcao_dramatica", t:"Função dramática"},
+    {k:"simbologia", t:"Carga simbólica"}
+  ], personagensFiltradas().slice());
+
+  tabela("#tbl-vernaculo", [
+    {k:"expressao", t:"Expressão"},
+    {k:"significado_epoca", t:"Significado de época"},
+    {k:"grau_certeza", t:"Certeza"},
+    {k:"localizacao", t:"Local", cls:"loc"},
+    {k:"n_ocorrencias", t:"N.º", cls:"num"}
+  ], vern.slice());
+}
+
+/* -------------------------------------------------------------------- topo */
+function tiles(){
+  const m = D.metricas || {}, v = D.validacao && D.validacao.metricas || {};
+  const pct = v.citacoes_verificadas_pct;
+  let estado = ["--text-muted", "○", "cotejo não executado"];
+  if (typeof pct === "number")
+    estado = pct >= 95 ? ["--good","●","citações confirmadas no original"]
+           : pct >= 80 ? ["--warning","◐","rever as citações assinaladas"]
+                       : ["--critical","✕","revisão manual necessária"];
+  const cards = [
+    {cls:"hero", lbl:"Ocorrências de recursos expressivos", val:m.n_recursos||0,
+     note:(m.densidade_recursos_por_100_linhas!=null ? m.densidade_recursos_por_100_linhas+" por 100 linhas" : "")},
+    {lbl:"Tipos de recurso", val:m.n_tipos_recurso||0},
+    {lbl:"Personagens", val:m.n_personagens||0},
+    {lbl:"Relações mapeadas", val:m.n_relacoes||0, note:(m.n_tipos_relacao||0)+" tipos"},
+    {lbl:"Entradas de vernáculo", val:m.n_vernaculo||0},
+    {lbl:"Citações verificadas", val:(typeof pct==="number" ? pct+"%" : "—"),
+     note:`<span class="badge"><span style="color:${cssv(estado[0])}">${estado[1]}</span>${estado[2]}</span>`}
+  ];
+  $("#tiles").innerHTML = cards.map(c =>
+    `<div class="tile ${c.cls||""}"><div class="lbl">${c.lbl}</div>` +
+    `<div class="val">${c.val}</div>${c.note?`<div class="note">${c.note}</div>`:""}</div>`).join("");
+}
+
+function markdownLeve(txt){
+  if (!txt) return "";
+  const linhas = esc(txt).split("\n");
+  let out = "", lista = false;
+  for (let l of linhas){
+    const h = l.match(/^(#{1,6})\s+(.*)$/);
+    const li = l.match(/^\s*[-*•]\s+(.*)$/);
+    if (li){ if (!lista){ out += "<ul>"; lista = true; } out += "<li>" + inline(li[1]) + "</li>"; continue; }
+    if (lista){ out += "</ul>"; lista = false; }
+    if (h){ out += `<h4>${inline(h[2])}</h4>`; continue; }
+    if (!l.trim()){ continue; }
+    out += `<p>${inline(l)}</p>`;
+  }
+  if (lista) out += "</ul>";
+  return out;
+  function inline(s){
+    return s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+            .replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+            .replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+}
+
+function prosa(){
+  const a = D.analise || {};
+  const blocos = [
+    ["Personagens, simbologia e relações", a.personagens],
+    ["Vernáculo e recursos expressivos", a.vernaculo_recursos]
+  ].filter(b => b[1]);
+  $("#prosa").innerHTML = blocos.map((b,i) =>
+    `<details ${i===0?"open":""}><summary>${esc(b[0])}</summary>` +
+    `<div class="prosa">${markdownLeve(b[1])}</div></details>`).join("")
+    || `<p class="muted">Sem prosa registada.</p>`;
+
+  $("#limitacoes").innerHTML = markdownLeve(a.limitacoes) ||
+    `<p class="muted">Nenhuma limitação assinalada pela análise.</p>`;
+
+  const val = D.validacao || {};
+  const bloco = (t, arr, marca) => (arr && arr.length)
+    ? `<details><summary>${t} (${arr.length})</summary><ul class="aviso-list">` +
+      arr.map(x => `<li>${marca} ${esc(x)}</li>`).join("") + "</ul></details>" : "";
+  $("#validacao").innerHTML =
+    bloco("Erros de validação", val.erros, "✗") +
+    bloco("Avisos", val.avisos, "!") +
+    bloco("Normalizações aplicadas", val.notas, "·");
+}
+
+/* ------------------------------------------------------------------ chrome */
+function preencherFiltros(){
+  const add = (sel, vals) => {
+    const s = $(sel);
+    vals.filter(Boolean).sort((a,b) => String(a).localeCompare(String(b), "pt"))
+        .forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; s.appendChild(o); });
+  };
+  add("#f-personagem", [...new Set(D.personagens.map(p => p.personagem))]);
+  add("#f-tipo", [...new Set(D.recursos.map(r => r.tipo_recurso))]);
+  add("#f-relacao", [...new Set(D.relacoes.map(r => r.tipo_relacao))]);
+  add("#f-certeza", [...new Set(D.vernaculo.map(v => v.grau_certeza))]);
+}
+function lerFiltros(){
+  F.personagem = $("#f-personagem").value;
+  F.tipo = $("#f-tipo").value;
+  F.relacao = $("#f-relacao").value;
+  F.certeza = $("#f-certeza").value;
+  F.texto = $("#f-texto").value.trim();
+}
+function descarregar(nome, conteudo, tipo){
+  const b = new Blob([conteudo], {type: tipo});
+  const u = URL.createObjectURL(b);
+  const a = document.createElement("a");
+  a.href = u; a.download = nome; document.body.appendChild(a); a.click();
+  a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+}
+function paraCSV(linhas, colunas){
+  const q = v => { v = String(v==null?"":v); return /[",\n;]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+  return "﻿" + [colunas.join(",")].concat(
+    linhas.map(l => colunas.map(c => q(l[c])).join(","))).join("\n");
+}
+
+function ligarChrome(){
+  $$(".card header .acts button[data-view]").forEach(b => b.addEventListener("click", () => {
+    const card = b.closest(".card");
+    card.querySelectorAll("button[data-view]").forEach(x =>
+      x.setAttribute("aria-pressed", String(x === b)));
+    card.querySelector(".view-chart").classList.toggle("hidden", b.dataset.view !== "chart");
+    card.querySelector(".view-table").classList.toggle("hidden", b.dataset.view !== "table");
+  }));
+  $$("button[data-svg]").forEach(b => b.addEventListener("click", () => {
+    const svg = $("#svg-" + b.dataset.svg).cloneNode(true);
+    svg.setAttribute("xmlns", NS);
+    svg.setAttribute("style", `background:${cssv("--surface-1")};font-family:${cssv("--sans")}`);
+    // fixa as cores dos textos (as variáveis CSS não sobrevivem à exportação)
+    svg.querySelectorAll("text").forEach(t => {
+      const c = t.getAttribute("class")||"";
+      t.setAttribute("fill", t.getAttribute("fill") ||
+        (c.includes("tick") ? cssv("--text-muted") : cssv("--text-secondary")));
+      t.setAttribute("font-size", c.includes("tick") ? "11" : "11.5");
+    });
+    svg.querySelectorAll(".gridline").forEach(l => l.setAttribute("stroke", cssv("--grid")));
+    svg.querySelectorAll(".axisline").forEach(l => l.setAttribute("stroke", cssv("--axis")));
+    descarregar(`${D.meta.slug||"peca"}-${b.dataset.svg}.svg`,
+      new XMLSerializer().serializeToString(svg), "image/svg+xml");
+  }));
+  const mapaCSV = {
+    recursos: [D.recursos, ["id","tipo_recurso","citacao","localizacao","personagem","interpretacao","verificacao"]],
+    personagens: [D.personagens, ["personagem","funcao_dramatica","simbologia"]],
+    vernaculo: [D.vernaculo, ["expressao","significado_epoca","grau_certeza","localizacao","n_ocorrencias"]]
+  };
+  $$("button[data-csv]").forEach(b => b.addEventListener("click", () => {
+    const [linhas, cols] = mapaCSV[b.dataset.csv];
+    descarregar(`${D.meta.slug||"peca"}-${b.dataset.csv}.csv`, paraCSV(linhas, cols), "text/csv");
+  }));
+  ["#f-personagem","#f-tipo","#f-relacao","#f-certeza"].forEach(s =>
+    $(s).addEventListener("change", () => { lerFiltros(); render(); }));
+  let t; $("#f-texto").addEventListener("input", () => {
+    clearTimeout(t); t = setTimeout(() => { lerFiltros(); render(); }, 180); });
+  $("#limpar").addEventListener("click", () => {
+    ["#f-personagem","#f-tipo","#f-relacao","#f-certeza"].forEach(s => $(s).value = "");
+    $("#f-texto").value = ""; selNo = null; lerFiltros(); render();
+  });
+  $("#tema").addEventListener("click", () => {
+    const actual = document.documentElement.getAttribute("data-theme");
+    const escuroSO = matchMedia("(prefers-color-scheme: dark)").matches;
+    const proximo = actual ? (actual === "dark" ? "light" : "dark") : (escuroSO ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", proximo);
+    render();
+  });
+  $("#imprimir").addEventListener("click", () => window.print());
+}
+
+function cabecalho(){
+  const m = D.meta || {};
+  document.title = (m.titulo || "Peça") + " — análise";
+  $("#titulo").textContent = m.titulo || "Peça sem título";
+  $("#subtitulo").textContent = [m.genero, m.datacao].filter(Boolean).join(" · ");
+  const campos = [
+    ["Proveniência", m.proveniencia], ["Transcrição", m.ficheiro],
+    ["Linhas", m.n_linhas], ["Modelo", m.modelo], ["Análise", m.data_execucao]
+  ].filter(c => c[1]);
+  $("#meta").innerHTML = campos.map(c => `<span><b>${esc(c[0])}:</b> ${esc(c[1])}</span>`).join("");
+  $("#rodape").innerHTML =
+    `Gerado por <b>presepios</b> a partir de ${esc(m.ficheiro||"")}. ` +
+    `As tabelas e os gráficos derivam exclusivamente dos CSVs validados; ` +
+    `as citações foram cotejadas automaticamente com a transcrição. ` +
+    `Toda a leitura interpretativa carece de confirmação por especialista.`;
+}
+
+cabecalho(); tiles(); preencherFiltros(); ligarChrome(); prosa(); lerFiltros(); render();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+})();
+</script>
+
+
+</body></html>
