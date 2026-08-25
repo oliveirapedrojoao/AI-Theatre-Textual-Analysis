@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITULO__ — análise</title>
+  <!--__ESTILOS__-->
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 id="titulo"></h1>
+    <p class="sub" id="subtitulo"></p>
+    <div class="meta-list" id="meta"></div>
+  </div>
+  <div style="display:flex; gap:8px">
+    <button id="tema" class="ghost" title="Alternar tema claro/escuro">Tema</button>
+    <button id="imprimir" class="ghost">Imprimir</button>
+  </div>
+</header>
+
+<section class="tiles" id="tiles"></section>
+
+<div class="filters" role="group" aria-label="Filtros aplicados a todos os gráficos e tabelas">
+  <span class="lbl">Filtrar:</span>
+  <select id="f-personagem" aria-label="Personagem"><option value="">Todas as personagens</option></select>
+  <select id="f-tipo" aria-label="Tipo de recurso"><option value="">Todos os recursos</option></select>
+  <select id="f-relacao" aria-label="Tipo de relação"><option value="">Todas as relações</option></select>
+  <select id="f-certeza" aria-label="Grau de certeza"><option value="">Todos os graus</option></select>
+  <input type="search" id="f-texto" placeholder="Pesquisar citação, termo…" aria-label="Pesquisa livre">
+  <span class="spacer"></span>
+  <span class="chip" id="contador"></span>
+  <button id="limpar" class="ghost">Limpar</button>
+</div>
+
+<section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(430px,1fr))">
+  <div class="card" id="card-freq">
+    <header>
+      <div><h2>Frequência dos recursos expressivos</h2><h3>ocorrências registadas por tipo</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Gráfico</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="freq" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart"><svg id="svg-freq" role="img" aria-label="Gráfico de barras da frequência dos recursos expressivos"></svg></div>
+    <div class="view-table hidden" id="tbl-freq"></div>
+  </div>
+
+  <div class="card" id="card-vern">
+    <header>
+      <div><h2>Vernáculo mais recorrente</h2><h3>expressões, regionalismos e arcaísmos por nº de ocorrências</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Gráfico</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="vern" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart"><svg id="svg-vern" role="img" aria-label="Gráfico de barras das expressões vernaculares mais frequentes"></svg></div>
+    <div class="view-table hidden" id="tbl-vern"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card" id="card-heat">
+    <header>
+      <div><h2>Distribuição dos recursos por personagem</h2><h3>quantas ocorrências de cada tipo cabem a cada personagem</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Mapa</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="heat" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart">
+      <svg id="svg-heat" role="img" aria-label="Mapa de calor da distribuição dos recursos expressivos por personagem"></svg>
+      <div class="scale" id="escala-heat"></div>
+    </div>
+    <div class="view-table hidden" id="tbl-heat"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card" id="card-rede">
+    <header>
+      <div><h2>Rede de relações entre personagens</h2><h3>nós dimensionados pelo número de relações; passa o cursor sobre uma aresta para ler o tipo</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Grafo</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="rede" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart">
+      <svg id="svg-rede" role="img" aria-label="Grafo das relações entre personagens"></svg>
+      <div class="legend" id="leg-rede"></div>
+    </div>
+    <div class="view-table hidden" id="tbl-rede"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card">
+    <header><div><h2>Ocorrências de recursos expressivos</h2><h3>tabela integral, com cotejo automático de cada citação com a transcrição</h3></div>
+      <div class="acts"><button data-csv="recursos" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-recursos"></div>
+  </div>
+  <div class="card">
+    <header><div><h2>Personagens</h2><h3>função dramática e carga simbólica</h3></div>
+      <div class="acts"><button data-csv="personagens" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-pers"></div>
+  </div>
+  <div class="card">
+    <header><div><h2>Vernáculo</h2><h3>significado de época e grau de certeza</h3></div>
+      <div class="acts"><button data-csv="vernaculo" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-vernaculo"></div>
+  </div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>Análise em prosa</h2>
+  <h3>texto integral produzido na primeira ronda</h3>
+  <div id="prosa"></div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>Limitações e validação</h2>
+  <h3>lacunas assinaladas pela análise e verificações automáticas</h3>
+  <div id="limitacoes" class="prosa"></div>
+  <div id="validacao"></div>
+</section>
+
+<footer id="rodape"></footer>
+</div>
+
+<div id="tip" role="tooltip"></div>
+<script id="dados" type="application/json">__DADOS_JSON__</script>
+<!--__SCRIPTS__-->
+</body>
+</html>
