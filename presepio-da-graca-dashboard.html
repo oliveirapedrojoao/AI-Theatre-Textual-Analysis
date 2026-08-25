@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Presépio da Graça — análise</title>
+  <style>
+/* Paleta e variáveis partilhadas pelo portal e pelo dashboard.
+
+   Os valores estão definidos três vezes de propósito: uma na raiz para o tema
+   claro, uma sob a media query para quem tem o sistema em escuro, e uma sob
+   [data-theme] para o botão de tema poder ganhar em qualquer dos sentidos.
+   Todo o resto das folhas de estilo se refere a estas variáveis por papel,
+   nunca por hexadecimal, para que a troca de tema aconteça num único sítio. */
+
+:root{
+  color-scheme: light;
+  --surface-1:#fcfcfb; --plane:#f9f9f7;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --hairline:rgba(11,11,11,0.10);
+  --series-1:#2a78d6; --series-2:#eb6834; --series-3:#1baf7a;
+  --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --seq-0:#cde2fb; --seq-1:#9ec5f4; --seq-2:#6da7ec; --seq-3:#3987e5;
+  --seq-4:#2a78d6; --seq-5:#256abf; --seq-6:#184f95;
+  --radius:10px;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:where(:not([data-theme="light"])){
+    color-scheme: dark;
+    --surface-1:#1a1a19; --plane:#0d0d0d;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --hairline:rgba(255,255,255,0.10);
+    --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+    --seq-0:#0d366b; --seq-1:#184f95; --seq-2:#256abf; --seq-3:#2a78d6;
+    --seq-4:#3987e5; --seq-5:#6da7ec; --seq-6:#9ec5f4;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --surface-1:#1a1a19; --plane:#0d0d0d;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --text-muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --hairline:rgba(255,255,255,0.10);
+  --series-1:#3987e5; --series-2:#d95926; --series-3:#199e70;
+  --seq-0:#0d366b; --seq-1:#184f95; --seq-2:#256abf; --seq-3:#2a78d6;
+  --seq-4:#3987e5; --seq-5:#6da7ec; --seq-6:#9ec5f4;
+}
+
+/* Folha de estilo do dashboard. As variáveis de cor vivem em tokens.css, que
+   é inlinado antes desta. */
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--plane); color:var(--text-primary);
+  font-family:var(--sans); font-size:15px; line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px}
+h1{font-size:26px; line-height:1.25; margin:0 0 6px; font-weight:600; letter-spacing:-0.01em}
+h2{font-size:17px; margin:0 0 2px; font-weight:600}
+h3{font-size:14px; margin:0 0 14px; font-weight:600; color:var(--text-secondary)}
+p{margin:0 0 10px}
+a{color:var(--series-1)}
+.sub{color:var(--text-secondary); font-size:13.5px; margin:0}
+.muted{color:var(--text-muted)}
+
+/* ---------- cabeçalho ---------- */
+header.top{display:flex; gap:18px; align-items:flex-start; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap}
+.meta-list{display:flex; flex-wrap:wrap; gap:6px 18px; font-size:13px; color:var(--text-secondary); margin-top:8px}
+.meta-list b{font-weight:600; color:var(--text-primary)}
+button, select, input[type=search]{
+  font:inherit; font-size:13px; color:var(--text-primary); background:var(--surface-1);
+  border:1px solid var(--hairline); border-radius:8px; padding:7px 11px; cursor:pointer;
+  min-height:34px;
+}
+input[type=search]{cursor:text; min-width:190px}
+button:hover, select:hover{border-color:var(--axis)}
+button.ghost{background:transparent}
+button[aria-pressed="true"]{background:var(--series-1); border-color:var(--series-1); color:#fff}
+
+/* ---------- cartões ---------- */
+.grid{display:grid; gap:16px}
+.card{
+  background:var(--surface-1); border:1px solid var(--hairline);
+  border-radius:var(--radius); padding:18px 18px 16px;
+}
+.card header{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px}
+.card header .acts{display:flex; gap:6px; flex-shrink:0}
+.card header .acts button{padding:5px 9px; min-height:0; font-size:12px}
+
+/* ---------- tiles ---------- */
+.tiles{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin-bottom:16px}
+.tile{background:var(--surface-1); border:1px solid var(--hairline); border-radius:var(--radius); padding:14px 16px}
+.tile .lbl{font-size:12.5px; color:var(--text-secondary)}
+.tile .val{font-size:27px; font-weight:600; letter-spacing:-0.02em; margin-top:2px}
+.tile.hero .val{font-size:52px; line-height:1.05; margin-top:4px}
+.tile .note{font-size:12px; color:var(--text-muted); margin-top:2px}
+.badge{display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600}
+.badge .dot{width:9px; height:9px; border-radius:50%; display:inline-block}
+
+/* ---------- filtros ---------- */
+.filters{
+  display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+  background:var(--surface-1); border:1px solid var(--hairline);
+  border-radius:var(--radius); padding:10px 12px; margin-bottom:16px;
+}
+.filters .lbl{font-size:12px; color:var(--text-muted); margin-right:2px}
+.filters .spacer{flex:1}
+.chip{
+  display:inline-flex; align-items:center; gap:6px; font-size:12px;
+  border:1px solid var(--hairline); border-radius:999px; padding:4px 10px; background:transparent;
+}
+
+/* ---------- gráficos ---------- */
+svg{display:block; width:100%; height:auto; overflow:visible}
+.tick{fill:var(--text-muted); font-size:11px}
+.lbl-mark{fill:var(--text-secondary); font-size:11.5px}
+.val-mark{fill:var(--text-secondary); font-size:11.5px; font-weight:600}
+.gridline{stroke:var(--grid); stroke-width:1}
+.axisline{stroke:var(--axis); stroke-width:1}
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12px; color:var(--text-secondary); margin-top:12px}
+.legend .key{display:inline-flex; align-items:center; gap:6px}
+.legend .swatch{width:11px; height:11px; border-radius:3px; display:inline-block}
+.scale{display:flex; align-items:center; gap:8px; font-size:11.5px; color:var(--text-muted); margin-top:10px}
+.scale .steps{display:flex}
+.scale .steps i{width:22px; height:10px; display:block}
+
+/* ---------- tabelas ---------- */
+.tbl-wrap{overflow:auto; max-height:460px; border:1px solid var(--hairline); border-radius:8px}
+table{border-collapse:collapse; width:100%; font-size:13px}
+th,td{text-align:left; padding:7px 10px; border-bottom:1px solid var(--grid); vertical-align:top}
+th{position:sticky; top:0; background:var(--surface-1); font-weight:600; font-size:12px;
+   color:var(--text-secondary); z-index:1; white-space:nowrap; cursor:pointer}
+th:after{content:""; }
+tbody tr:hover{background:color-mix(in srgb, var(--series-1) 7%, transparent)}
+td.num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+td.loc{white-space:nowrap; font-variant-numeric:tabular-nums; color:var(--text-secondary)}
+.cit{font-style:italic}
+.hidden{display:none !important}
+
+/* ---------- tooltip ---------- */
+#tip{
+  position:fixed; pointer-events:none; z-index:50; max-width:330px;
+  background:var(--surface-1); color:var(--text-primary);
+  border:1px solid var(--hairline); border-radius:8px; padding:9px 11px;
+  font-size:12.5px; line-height:1.45; box-shadow:0 6px 22px rgba(0,0,0,.16);
+  opacity:0; transition:opacity .1s;
+}
+#tip b{display:block; margin-bottom:3px}
+#tip .q{font-style:italic; color:var(--text-secondary)}
+
+/* ---------- prosa ---------- */
+.prosa{font-size:14.5px; max-width:74ch}
+.prosa h1,.prosa h2,.prosa h3,.prosa h4{margin:18px 0 8px; font-size:15px}
+.prosa ul{padding-left:20px; margin:0 0 12px}
+.prosa code{background:var(--plane); padding:1px 5px; border-radius:4px; font-size:12.5px}
+details{border-top:1px solid var(--grid); padding:12px 0}
+details summary{cursor:pointer; font-weight:600; font-size:14px}
+.aviso-list{margin:8px 0 0; padding-left:18px; font-size:13px; color:var(--text-secondary)}
+footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--grid);
+       font-size:12px; color:var(--text-muted)}
+@media print{
+  body{background:#fff}
+  .filters,.card header .acts,button{display:none !important}
+  .card{break-inside:avoid}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <div>
+    <h1 id="titulo"></h1>
+    <p class="sub" id="subtitulo"></p>
+    <div class="meta-list" id="meta"></div>
+  </div>
+  <div style="display:flex; gap:8px">
+    <button id="tema" class="ghost" title="Alternar tema claro/escuro">Tema</button>
+    <button id="imprimir" class="ghost">Imprimir</button>
+  </div>
+</header>
+
+<section class="tiles" id="tiles"></section>
+
+<div class="filters" role="group" aria-label="Filtros aplicados a todos os gráficos e tabelas">
+  <span class="lbl">Filtrar:</span>
+  <select id="f-personagem" aria-label="Personagem"><option value="">Todas as personagens</option></select>
+  <select id="f-tipo" aria-label="Tipo de recurso"><option value="">Todos os recursos</option></select>
+  <select id="f-relacao" aria-label="Tipo de relação"><option value="">Todas as relações</option></select>
+  <select id="f-certeza" aria-label="Grau de certeza"><option value="">Todos os graus</option></select>
+  <input type="search" id="f-texto" placeholder="Pesquisar citação, termo…" aria-label="Pesquisa livre">
+  <span class="spacer"></span>
+  <span class="chip" id="contador"></span>
+  <button id="limpar" class="ghost">Limpar</button>
+</div>
+
+<section class="grid" style="grid-template-columns:repeat(auto-fit,minmax(430px,1fr))">
+  <div class="card" id="card-freq">
+    <header>
+      <div><h2>Frequência dos recursos expressivos</h2><h3>ocorrências registadas por tipo</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Gráfico</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="freq" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart"><svg id="svg-freq" role="img" aria-label="Gráfico de barras da frequência dos recursos expressivos"></svg></div>
+    <div class="view-table hidden" id="tbl-freq"></div>
+  </div>
+
+  <div class="card" id="card-vern">
+    <header>
+      <div><h2>Vernáculo mais recorrente</h2><h3>expressões, regionalismos e arcaísmos por nº de ocorrências</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Gráfico</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="vern" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart"><svg id="svg-vern" role="img" aria-label="Gráfico de barras das expressões vernaculares mais frequentes"></svg></div>
+    <div class="view-table hidden" id="tbl-vern"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card" id="card-heat">
+    <header>
+      <div><h2>Distribuição dos recursos por personagem</h2><h3>quantas ocorrências de cada tipo cabem a cada personagem</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Mapa</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="heat" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart">
+      <svg id="svg-heat" role="img" aria-label="Mapa de calor da distribuição dos recursos expressivos por personagem"></svg>
+      <div class="scale" id="escala-heat"></div>
+    </div>
+    <div class="view-table hidden" id="tbl-heat"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card" id="card-rede">
+    <header>
+      <div><h2>Rede de relações entre personagens</h2><h3>nós dimensionados pelo número de relações; passa o cursor sobre uma aresta para ler o tipo</h3></div>
+      <div class="acts">
+        <button data-view="chart" aria-pressed="true">Grafo</button>
+        <button data-view="table" aria-pressed="false">Tabela</button>
+        <button data-svg="rede" class="ghost" title="Descarregar SVG">SVG</button>
+      </div>
+    </header>
+    <div class="view-chart">
+      <svg id="svg-rede" role="img" aria-label="Grafo das relações entre personagens"></svg>
+      <div class="legend" id="leg-rede"></div>
+    </div>
+    <div class="view-table hidden" id="tbl-rede"></div>
+  </div>
+</section>
+
+<section class="grid" style="margin-top:16px">
+  <div class="card">
+    <header><div><h2>Ocorrências de recursos expressivos</h2><h3>tabela integral, com cotejo automático de cada citação com a transcrição</h3></div>
+      <div class="acts"><button data-csv="recursos" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-recursos"></div>
+  </div>
+  <div class="card">
+    <header><div><h2>Personagens</h2><h3>função dramática e carga simbólica</h3></div>
+      <div class="acts"><button data-csv="personagens" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-pers"></div>
+  </div>
+  <div class="card">
+    <header><div><h2>Vernáculo</h2><h3>significado de época e grau de certeza</h3></div>
+      <div class="acts"><button data-csv="vernaculo" class="ghost">CSV</button></div>
+    </header>
+    <div id="tbl-vernaculo"></div>
+  </div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>Análise em prosa</h2>
+  <h3>texto integral produzido na primeira ronda</h3>
+  <div id="prosa"></div>
+</section>
+
+<section class="card" style="margin-top:16px">
+  <h2>Limitações e validação</h2>
+  <h3>lacunas assinaladas pela análise e verificações automáticas</h3>
+  <div id="limitacoes" class="prosa"></div>
+  <div id="validacao"></div>
+</section>
+
+<footer id="rodape"></footer>
+</div>
+
+<div id="tip" role="tooltip"></div>
+<script id="dados" type="application/json">{"meta":{"titulo":"Presépio da Graça","datacao":"1779 — licenças de 27 de Janeiro de 1779; texto de repertório anterior","proveniencia":"Requerimentos ao Santo Ofício e à Real Mesa Censória com o papel anexo; Teatro da Calçada da Graça, Lisboa, empresário Henrique da Costa Passos. Transcrição sem revisões, com quebras de linha do manuscrito conservadas.\n","genero":"presépio teatral — auto de Natal por passos, com entremezes intercalados","slug":"presepio-da-graca","data_execucao":"2026-08-25 13:47","modelo":"","ficheiro":"presepio_graca.txt","n_linhas":1188},"metricas":{"citacoes_testadas":145,"citacoes_verificadas":145,"citacoes_deslocadas":0,"citacoes_nao_encontradas":0,"citacoes_sem_localizacao":0,"citacoes_verificadas_pct":100.0,"n_recursos":145,"n_tipos_recurso":15,"n_personagens":35,"n_relacoes":63,"n_vernaculo":45,"n_tipos_relacao":10,"n_linhas_peca":1188,"densidade_recursos_por_100_linhas":12.21},"recursos":[{"id":"R001","tipo_recurso":"anáfora","citacao":"Eu não sou a quem a devidade in tempore formou, aos mais unidos, eu não sou o maior dos escolhidos","localizacao":"L0027-L0029","personagem":"Luzbel","interpretacao":"A soberba formula-se por negação repetida: Luzbel define-se recusando o lugar que lhe foi dado. A anáfora instala desde o primeiro verso o tema da comparação com o alto que atravessa toda a peça.","verificacao":"verificada","linha":"27"},{"id":"R002","tipo_recurso":"hipérbole","citacao":"ao sólio subirei no mesmo instante ocupando da glória o sacro assento","localizacao":"L0039-L0040","personagem":"Luzbel","interpretacao":"A instantaneidade («no mesmo instante») mede a desmedida: a usurpação é imaginada sem processo nem mediação, o que a torna teologicamente absurda antes de ser punida.","verificacao":"verificada","linha":"39"},{"id":"R003","tipo_recurso":"comparação","citacao":"para em tudo ficar seu similante","localizacao":"L0041","personagem":"Luzbel","interpretacao":"Semelhança pretendida por conquista. Ecoa por antecipação a semelhança concedida a Adão em L0092, invertendo-lhe o sinal: o que é dom na criatura é roubo no anjo.","verificacao":"verificada","linha":"41"},{"id":"R004","tipo_recurso":"apóstrofe","citacao":"Suspende o temerário pensameNto","localizacao":"L0045","personagem":"São Miguel","interpretacao":"O soneto de resposta abre com imperativo directo, sem exórdio. A justiça divina é encenada como interrupção, não como argumento.","verificacao":"verificada","linha":"45"},{"id":"R005","tipo_recurso":"metáfora","citacao":"desde já te sepulta no tromento","localizacao":"L0048","personagem":"São Miguel","interpretacao":"Sepultura aplicada a um ser incorpóreo: a pena espiritual é dita em vocabulário funerário para se tornar representável em cena.","verificacao":"verificada","linha":"48"},{"id":"R006","tipo_recurso":"antítese","citacao":"e no horrendo lugar da escuridade fromará em prepétuo o teu assento","localizacao":"L0052-L0053","personagem":"São Miguel","interpretacao":"Contraponto exacto ao «sacro assento» de L0040. A mesma palavra ocupa os dois extremos do eixo alto/baixo que organiza o auto.","verificacao":"verificada","linha":"52"},{"id":"R007","tipo_recurso":"personificação","citacao":"e as entranhas da terra feia e escura sepulte para sempre esse maldito","localizacao":"L0060-L0061","personagem":"São Miguel","interpretacao":"A terra ganha entranhas e vontade punitiva. Prepara a terra hostil de Caim (L0248) e a terra regada de lágrimas de Adão (L0162).","verificacao":"verificada","linha":"60"},{"id":"R008","tipo_recurso":"metáfora","citacao":"Desterrem-se as trevas que em sombras revestem a orbe","localizacao":"L0065","personagem":"Padre Eterno","interpretacao":"Criação dita em vocabulário jurídico-político: o desterro é pena de degredo. A ordem do mundo é imaginada como acto de soberania régia.","verificacao":"verificada","linha":"65"},{"id":"R009","tipo_recurso":"anáfora","citacao":"Produza a terra todas as plantas e árvores... Produza o mar a competente criação de toda a diversidade de peixes... Produzam-se todos os animais segundo a ordem natural","localizacao":"L0082-L0087","personagem":"Padre Eterno","interpretacao":"A repetição do verbo escande a sequência criadora e serve de deixa às mutações de cenário anunciadas nas didascálias, articulando retórica e tramoia.","verificacao":"verificada","linha":"82"},{"id":"R010","tipo_recurso":"comparação","citacao":"façamos o homem à nossa imagem e semelhança","localizacao":"L0092","personagem":"Padre Eterno","interpretacao":"Fórmula bíblica conservada intacta; funciona como termo de comparação estruturante a que Luzbel (L0041) e, mais tarde, a soberba de Olofernes se opõem.","verificacao":"verificada","linha":"92"},{"id":"R011","tipo_recurso":"metáfora","citacao":"Na tua face deposito uma espiritual essência da vida","localizacao":"L0097","personagem":"Padre Eterno","interpretacao":"O sopro divino é dito como depósito — termo de guarda e de confiança, que implica devolução e prepara a lógica do preceito.","verificacao":"verificada","linha":"97"},{"id":"R012","tipo_recurso":"comparação","citacao":"façamos um adjutório semelhante a ele","localizacao":"L0100","personagem":"Padre Eterno","interpretacao":"Eva é introduzida por semelhança e subordinação simultâneas; o termo «adjutório» fixa desde a criação a hierarquia que a sentença de L0132 tornará explícita.","verificacao":"verificada","linha":"100"},{"id":"R013","tipo_recurso":"alegoria","citacao":"esta é a Árvore da ciência onde donde oculto o conhicimento do bem e do mal","localizacao":"L0105","personagem":"Padre Eterno","interpretacao":"O saber moral é figurado como fruto guardado. A alegoria dá corpo cénico a uma proibição abstracta e torna-a representável num único objecto.","verificacao":"verificada","linha":"105"},{"id":"R014","tipo_recurso":"ironia","citacao":"De nenhum modo comendo dela podereis prigar na vida","localizacao":"L0113","personagem":"Serpente","interpretacao":"A tentação opera por negação enfática do que é verdadeiro. É a primeira das falas enganosas da peça, série que continua no Diabo cómico e se inverte na dissimulação virtuosa de Judite.","verificacao":"verificada","linha":"113"},{"id":"R015","tipo_recurso":"personificação","citacao":"não sei o que me vaticina o coração","localizacao":"L0119","personagem":"Adão","interpretacao":"O coração profetiza: o pressentimento é externalizado num órgão que fala. Adão adivinha a culpa antes de a cometer, o que agrava a transgressão.","verificacao":"verificada","linha":"119"},{"id":"R016","tipo_recurso":"metáfora","citacao":"como réu da culpa me escondi","localizacao":"L0127","personagem":"Adão","interpretacao":"Vocabulário forense aplicado à consciência. A queda é imediatamente traduzida em processo judicial, registo que domina toda a intervenção do Padre Eterno.","verificacao":"verificada","linha":"127"},{"id":"R017","tipo_recurso":"enumeração","citacao":"naçarás filho algum sem empulsos de dores, será sojeita aos perceitos do homem, e debaixo do seu domínio vivirás","localizacao":"L0132","personagem":"Padre Eterno","interpretacao":"Três encargos acumulados sobre Eva: dor, sujeição e domínio. A hierarquia doméstica setecentista é aqui enunciada como sentença divina, e é a passagem de maior densidade social do primeiro terço.","verificacao":"verificada","linha":"132"},{"id":"R018","tipo_recurso":"hipérbole","citacao":"sarás a mais desgraçada entre todas as feras","localizacao":"L0132","personagem":"Padre Eterno","interpretacao":"Superlativo absoluto que fixa a serpente no fundo da escala dos viventes, completando por baixo a hierarquia que a criação estabelecera por cima.","verificacao":"verificada","linha":"132"},{"id":"R019","tipo_recurso":"metáfora","citacao":"em copioso suor do teu rosto ganharás o pão té que te convertas em terra","localizacao":"L0135","personagem":"Padre Eterno","interpretacao":"O trabalho é dito em imagem circular: o homem vem da terra, alimenta-se dela e volta a ela. A metáfora agrícola torna-se, no lamento seguinte, a do pranto que rega.","verificacao":"verificada","linha":"135"},{"id":"R020","tipo_recurso":"personificação","citacao":"sintirás as paixões que o mundo ilaça","localizacao":"L0141","personagem":"Anjo","interpretacao":"O mundo enlaça como caçador. A expulsão não é apenas espacial: entrega o homem a um agente activo e hostil.","verificacao":"verificada","linha":"141"},{"id":"R021","tipo_recurso":"personificação","citacao":"vai que o mundo te dará o desengano","localizacao":"L0144","personagem":"Anjo","interpretacao":"O mundo torna-se preceptor moral. A oitava fecha o passo com uma sentença de sabor barroco — o desengano como forma de conhecimento.","verificacao":"verificada","linha":"144"},{"id":"R022","tipo_recurso":"metáfora","citacao":"desfaze-te em puro pranto para lavar teu defeito","localizacao":"L0148","personagem":"Adão","interpretacao":"O choro como água baptismal antecipada. A penitência é figurada em operação de limpeza, isotopia que percorre toda a lamentação.","verificacao":"verificada","linha":"148"},{"id":"R023","tipo_recurso":"hipérbole","citacao":"se não lançar pelos olhos lágrimas de cento a cento","localizacao":"L0151-L0152","personagem":"Eva","interpretacao":"A contagem das lágrimas transforma a dor em quantidade. O exagero numérico é o registo próprio da lamentação cantada deste passo.","verificacao":"verificada","linha":"151"},{"id":"R024","tipo_recurso":"hipérbole","citacao":"Enquanto tivermos vida seja o nosso pranto eterno","localizacao":"L0159-L0160","personagem":"Adão","interpretacao":"Fala conjunta de Adão e Eva («Ambos»). A eternidade do pranto mede-se pela duração da vida: a hipérbole é, na verdade, uma definição da condição humana pós-lapsária.","verificacao":"verificada","linha":"159"},{"id":"R025","tipo_recurso":"metáfora","citacao":"Chora regando essa terra Adão, com lágrimas puras","localizacao":"L0162-L0163","personagem":"Adão","interpretacao":"O pranto converte-se em rega e a penitência em lavoura, ligando directamente a pena do trabalho (L0135) à pena da dor. É a metáfora mais bem integrada do passo.","verificacao":"verificada","linha":"162"},{"id":"R026","tipo_recurso":"antítese","citacao":"pois pusestes fim ao bem por dares prencípio ao mal","localizacao":"L0169-L0170","personagem":"Adão","interpretacao":"Quiasmo perfeito entre fim/princípio e bem/mal. A auto-acusação assume forma de sentença moral memorizável, própria da glosa cantada.","verificacao":"verificada","linha":"169"},{"id":"R027","tipo_recurso":"apóstrofe","citacao":"Sofre terra o golpe irado pois sendo a que me formaste fostes a mesma que brotastes fruto para o meu pecado","localizacao":"L0178-L0181","personagem":"Adão","interpretacao":"Adão interpela a terra como cúmplice: matéria da sua origem e do seu crime. A apóstrofe desloca parcialmente a culpa para a criação, movimento que o texto não corrige.","verificacao":"verificada","linha":"178"},{"id":"R028","tipo_recurso":"antítese","citacao":"pois tantos séculos de graça por um bocado a perdi","localizacao":"L0193-L0194","personagem":"Adão","interpretacao":"Desproporção entre séculos e bocado: a antítese quantifica a queda e é, das formulações do passo, a que melhor condensa a doutrina.","verificacao":"verificada","linha":"193"},{"id":"R029","tipo_recurso":"antítese","citacao":"que de Deus a imensa graça é maior que o teu pecado","localizacao":"L0204-L0205","personagem":"Adão","interpretacao":"Contra-antítese consoladora que responde à anterior. As duas juntas desenham o arco teológico completo — culpa desmedida, misericórdia maior — que a peça só cumprirá em Belém.","verificacao":"verificada","linha":"204"},{"id":"R030","tipo_recurso":"enumeração","citacao":"poi são as pensões da vida: morrer, sentir e chorar","localizacao":"L0224-L0225","personagem":"Adão","interpretacao":"Fala conjunta de Adão e Eva. «Pensão» tem aqui o valor coevo de encargo ou tributo devido, não o moderno de rendimento: a vida é dita como dívida a pagar em três prestações.","verificacao":"verificada","linha":"224"},{"id":"R031","tipo_recurso":"anáfora","citacao":"Que podemos conseguir depois de pecado ter? Coro: Morrer.","localizacao":"L0214-L0216","personagem":"Coro","interpretacao":"O Coro responde com uma palavra a cada pergunta (Morrer / Sentir / Chorar). O destino é encenado como eco: não se argumenta, repete-se — e as três respostas são depois recolhidas no dístico final.","verificacao":"verificada","linha":"214"},{"id":"R032","tipo_recurso":"antítese","citacao":"tu fertilizas os campos com grandes rabanhos, o meu gado cada vez mais se deminuem, e o teu se aumenta","localizacao":"L0233","personagem":"Caim","interpretacao":"A inveja nasce de uma comparação contabilística. A antítese entre aumentar e diminuir é o motor do fratricídio e reencena, em escala doméstica, a comparação soberba de Luzbel.","verificacao":"verificada","linha":"233"},{"id":"R033","tipo_recurso":"ironia","citacao":"acaso julgas-te mais saprior qu'eu?","localizacao":"L0237","personagem":"Caim","interpretacao":"Pergunta retórica que atribui ao irmão a soberba de que o próprio Caim está possuído. A projecção é o mecanismo psicológico que o texto expõe sem o nomear.","verificacao":"verificada","linha":"237"},{"id":"R034","tipo_recurso":"metáfora","citacao":"sou escravo do senhor, e mais não sei","localizacao":"L0238","personagem":"Abel","interpretacao":"A obediência define-se por servidão voluntária e por recusa de saber. Abel é o contrário exacto da Serpente, que prometia conhecimento (L0113).","verificacao":"verificada","linha":"238"},{"id":"R035","tipo_recurso":"eufemismo","citacao":"com a tua morte porarei fim a tantos cuidados","localizacao":"L0239","personagem":"Caim","interpretacao":"O homicídio é dito como alívio administrativo. O eufemismo tem gémeo exacto na boca de Judite (L0689-L0690), simetria que a peça não comenta.","verificacao":"verificada","linha":"239"},{"id":"R036","tipo_recurso":"personificação","citacao":"serva-te de castigo a mesma terra, que andando por ela fugitivo nem ela mesma te empare nem eu jamais te secorra","localizacao":"L0248","personagem":"Padre Eterno","interpretacao":"A terra passa de mãe a carcereira. Completa a série iniciada em L0060 e prepara a imagem seguinte, em que Caim pede à mesma terra que se abra.","verificacao":"verificada","linha":"248"},{"id":"R037","tipo_recurso":"hipérbole","citacao":"Ainda a terra não se abre em diferentes bocas para somergir este desesperado","localizacao":"L0253","personagem":"Caim","interpretacao":"A terra ganha bocas: o desespero pede a punição que lhe foi negada. A hipérbole marca a passagem do registo trágico ao entremez que se lhe segue.","verificacao":"verificada","linha":"253"},{"id":"R038","tipo_recurso":"comparação","citacao":"Eu entendo que vossa mercê é como os engleses, que em lhe dando bexigas querem-se enterrar vivos","localizacao":"L0254","personagem":"Diabo","interpretacao":"Comparação anacrónica que muda o registo da peça de um golpe: o desespero bíblico é reclassificado como melancolia inglesa, tópico corrente na Europa setecentista.","verificacao":"verificada","linha":"254"},{"id":"R039","tipo_recurso":"ironia","citacao":"Engana-se, que eu cantei bem nos meus tempos","localizacao":"L0256","personagem":"Diabo","interpretacao":"O Diabo responde à repulsa com vaidade de cantor. A auto-ironia humaniza-o e é precisamente o que o torna eficaz como tentador.","verificacao":"verificada","linha":"256"},{"id":"R040","tipo_recurso":"provérbio","citacao":"não tenha medo que o diabo não é tão feio como o pintam","localizacao":"L0258","personagem":"Diabo","interpretacao":"O Diabo cita o provérbio que existe sobre si próprio. O efeito metalinguístico é o achado cómico do passo e desactiva a iconografia do medo que a cena acabara de montar.","verificacao":"verificada","linha":"258"},{"id":"R041","tipo_recurso":"anacronismo","citacao":"Venha comigo que lhe quero dar uma sala onde tome chá com o meu amigo Poltão","localizacao":"L0262","personagem":"Diabo","interpretacao":"O Inferno como sala de visitas com chá servido. Plutão, deformado em Poltão, torna-se anfitrião mundano: o mal apresenta-se por convite de sociabilidade, não por ameaça.","verificacao":"verificada","linha":"262"},{"id":"R042","tipo_recurso":"anacronismo","citacao":"o tomei por valete de chambri que costuma servir aos hóspades","localizacao":"L0264","personagem":"Diabo","interpretacao":"A corte infernal organiza-se como casa nobre lisboeta, com criadagem hierarquizada. O galicismo cru marca a moda cortesã da segunda metade de setecentos.","verificacao":"verificada","linha":"264"},{"id":"R043","tipo_recurso":"antítese","citacao":"o céu me falta, a terra não me ampara","localizacao":"L0272","personagem":"Caim","interpretacao":"Suspensão entre dois recursos negados. A oitava de Caim fecha o passo com a formulação mais concisa do desamparo em toda a peça.","verificacao":"verificada","linha":"272"},{"id":"R044","tipo_recurso":"apóstrofe","citacao":"chovam já desses céus emensos raios","localizacao":"L0276","personagem":"Caim","interpretacao":"Invocação do castigo como desafio. A chuva de raios contrasta, por antecipação, com a chuva de bênção que fechará o passo de Noé (L0307).","verificacao":"verificada","linha":"276"},{"id":"R045","tipo_recurso":"metáfora","citacao":"O mundo flutua em um lago de tropezas","localizacao":"L0285","personagem":"Padre Eterno","interpretacao":"Metáfora aquática que anuncia literalmente o dilúvio: o pecado é já água antes de a água ser castigo. É a prolepse mais elegante do papel.","verificacao":"verificada","linha":"285"},{"id":"R046","tipo_recurso":"apóstrofe","citacao":"Oh quem podera satisfazer aos pecados de todos para que ficássemos salvos de tanta ruína","localizacao":"L0286","personagem":"Noé","interpretacao":"Desejo formulado como pergunta impossível. No plano da compilação, é uma prefiguração explícita da Redenção que o Passo dos Pastores virá celebrar.","verificacao":"verificada","linha":"286"},{"id":"R047","tipo_recurso":"metáfora","citacao":"samos mandados clausurar em uma arca","localizacao":"L0292","personagem":"Noé","interpretacao":"«Clausurar» tem aqui o valor de clausura monástica, não o moderno de encerramento genérico: a arca é lida como convento, e a salvação como recolhimento regrado.","verificacao":"verificada","linha":"292"},{"id":"R048","tipo_recurso":"metáfora","citacao":"Receba a terra o ósculo de paz","localizacao":"L0305","personagem":"Noé","interpretacao":"Fala colectiva («Todos»). O gesto litúrgico da paz é transferido para a terra emersa, transformando o fim do dilúvio em cerimónia de reconciliação.","verificacao":"verificada","linha":"305"},{"id":"R049","tipo_recurso":"metáfora","citacao":"Já que ficamos livres da ruína a bênção chova em nós da mão divina","localizacao":"L0307","personagem":"Noé","interpretacao":"Fala colectiva. A mesma imagem — chuva — que fora instrumento de destruição torna-se veículo de graça. A inversão fecha o passo com economia notável.","verificacao":"verificada","linha":"307"},{"id":"R050","tipo_recurso":"comparação","citacao":"Capitães valerosos cujos peitos excedem ao de Martem, heróim invicto","localizacao":"L0326-L0327","personagem":"Olofernes","interpretacao":"O termo de comparação é mitológico e pagão, adequado ao tirano assírio. Contrasta deliberadamente com as comparações domésticas dos passos cómicos.","verificacao":"verificada","linha":"326"},{"id":"R051","tipo_recurso":"metáfora","citacao":"esforçai o valor bramindo a lança","localizacao":"L0328","personagem":"Olofernes","interpretacao":"O bramido pertence ao animal e é transferido para a arma. A guerra é figurada como som antes de ser acção — coerente com um tirano que vence sobretudo por discurso.","verificacao":"verificada","linha":"328"},{"id":"R052","tipo_recurso":"hipérbole","citacao":"morram todos e não fiquem nenhum vivos","localizacao":"L0344","personagem":"Olofernes","interpretacao":"Pleonasmo hiperbólico que expõe a desmedida pela própria redundância sintáctica. O excesso da ordem está no excesso da frase.","verificacao":"verificada","linha":"344"},{"id":"R053","tipo_recurso":"antítese","citacao":"esquecida a paixão para a piedade té se rompam os sagrados idifícios","localizacao":"L0355-L0356","personagem":"Olofernes","interpretacao":"A paixão é convocada para a destruição e esquecida para a clemência. A antítese define o tirano por aquilo que decide não sentir.","verificacao":"verificada","linha":"355"},{"id":"R054","tipo_recurso":"metáfora","citacao":"Com a espada morram o braço armado o coração vestido de bravura","localizacao":"L0368-L0369","personagem":"1.º Capitão","interpretacao":"O coração veste-se como um corpo. O soneto a dois vozes dos capitães faz da obediência militar uma forma métrica: o encaixe das réplicas é a imagem da disciplina.","verificacao":"verificada","linha":"368"},{"id":"R055","tipo_recurso":"hipérbole","citacao":"rotas as pedras se veja destruída não se deixe vivente algum com vida","localizacao":"L0405-L0406","personagem":"Olofernes","interpretacao":"Destruição total declarada em dois planos — mineral e vivo. A acumulação prepara a tríade final de L0435.","verificacao":"verificada","linha":"405"},{"id":"R056","tipo_recurso":"hipérbole","citacao":"tudo estrago será, nem sepultura aos mortos lhe darei em parte digna","localizacao":"L0424-L0425","personagem":"Olofernes","interpretacao":"A negação de sepultura é, na tradição clássica, o extremo da desumanidade. O tirano define-se por ultrapassar o limite que separa a guerra do sacrilégio.","verificacao":"verificada","linha":"424"},{"id":"R057","tipo_recurso":"anáfora","citacao":"tudo em pó, tudo em cinza e tudo em fogo","localizacao":"L0435","personagem":"Olofernes","interpretacao":"Tríade em gradação que fecha a ária de Olofernes. É pura potência verbal — e a peça encarrega-se de a desmentir, fazendo-o cair por uma mulher e um jantar.","verificacao":"verificada","linha":"435"},{"id":"R058","tipo_recurso":"personificação","citacao":"a sua mesma cabeça será testemunha disto, pois separada do corpo hei de trazê-la comigo","localizacao":"L0449-L0452","personagem":"Judite","interpretacao":"A cabeça decepada é convocada como testemunha judicial. Judite anuncia o desfecho com precisão forense, e o troféu vale como prova.","verificacao":"verificada","linha":"449"},{"id":"R059","tipo_recurso":"metáfora","citacao":"oh ânimo revestido de uma pura fé","localizacao":"L0456-L0457","personagem":"Sacerdote","interpretacao":"A fé é armadura. A metáfora bélica aplicada à virtude autoriza religiosamente a violência de Judite e converte iniciativa individual em causa colectiva.","verificacao":"verificada","linha":"456"},{"id":"R060","tipo_recurso":"metáfora","citacao":"já meu amo tira hoje a ferruge ao seu dinheiro","localizacao":"L0467-L0469","personagem":"Mestre-Sala","interpretacao":"A avareza é dita pela oxidação da moeda parada. É a primeira fala do criado e fixa de imediato a sua função: ver o senhor por dentro.","verificacao":"verificada","linha":"467"},{"id":"R061","tipo_recurso":"metáfora","citacao":"o Mestre-Sala também há de ter a sua função de lambedela","localizacao":"L0471-L0472","personagem":"Mestre-Sala","interpretacao":"O banquete do amo desdobra-se num banquete de criados. A metáfora do lamber marca a posição na cadeia alimentar da casa — e da peça.","verificacao":"verificada","linha":"471"},{"id":"R062","tipo_recurso":"anacronismo","citacao":"vi uma dama destas de topete alto à Zamperina","localizacao":"L0503-L0504","personagem":"Mestre-Sala","interpretacao":"Judite entra na tenda assíria com o penteado da cantora de ópera em voga em Lisboa. É o anacronismo mais preciso do papel e o seu melhor indício de datação relativa.","verificacao":"verificada","linha":"503"},{"id":"R063","tipo_recurso":"trocadilho","citacao":"Minha menina, poteis intrare","localizacao":"L0508","personagem":"Mestre-Sala","interpretacao":"Latim de fantasia com terminação italianizante. O criado exibe língua que não domina — procedimento que se repetirá com a Velha (L0625) e com o Doutor (L0883).","verificacao":"verificada","linha":"508"},{"id":"R064","tipo_recurso":"metáfora","citacao":"por desventura da estrela foi de minha vida o berço","localizacao":"L0519-L0520","personagem":"Judite","interpretacao":"Astrologia como retórica de queixa. Judite constrói uma biografia falsa em romance cantado, e a metáfora fatalista é o que a torna verosímil ao ouvido do tirano.","verificacao":"verificada","linha":"519"},{"id":"R065","tipo_recurso":"hipérbole","citacao":"não ficará pedra sobre pedra desta enfeliz cidade de Betúlia","localizacao":"L0566-L0568","personagem":"Olofernes","interpretacao":"A promessa de arrasamento é feita como galanteio: a destruição de uma cidade oferecida a uma mulher como prova de afecto. A hipérbole tem aqui função erótica.","verificacao":"verificada","linha":"566"},{"id":"R066","tipo_recurso":"anacronismo","citacao":"E que função terão os rapazes na Cotovia com tanta pedra?","localizacao":"L0569-L0570","personagem":"Mestre-Sala","interpretacao":"O aparte reduz o arrasamento de Betúlia a matéria-prima para as pedradas dos rapazes de um bairro lisboeta. É o mecanismo central do papel: rebaixar o bíblico à rua do espectador.","verificacao":"verificada","linha":"569"},{"id":"R067","tipo_recurso":"ironia","citacao":"Cuidado nisso.","localizacao":"L0573","personagem":"Mestre-Sala","interpretacao":"Duas palavras respondem a uma ameaça de genocídio. O laconismo do criado desactiva a retórica do amo com mais eficácia do que qualquer réplica longa.","verificacao":"verificada","linha":"573"},{"id":"R068","tipo_recurso":"metáfora","citacao":"a tua fromusura me tem arrebatado de tal sorte que já não sei parte de mim","localizacao":"L0586-L0588","personagem":"Olofernes","interpretacao":"O tirano descreve-se como território conquistado. A metáfora inverte a relação de poder antes de a acção o fazer: quem cerca cidades é cercado.","verificacao":"verificada","linha":"586"},{"id":"R069","tipo_recurso":"ironia","citacao":"Foram-se os gulosos mas foram bem convidados","localizacao":"L0613-L0614","personagem":"Mestre-Sala","interpretacao":"O criado avalia o banquete pela perspectiva do que sobra. A ironia sobre a gula dos senhores é também constatação de fome própria.","verificacao":"verificada","linha":"613"},{"id":"R070","tipo_recurso":"trocadilho","citacao":"Vossa mercê não sabe que acessório séquito porém cipa-me cipale","localizacao":"L0625-L0626","personagem":"Mestre-Sala","interpretacao":"Latim macarrónico usado como arma de galanteio. Não comunica: exibe — e a Velha desmascara-o na fala seguinte.","verificacao":"verificada","linha":"625"},{"id":"R071","tipo_recurso":"ironia","citacao":"ei sei cá latim!","localizacao":"L0627","personagem":"Velha","interpretacao":"A ignorância declarada derrota a erudição fingida. A resposta é o momento em que a peça toma partido pelo saber popular contra a exibição letrada.","verificacao":"verificada","linha":"627"},{"id":"R072","tipo_recurso":"anáfora","citacao":"não repara nestas cãs, não vê esta prespicácia","localizacao":"L0635-L0637","personagem":"Velha","interpretacao":"A dupla negação invoca a autoridade da idade. A Velha reivindica respeito com os mesmos argumentos com que a peça a torna ridícula.","verificacao":"verificada","linha":"635"},{"id":"R073","tipo_recurso":"anáfora","citacao":"Farei com que mais não fale farei com que mais não diga e lhe arrancarei esses olhos","localizacao":"L0648-L0650","personagem":"Velha","interpretacao":"Gradação de ameaças que sobe da palavra ao corpo. A anáfora dá à fúria da velha uma forma retórica quase litúrgica, o que aumenta o efeito cómico.","verificacao":"verificada","linha":"648"},{"id":"R074","tipo_recurso":"metáfora","citacao":"vai-te negra cristaleira do inferno","localizacao":"L0654","personagem":"Mestre-Sala","interpretacao":"A injúria identifica a velha com o ofício de aplicar clisteres. O corpo feminino envelhecido é reduzido a função escatológica — o registo mais violento do papel.","verificacao":"verificada","linha":"654"},{"id":"R075","tipo_recurso":"hipérbole","citacao":"Traze-me para aqui um bom alguidar de sopas com seiscentas rodas de paio","localizacao":"L0659-L0660","personagem":"Mestre-Sala","interpretacao":"O número redondo e absurdo mede a fome. A hipérbole alimentar é o contraponto exacto da hipérbole destrutiva de Olofernes (L0435).","verificacao":"verificada","linha":"659"},{"id":"R076","tipo_recurso":"trocadilho","citacao":"Quem te alinhavara o corpo co uma faca","localizacao":"L0664-L0665","personagem":"Mestre-Sala","interpretacao":"O criado devolve ao cozinheiro a palavra que este acabara de usar para o cozido («alinhavado», L0663), transferindo-a da costura para o golpe. A ameaça nasce do léxico do outro.","verificacao":"verificada","linha":"664"},{"id":"R077","tipo_recurso":"anáfora","citacao":"Queimado sejas tu, venha a olha... Apodrecidos sejam os teus olhos","localizacao":"L0667-L0669","personagem":"Mestre-Sala","interpretacao":"Cada resposta do Preto é convertida em maldição pela repetição do particípio. O diálogo funciona como máquina: o que falta à cozinha volta como praga.","verificacao":"verificada","linha":"667"},{"id":"R078","tipo_recurso":"ironia","citacao":"Nos copa de meu senhor Oslofernes há muntas cosas, há pão, há vinho","localizacao":"L0671-L0672","personagem":"Preto (criado de Olofernes)","interpretacao":"Depois de negar tudo, o cozinheiro aponta a despensa do amo. A fala expõe, sem o dizer, que a escassez dos criados coexiste com a abundância do senhor.","verificacao":"verificada","linha":"671"},{"id":"R079","tipo_recurso":"eufemismo","citacao":"dormindo está, eterno há de ser o seu descanso","localizacao":"L0689-L0690","personagem":"Judite","interpretacao":"O sono desliza para a morte no espaço de uma vírgula. O eufemismo é idêntico em função ao de Caim (L0239), com valoração moral oposta.","verificacao":"verificada","linha":"689"},{"id":"R080","tipo_recurso":"apóstrofe","citacao":"morre ó mostro da tirania não blazones de atrevido quando uma molher te osurpa os assentos","localizacao":"L0692-L0694","personagem":"Judite","interpretacao":"O golpe é acompanhado de sentença. «Assentos» retoma pela terceira vez a palavra que Luzbel quis ocupar (L0040) e que São Miguel lhe negou (L0053): a inversão hierárquica fecha aqui o seu ciclo.","verificacao":"verificada","linha":"692"},{"id":"R081","tipo_recurso":"comparação","citacao":"Oh valerosa Pantalisea, bote, bote aqui neste avental que eu levo lá para dentro","localizacao":"L0695-L0696","personagem":"Velha","interpretacao":"Judite é saudada como Pentesileia e no mesmo fôlego convidada a pôr a cabeça num avental. A queda do registo épico para o doméstico é o mais eficaz bathos do papel.","verificacao":"verificada","linha":"695"},{"id":"R082","tipo_recurso":"ironia","citacao":"Quem havia de ser senão aquela caganita que lhe levou a cabeça","localizacao":"L0707-L0708","personagem":"Mestre-Sala","interpretacao":"O tiranicídio é reportado em linguagem de insulto de rua. O criado retira à heroína a solenidade que o texto sério lhe atribui, e a peça deixa as duas leituras coexistir.","verificacao":"verificada","linha":"707"},{"id":"R083","tipo_recurso":"hipérbole","citacao":"aqui tens a cabeça mais ferina","localizacao":"L0719","personagem":"Judite","interpretacao":"Superlativo que transforma o despojo em prova pública. A oitava final devolve o passo ao registo elevado, apagando o entremez que acabara de decorrer.","verificacao":"verificada","linha":"719"},{"id":"R084","tipo_recurso":"apóstrofe","citacao":"Descuidados pastores, ter sentido, despertai desse sono tão profundo","localizacao":"L0733-L0734","personagem":"Anjo","interpretacao":"O anúncio começa por repreensão. O sono dos pastores é o mesmo descuido moral de que a peça vem tratando desde Adão, e o despertar vale por conversão.","verificacao":"verificada","linha":"733"},{"id":"R085","tipo_recurso":"anáfora","citacao":"Já o Céu glória em si está possuindo, já os homens tem paz, gosto jocundo","localizacao":"L0737-L0738","personagem":"Anjo","interpretacao":"A dupla anáfora do «já» marca a mudança de tempo teológico: o que era espera passa a estado presente. É a articulação que justifica todos os passos anteriores.","verificacao":"verificada","linha":"737"},{"id":"R086","tipo_recurso":"antítese","citacao":"ou será favor do Céu ou é sonho do sentido","localizacao":"L0747-L0748","personagem":"Alceto","interpretacao":"Fala colectiva dos pastores. A alternativa entre revelação e ilusão é resolvida pela verificação («pois eu os olhos abrindo», L0750), procedimento que dá ao milagre o estatuto de facto testemunhado.","verificacao":"verificada","linha":"747"},{"id":"R087","tipo_recurso":"metáfora","citacao":"vi encaminhar-se ao Céu um celeste paranifo","localizacao":"L0751-L0752","personagem":"Alceto","interpretacao":"«Paraninfo» — o que conduz a noiva — aplica ao anjo vocabulário de núpcias, alusão à união entre o divino e o humano que o Natal celebra.","verificacao":"verificada","linha":"751"},{"id":"R088","tipo_recurso":"antítese","citacao":"Tens do céu estimação, arruinado idifício, pois em ti nasce o prencípio para a nossa salvação","localizacao":"L0765-L0768","personagem":"Alceto","interpretacao":"A ruína material é a condição da elevação espiritual. Esta antítese é a formulação central da teologia do presépio e responde, ponto por ponto, à ruína de Betúlia.","verificacao":"verificada","linha":"765"},{"id":"R089","tipo_recurso":"anáfora","citacao":"Quanto posso e quanto tenho desde já fica ofrecido","localizacao":"L0771-L0772","personagem":"Alceto","interpretacao":"A oferta define-se por totalidade, não por quantidade. A anáfora mede a dádiva pela capacidade e não pelo valor — doutrina que Anfriso completará oferecendo a pobreza.","verificacao":"verificada","linha":"771"},{"id":"R090","tipo_recurso":"metáfora","citacao":"só por ser ademetido ao vosso santo rebenho","localizacao":"L0773-L0774","personagem":"Alceto","interpretacao":"O pastor pede para ser ovelha. A inversão de papéis dentro da própria metáfora pastoril é o modo como o passo articula ofício real e figura religiosa.","verificacao":"verificada","linha":"773"},{"id":"R091","tipo_recurso":"apóstrofe","citacao":"Oh, ditosas porfecias de alto mistério profundo","localizacao":"L0785-L0786","personagem":"Amador","interpretacao":"A invocação dirige-se às profecias e não a Deus: o que se celebra é o cumprimento de um texto, o que faz do presépio a última cena de uma escritura.","verificacao":"verificada","linha":"785"},{"id":"R092","tipo_recurso":"antítese","citacao":"para ter fim todo o mal, é nascido o nosso bem","localizacao":"L0797-L0798","personagem":"Florindo","interpretacao":"Fecho doutrinal da adoração, com paralelismo perfeito entre mal e bem. Encerra a série de antíteses aberta em L0169 pela auto-acusação de Adão.","verificacao":"verificada","linha":"797"},{"id":"R093","tipo_recurso":"hipérbole","citacao":"Todas as horas e dias seja o louvor de contínuo","localizacao":"L0789-L0790","personagem":"Amador","interpretacao":"A totalidade temporal do louvor responde à totalidade da oferta (L0771). Os quatro pastores repartem entre si os modos possíveis de dar.","verificacao":"verificada","linha":"789"},{"id":"R094","tipo_recurso":"apóstrofe","citacao":"Ah tempos, tempos, como estais virsificados dos antigos tempos!","localizacao":"L0818","personagem":"Manuel Gonçalves","interpretacao":"Tópico do elogio do tempo antigo, transposto para a boca de um pescador. A queixa geracional abre o monólogo e legitima a evocação nostálgica que se segue.","verificacao":"verificada","linha":"818"},{"id":"R095","tipo_recurso":"ironia","citacao":"Qui seja possibli que estes labutem nos destranques e que eu ande chafurdando na obra da arca","localizacao":"L0818","personagem":"Manuel Gonçalves","interpretacao":"Fala metateatral: o actor queixa-se do serviço que lhe dá a máquina do dilúvio. É a prova interna mais forte de que este monólogo é a «parte» anunciada em L0289, dentro do passo de Noé.","verificacao":"verificada","linha":"818"},{"id":"R096","tipo_recurso":"comparação","citacao":"uma delas era mocetona como um barco","localizacao":"L0818","personagem":"Manuel Gonçalves","interpretacao":"O corpo feminino medido em tonelagem. A comparação instala o campo náutico que organizará todo o monólogo, do vestuário à correspondência amorosa.","verificacao":"verificada","linha":"818"},{"id":"R097","tipo_recurso":"metáfora","citacao":"era um camezote de Holanda, de vela de navios, com punhos e bofes de casa de traquete","localizacao":"L0818","personagem":"Manuel Gonçalves","interpretacao":"A camisa é descrita peça a peça como aparelho de navio. O luxo é dito no único vocabulário técnico que o falante possui — o que é simultaneamente cómico e socialmente exacto.","verificacao":"verificada","linha":"818"},{"id":"R098","tipo_recurso":"enumeração","citacao":"pondem-se-á 3 casões, 20 arraias, 18 safios, 30 eroses , 60 caxuxos, e de sardinhas 500","localizacao":"L0818","personagem":"Manuel Gonçalves","interpretacao":"Inventário de pescado com quantidades crescentes. A enumeração serve de prova de amor e é, ao mesmo tempo, o documento lexical mais rico do papel sobre a pesca da costa.","verificacao":"verificada","linha":"818"},{"id":"R099","tipo_recurso":"trocadilho","citacao":"te rimeto esse despigo pois ainda me não despigo","localizacao":"L0821-L0822","personagem":"Manuel Gonçalves","interpretacao":"Paronomásia entre o despojo de pescado e o despicar-se amoroso. A décima do pescador constrói-se inteira sobre este tipo de duplo sentido técnico-afectivo.","verificacao":"verificada","linha":"821"},{"id":"R100","tipo_recurso":"metáfora","citacao":"pois vai com o sangue na guelra","localizacao":"L0829","personagem":"Manuel Gonçalves","interpretacao":"A frescura do peixe garante a frescura do amor. A metáfora funde por completo o campo do ofício e o do sentimento, sem resto.","verificacao":"verificada","linha":"829"},{"id":"R101","tipo_recurso":"trocadilho","citacao":"pois na compra do carinho, ninguém me tira do lanço","localizacao":"L0832-L0833","personagem":"Manuel Gonçalves","interpretacao":"«Lanço» é ao mesmo tempo o lance da rede e o lance do leilão. O afecto é dito como transacção em que o falante não se deixa cobrir.","verificacao":"verificada","linha":"832"},{"id":"R102","tipo_recurso":"trocadilho","citacao":"só contigo mi trismalho","localizacao":"L0839","personagem":"Manuel Gonçalves","interpretacao":"O trasmalho é a rede de três malhas e «tresmalhar-se» é perder-se. O verso condensa em três palavras a arte e o desnorte amoroso.","verificacao":"verificada","linha":"839"},{"id":"R103","tipo_recurso":"alegoria","citacao":"Fichi a carta e miti a chavi n'alzibeira, embarquei-a no paquete, largou este o passo todo, foi bolinando por i fora, chegou à porta da moça, pouse a capa, fez sinal à fortaleza","localizacao":"L0841","personagem":"Manuel Gonçalves","interpretacao":"A entrega da carta é narrada como viagem completa de embarcação, com manobra, aproximação e sinal à fortaleza. É a alegoria mais desenvolvida do papel e transforma um recado numa campanha naval.","verificacao":"verificada","linha":"841"},{"id":"R104","tipo_recurso":"metáfora","citacao":"cingi a farrusca a balravento, mandi abri os embornais nos sapatos, pus o galério no topi, virei o gajeiro para a parte esquerda","localizacao":"L0841","personagem":"Manuel Gonçalves","interpretacao":"O corpo vestido é aparelhado como navio, do calçado ao chapéu. O léxico náutico converte-se aqui em código de elegância popular.","verificacao":"verificada","linha":"841"},{"id":"R105","tipo_recurso":"hipérbole","citacao":"só os bofes afogados podiam encher todas as tavernas do mal cozinhado","localizacao":"L0841","personagem":"Manuel Gonçalves","interpretacao":"Os folhos da camisa dariam para abastecer as casas de comida da Ribeira. A hipérbole mede o traje pela geografia comercial de Lisboa.","verificacao":"verificada","linha":"841"},{"id":"R106","tipo_recurso":"ironia","citacao":"mas isperi, com quem falo eu","localizacao":"L0841","personagem":"Manuel Gonçalves","interpretacao":"Interrupção metateatral que devolve o falante à consciência do público. Fecha o monólogo com a mesma quebra de ilusão com que ele começara (L0818).","verificacao":"verificada","linha":"841"},{"id":"R107","tipo_recurso":"metáfora","citacao":"vamos entrando na palesta de Cupido","localizacao":"L0861","personagem":"Chantre","interpretacao":"A portaria do convento é declarada palestra — lugar de combate e de exercício. O galanteio é enquadrado desde a primeira fala como desporto regrado.","verificacao":"verificada","linha":"861"},{"id":"R108","tipo_recurso":"antítese","citacao":"que sendo esta portaria aula de amorosos certames, se veja agora teatro de mercancias","localizacao":"L0861","personagem":"Chantre","interpretacao":"Contraste entre o passado cortês e o presente comercial da mesma grade. A palavra «teatro» acrescenta uma camada metateatral à sátira do freiratismo.","verificacao":"verificada","linha":"861"},{"id":"R109","tipo_recurso":"metáfora","citacao":"os frios corações de afectos perseverantes vinham buscar calor no moratório aos raios de tantos sóis que garnecem esta clausura","localizacao":"L0861","personagem":"Chantre","interpretacao":"As freiras são sóis e a clausura é braseiro. A metáfora petrarquista é aplicada com toda a seriedade a um espaço religioso, e é dessa impropriedade que nasce a sátira.","verificacao":"verificada","linha":"861"},{"id":"R110","tipo_recurso":"metáfora","citacao":"Se a enfirmidade de amor precisa de junta, aqui está um doutor","localizacao":"L0867","personagem":"Doutor","interpretacao":"O amor como doença que requer junta médica. A isotopia clínica atravessará todo o passo e permite ao Doutor tratar sentimentos como sintomas.","verificacao":"verificada","linha":"867"},{"id":"R111","tipo_recurso":"metáfora","citacao":"ainda não está enferma a nossa conrespondência","localizacao":"L0869","personagem":"Chantre","interpretacao":"O Chantre aceita a metáfora do outro e continua-a. A amizade é diagnosticada como se fosse corpo — sinal de que os dois falam a mesma língua paródica.","verificacao":"verificada","linha":"869"},{"id":"R112","tipo_recurso":"trocadilho","citacao":"Função rija? De que é, de pau do Brasil?","localizacao":"L0871","personagem":"Doutor","interpretacao":"O adjectivo «rija» é desviado do sentido de solene para o de dura, e daí para a madeira colonial. O equívoco obsceno funciona por deslize material.","verificacao":"verificada","linha":"871"},{"id":"R113","tipo_recurso":"trocadilho","citacao":"Por que mandaste vir algum romendão? Ora estimo pois também quero o meu romendo","localizacao":"L0875","personagem":"Doutor","interpretacao":"Jogo entre o músico remendão e o remendo. A resposta rebaixa o concerto anunciado a trabalho de costura.","verificacao":"verificada","linha":"875"},{"id":"R114","tipo_recurso":"sátira","citacao":"Tudo o que é asneira é despidido juízo, pois na loucura não se dá acto de descurso Ergo; é vossa mercê um pedaço d'asno","localizacao":"L0883","personagem":"Doutor","interpretacao":"Silogismo escolástico completo, com «Ergo» incluído, ao serviço de um insulto. É o núcleo intelectual do entremez: a lógica das escolas exibida como maquinaria vazia.","verificacao":"verificada","linha":"883"},{"id":"R115","tipo_recurso":"hipérbole","citacao":"Quem, por destino dos astros, vem comprir o fado desta portaria","localizacao":"L0889-L0890","personagem":"Chantre","interpretacao":"Resposta a uma porteira formulada em estilo de tragédia. O desajuste entre a grandeza do enunciado e a banalidade da situação é o método cómico do passo.","verificacao":"verificada","linha":"889"},{"id":"R116","tipo_recurso":"metáfora","citacao":"É forte lobisomi","localizacao":"L0892","personagem":"Doutor","interpretacao":"Aparte que classifica o companheiro como criatura nocturna. O Doutor comenta à parte tudo o que o Chantre diz a sério, mantendo o público do seu lado.","verificacao":"verificada","linha":"892"},{"id":"R117","tipo_recurso":"ironia","citacao":"Se a saúde tem notícia dela, pregoa/prego-a no mar","localizacao":"L0896","personagem":"Doutor","interpretacao":"A saúde da freira é dada por perdida numa fórmula de escárnio marítimo. A barra é do transcritor e assinala leitura dupla, não uma escolha do texto.","verificacao":"verificada","linha":"896"},{"id":"R118","tipo_recurso":"ironia","citacao":"estimarei que vossa senhoria conte dilatados anos só para vir a ser desengano das idades","localizacao":"L0900","personagem":"Doutor","interpretacao":"O voto de vida longa converte-se em insulto pela finalidade que lhe é dada. É a construção irónica mais fina do papel: a cortesia usada como veículo exacto da ofensa.","verificacao":"verificada","linha":"900"},{"id":"R119","tipo_recurso":"ironia","citacao":"Não, minha senhora, mas está já muito alquebrada","localizacao":"L0904","personagem":"Doutor","interpretacao":"A negação atenuante agrava o insulto anterior. O par pergunta/resposta mostra que a vítima entende, o que aumenta a crueldade cómica.","verificacao":"verificada","linha":"904"},{"id":"R120","tipo_recurso":"hipérbole","citacao":"Isso é uma traquinada de cacos que vinha da botica","localizacao":"L0922","personagem":"Galego","interpretacao":"O criado reporta a medicação como estrondo de louça. A deformação popular do vocabulário médico caracteriza-o socialmente e ridiculariza a farmacopeia.","verificacao":"verificada","linha":"922"},{"id":"R121","tipo_recurso":"ironia","citacao":"Ó galego, teu amo quer pôr agora loje de sabão!","localizacao":"L0924","personagem":"Doutor","interpretacao":"Do relato dos frascos deduz-se um negócio de sabão. O Doutor troça do criado e, por tabela, do amo que o emprega.","verificacao":"verificada","linha":"924"},{"id":"R122","tipo_recurso":"ironia","citacao":"Vai, que eu cá a irei temperando","localizacao":"L0932","personagem":"Doutor","interpretacao":"O verbo oscila entre acalmar e afinar, com evidente insinuação. O médico oferece-se para cuidar da prima na ausência do primo.","verificacao":"verificada","linha":"932"},{"id":"R123","tipo_recurso":"hipérbole","citacao":"quem ama, os minutos lhe parece itirnidade","localizacao":"L0952","personagem":"Freira","interpretacao":"Tópico petrarquista do tempo dilatado, dito com toda a seriedade dentro de uma cena cómica. A Freira é a única personagem do passo que não faz troça de ninguém.","verificacao":"verificada","linha":"952"},{"id":"R124","tipo_recurso":"sátira","citacao":"Ah, que a freira quer ter cachorrinho de fralda a toda a hora","localizacao":"L0954","personagem":"Doutor","interpretacao":"O primo é reduzido a animal de regaço. A imagem satiriza de um golpe o freiratismo, a ociosidade conventual e a masculinidade do Chantre.","verificacao":"verificada","linha":"954"},{"id":"R125","tipo_recurso":"sátira","citacao":"seriam poucos todos os gorgomilos para poblicar a glória que tenho de ver a vossa senhoria","localizacao":"L0958","personagem":"Doutor","interpretacao":"Paródia do estilo cultista levada ao limite do inteligível. O excesso de ornamento denuncia-se a si próprio, e o cumprimento não chega a significar nada.","verificacao":"verificada","linha":"958"},{"id":"R126","tipo_recurso":"comparação","citacao":"Seu primo parece-me um bonecro","localizacao":"L0962","personagem":"Doutor","interpretacao":"O Chantre é comparado a um boneco. A redução a objecto articulado prepara o soneto ridículo que ele próprio vai declamar.","verificacao":"verificada","linha":"962"},{"id":"R127","tipo_recurso":"enumeração","citacao":"Durmo pouco, ando sempre com mil pressas, visto às vezes as meias às avessas, não sei o que vou ler no bribiário","localizacao":"L0975-L0977","personagem":"Chantre","interpretacao":"Catálogo de sintomas amorosos rebaixado do sofrimento cortês para o desmazelo doméstico. A meia às avessas substitui as insónias de Petrarca.","verificacao":"verificada","linha":"975"},{"id":"R128","tipo_recurso":"sátira","citacao":"fui marrar outro dia com um almário","localizacao":"L0981-L0982","personagem":"Chantre","interpretacao":"O soneto amoroso termina com uma cabeçada num armário. O bathos final desmonta os treze versos anteriores e é a assinatura cómica do passo.","verificacao":"verificada","linha":"981"},{"id":"R129","tipo_recurso":"sátira","citacao":"Tenho um primo Joaquim que é um galante sujeito, comprei onte à tarde um leito para esta noute dormir","localizacao":"L0992-L0995","personagem":"Doutor","interpretacao":"Décima de disparates encadeados sem nexo, em resposta ao soneto do Chantre. A paródia opera pela ausência total de pertinência — a forma poética mantém-se, o sentido evapora-se.","verificacao":"verificada","linha":"992"},{"id":"R130","tipo_recurso":"hipérbole","citacao":"depois de vos ouvir, prima adorada, já não tem mais que ouvir o meu desejo","localizacao":"L1043-L1044","personagem":"Chantre","interpretacao":"Encerramento do encómio: ouvir a prima esgota o desejo de ouvir. A hipérbole é sincera dentro da ficção e ridícula fora dela.","verificacao":"verificada","linha":"1043"},{"id":"R131","tipo_recurso":"ironia","citacao":"que essa voz, pelo grosso e pelo fino, bem pode acompanhar qualquer defunto","localizacao":"L1050-L1051","personagem":"Doutor","interpretacao":"Primeiro verso do contra-encómio. O soneto do Doutor responde ao do Chantre verso a verso, formando um díptico louvor/vitupério que é a construção retórica mais elaborada do papel.","verificacao":"verificada","linha":"1050"},{"id":"R132","tipo_recurso":"comparação","citacao":"esse eco substimado parece de rapaz inda de escola quando vai a fazer o seu recado","localizacao":"L1057-L1059","personagem":"Doutor","interpretacao":"A voz da freira é comparada à de um moço de recados. A comparação retira-lhe simultaneamente idade, sexo e dignidade.","verificacao":"verificada","linha":"1057"},{"id":"R133","tipo_recurso":"ironia","citacao":"há de cantar os passos da charola","localizacao":"L1063","personagem":"Doutor","interpretacao":"O destino artístico prometido é o das procissões da Quaresma. A referência local dá ao insulto uma precisão que o público reconheceria de imediato.","verificacao":"verificada","linha":"1063"},{"id":"R134","tipo_recurso":"trocadilho","citacao":"Cacau tem ela, que lhe dá o Chantre","localizacao":"L1068","personagem":"Doutor","interpretacao":"Aparte obsceno construído sobre a mercadoria colonial que acaba de entrar em cena. É o ponto em que a sátira ao clero se torna mais crua.","verificacao":"verificada","linha":"1068"},{"id":"R135","tipo_recurso":"hipérbole","citacao":"Essa vozo é um trovão","localizacao":"L1079","personagem":"Preto (vendedor de cacau)","interpretacao":"O elogio hiperbólico do vendedor é sincero e, por isso mesmo, mais devastador do que a ironia do Doutor. A voz que todos criticaram é aqui fenómeno meteorológico.","verificacao":"verificada","linha":"1079"},{"id":"R136","tipo_recurso":"comparação","citacao":"pode ir a uma função com os pretinhos de Guiné","localizacao":"L1083-L1084","personagem":"Preto (vendedor de cacau)","interpretacao":"O louvor situa a freira numa festa negra de Lisboa. A comparação atravessa a fronteira social do convento e é, no papel, a única que o faz por elogio.","verificacao":"verificada","linha":"1083"},{"id":"R137","tipo_recurso":"metáfora","citacao":"Ai, que o sebo vai-se derretendo","localizacao":"L1090","personagem":"Doutor","interpretacao":"Aparte que traduz o enlevo geral em gordura a derreter. A metáfora corpórea desfaz o clima de galanteio no exacto momento em que ele culmina.","verificacao":"verificada","linha":"1090"},{"id":"R138","tipo_recurso":"comparação","citacao":"O senhor doutor parece que gritava àque del rei","localizacao":"L1110","personagem":"Preto (vendedor de cacau)","interpretacao":"O canto do médico é comparado ao grito de socorro. A comparação vinga, sem intenção aparente, todas as troças que o Doutor distribuiu.","verificacao":"verificada","linha":"1110"},{"id":"R139","tipo_recurso":"ironia","citacao":"Se ele curasse os doentes cantando, morriam todos","localizacao":"L1112","personagem":"Galego","interpretacao":"O criado remata o escárnio ao médico. É significativo que a sentença mais dura contra o Doutor venha do galego, a personagem de menor estatuto da cena.","verificacao":"verificada","linha":"1112"},{"id":"R140","tipo_recurso":"antítese","citacao":"quem não vive duvidoso não ama os finos desvelos","localizacao":"L1120-L1121","personagem":"Chantre","interpretacao":"Glosa do mote «Quem tem amores, tem zelos». A antítese entre dúvida e amor é doutrina cortês tratada com seriedade, num contexto que a esvazia.","verificacao":"verificada","linha":"1120"},{"id":"R141","tipo_recurso":"enumeração","citacao":"Casado tem mulher, quem bem paga tem dinheiro, vende vinho o taverneiro, quem tem fome quer comer","localizacao":"L1129-L1132","personagem":"Doutor","interpretacao":"Glosa feita inteira de truísmos. A forma poética cumpre-se com rigor enquanto o conteúdo se recusa: é paródia da glosa como exercício obrigatório de sociedade.","verificacao":"verificada","linha":"1129"},{"id":"R142","tipo_recurso":"ironia","citacao":"era preta dos outro laia, parenta dos Vasconcelos","localizacao":"L1155-L1156","personagem":"Preto (vendedor de cacau)","interpretacao":"Atribui-se à mulher negra parentesco com uma casa nobre portuguesa. O verso brinca com a genealogia e com os apelidos impostos pela escravatura — leitura que o texto abre e não desenvolve.","verificacao":"verificada","linha":"1155"},{"id":"R143","tipo_recurso":"sátira","citacao":"que o mesmo é ter freira que cobrar a cabeça","localizacao":"L1166","personagem":"Doutor","interpretacao":"Sentença final sobre o freiratismo, com jogo entre a cabeça que se cobra e a que se perde. Fecha o passo devolvendo-lhe o motivo da decapitação que o passo de Judite tratara a sério.","verificacao":"verificada","linha":"1166"},{"id":"R144","tipo_recurso":"trocadilho","citacao":"vá-se embora, que aqui não há frete","localizacao":"L1180","personagem":"Preto (vendedor de cacau)","interpretacao":"«Frete» é carreto e é proveito. A altercação final entre os dois criados estrangeirados faz-se toda sobre os ofícios a que cada um é socialmente atribuído.","verificacao":"verificada","linha":"1180"},{"id":"R145","tipo_recurso":"trocadilho","citacao":"vá-se embora que aqui não há que esfolar","localizacao":"L1182","personagem":"Galego","interpretacao":"Resposta simétrica, com o ofício de esfolar atribuído ao adversário. A peça acaba, significativamente, num conflito entre subalternos e não entre senhores.","verificacao":"verificada","linha":"1182"}],"personagens":[{"personagem":"Padre Eterno","funcao_dramatica":"Criador, legislador e juiz; estrutura todo o primeiro terço por preceito e sanção","simbologia":"A ordem como palavra eficaz: cada fala sua é seguida de uma mutação de cenário, de modo que a omnipotência se traduz materialmente em tramoia"},{"personagem":"Luzbel","funcao_dramatica":"Antagonista inaugural; abre a peça com o soneto da revolta","simbologia":"Soberba como erro de medida; a semelhança com Deus pretendida por usurpação, em espelho invertido da semelhança concedida a Adão"},{"personagem":"São Miguel","funcao_dramatica":"Executor da sentença divina, em soneto simétrico ao de Luzbel","simbologia":"A justiça como interrupção imediata e proporcional; a palavra que repõe a ordem que outra palavra tentara subverter"},{"personagem":"Adão","funcao_dramatica":"Criatura, transgressor e penitente; passa da prosa ao verso depois da queda","simbologia":"O homem como sujeito da culpa e da esperança; a sua penitência antecipa a Redenção que só Belém cumprirá"},{"personagem":"Eva","funcao_dramatica":"Interlocutora da Serpente e primeira transgressora; co-protagonista da lamentação","simbologia":"Recebe a maldição socialmente mais pesada do papel (dor, sujeição, domínio); a hierarquia doméstica setecentista dita como sentença divina"},{"personagem":"Serpente","funcao_dramatica":"Tentadora; opera por pergunta antes de negar","simbologia":"A palavra que engana pela forma; primeira de uma série de enganadores que continua no Diabo e se inverte na dissimulação virtuosa de Judite"},{"personagem":"Anjo","funcao_dramatica":"Mensageiro celeste; expulsa do Paraíso em oitava e anuncia o Natal em oitava","simbologia":"A mesma voz e a mesma estrofe fecham o arco que abriram: o desengano do mundo e a convocação a Belém são as duas pontas da peça"},{"personagem":"Coro","funcao_dramatica":"Voz colectiva sentenciosa; responde com uma palavra a cada pergunta de Adão e Eva","simbologia":"O destino como eco — aquilo que não se argumenta, apenas se repete"},{"personagem":"Abel","funcao_dramatica":"Vítima do fratricídio; modelo de obediência que não pergunta","simbologia":"A submissão devota como recusa de saber, contraposta ponto por ponto à curiosidade que perde Caim"},{"personagem":"Caim","funcao_dramatica":"Fratricida; repete em escala humana o gesto de Luzbel","simbologia":"O desespero que recusa até o amparo; única figura trágica a quem a peça retira a dignidade, entregando-a a um entremez"},{"personagem":"Diabo","funcao_dramatica":"Tentador cómico; primeira grande ruptura de registo do papel","simbologia":"O mal domesticado em mundanidade lisboeta — com chá, criadagem e visitas — e por isso mais perigoso do que o mal terrível"},{"personagem":"Noé","funcao_dramatica":"Obediente exemplar; o seu passo é o mais breve e menos dramatizado","simbologia":"A arca lida como clausura monástica: a salvação figurada como recolhimento regrado"},{"personagem":"Sem","funcao_dramatica":"Filho de Noé; função coral de agradecimento","simbologia":"A obediência filial como forma de piedade colectiva"},{"personagem":"Jafé","funcao_dramatica":"Filho de Noé; reparte com Sem o agradecimento","simbologia":"A gratidão repartida por vozes, que converte a salvação individual em rito de família"},{"personagem":"Olofernes","funcao_dramatica":"Tirano assírio; antagonista de escala política, o único do papel","simbologia":"O poder como excesso de linguagem: a sua ameaça é pura potência verbal, desmentida por uma mulher e um jantar"},{"personagem":"Judite","funcao_dramatica":"Protagonista do passo mais longo; agente único da reviravolta","simbologia":"Mulher forte que decapita o tirano; leitura tipológica tradicional como prefiguração de Maria, o que explica a sua presença num presépio"},{"personagem":"Sacerdote","funcao_dramatica":"Autoridade religiosa que legitima a acção de Judite e a devolve à liturgia","simbologia":"Converte iniciativa individual em causa colectiva; a fé como armadura que autoriza a violência"},{"personagem":"Mestre-Sala","funcao_dramatica":"Gracioso do passo de Olofernes; comenta e desmonta toda a acção séria","simbologia":"O criado que vê o senhor por dentro; é por ele que o sublime bíblico é continuamente rebaixado à rua de Lisboa"},{"personagem":"Velha","funcao_dramatica":"Criada de Judite; cúmplice no plano sério e adversária do Mestre-Sala no cómico","simbologia":"A velhice popular como língua solta e corpo desqualificado; produz o maior bathos do papel ao saudar Judite como Pentesileia e logo lhe pedir o avental"},{"personagem":"Volante","funcao_dramatica":"Arauto; leva o ultimato e traz a recusa","simbologia":"A brevidade da sua função sublinha que a guerra já estava decidida antes de ser anunciada"},{"personagem":"1.º Capitão","funcao_dramatica":"Coro militar; fala um soneto a dois com o companheiro","simbologia":"A obediência armada como forma métrica: o encaixe das réplicas é a imagem da disciplina"},{"personagem":"2.º Capitão","funcao_dramatica":"Coro militar; completa os quartetos e tercetos do companheiro","simbologia":"A intercambialidade das vozes como figura da tropa — nenhum dos dois tem traço próprio"},{"personagem":"Preto (criado de Olofernes)","funcao_dramatica":"Cozinheiro; nega sucessivamente ao Mestre-Sala tudo o que ele pede","simbologia":"A escassez vista de baixo e a hierarquia entre criados; fala na convenção teatral da língua de preto"},{"personagem":"Soldado","funcao_dramatica":"Descobre o corpo de Olofernes e desencadeia o desfecho","simbologia":"A autoridade militar reduzida a testemunha tardia do que já aconteceu"},{"personagem":"Alceto","funcao_dramatica":"Pastor; abre a adoração oferecendo os seus bens","simbologia":"A dádiva medida pela capacidade e não pelo valor; nome de tradição arcádica que o separa dos rústicos cómicos"},{"personagem":"Anfriso","funcao_dramatica":"Pastor; oferece a própria pobreza","simbologia":"O pobre que se apresenta como oferta — inversão da lógica do dom que sustenta a doutrina do presépio"},{"personagem":"Amador","funcao_dramatica":"Pastor; oferece o louvor contínuo","simbologia":"A totalidade temporal da devoção, resposta à totalidade material oferecida por Alceto"},{"personagem":"Florindo","funcao_dramatica":"Pastor; formula a doutrina no fecho da adoração","simbologia":"A síntese teológica posta na boca do último e mais humilde: o mal termina onde o bem nasce"},{"personagem":"Manuel Gonçalves","funcao_dramatica":"Pescador; solo cómico autónomo, provavelmente a parte de actor anunciada no passo de Noé","simbologia":"A Lisboa ribeirinha entra na peça pela boca de quem a trabalha; a sua queixa metateatral sobre a máquina da arca liga o entremez ao passo bíblico"},{"personagem":"Chantre","funcao_dramatica":"Clérigo enamorado da prima freira; protagonista e alvo principal da sátira do último passo","simbologia":"O freirático — o eclesiástico que faz da grade do convento salão de galanteio; fala em soneto quando quer ser levado a sério, o que o torna duplamente ridículo"},{"personagem":"Freira","funcao_dramatica":"Prima do Chantre; sustenta a cena, pede o canto, distribui as vezes","simbologia":"A clausura como espaço de sociabilidade mundana; não é censurada pelo texto — o riso recai sobre os homens que a cortejam"},{"personagem":"Doutor","funcao_dramatica":"Médico; comentador satírico universal e motor cómico do passo","simbologia":"O saber como impostura verbal: parodia o silogismo escolástico, o estilo cultista e a própria medicina"},{"personagem":"Galego","funcao_dramatica":"Criado do Chantre; traz três vezes a má notícia com urgência crescente","simbologia":"Tipo cómico fixo do teatro português: servil, de fala regionalizada e associado aos ofícios pesados"},{"personagem":"Rodeira","funcao_dramatica":"Irmã da roda; medeia o acesso à grade do convento","simbologia":"O guarda da clausura que na prática a franqueia; recebe do Doutor o insulto mais fino do papel"},{"personagem":"Preto (vendedor de cacau)","funcao_dramatica":"Vendedor ambulante; entra com a mercadoria colonial e fica para a glosa","simbologia":"A presença negra urbana em Lisboa, tratada pela convenção cómica mas com uma consciência explícita de condição que o texto abre e não apaga"}],"relacoes":[{"origem":"Luzbel","destino":"Padre Eterno","tipo_relacao":"antagónica","descricao":"Rivalidade com a própria divindade; a soberba formula-se como projecto de ocupar o lugar de Deus (L0039-L0041)"},{"origem":"Padre Eterno","destino":"São Miguel","tipo_relacao":"hierárquica","descricao":"Delegação implícita da justiça: Miguel sentencia sem que a ordem seja mostrada em cena"},{"origem":"São Miguel","destino":"Luzbel","tipo_relacao":"antagónica","descricao":"Executa a condenação em soneto simétrico ao da revolta (L0045-L0061)"},{"origem":"Padre Eterno","destino":"Adão","tipo_relacao":"hierárquica","descricao":"Criação, preceito e julgamento; a relação estrutura todo o passo do Paraíso (L0097, L0105, L0123)"},{"origem":"Padre Eterno","destino":"Eva","tipo_relacao":"hierárquica","descricao":"Interrogatório e sentença; a maldição de L0132 fixa a sua condição social e doméstica"},{"origem":"Padre Eterno","destino":"Serpente","tipo_relacao":"hierárquica","descricao":"Maldição que a rebaixa ao fundo da escala dos viventes (L0132)"},{"origem":"Adão","destino":"Eva","tipo_relacao":"familiar","descricao":"Vínculo conjugal que a queda transforma em acusação («A mesma mulher que me destes por companheira», L0129) e depois em solidariedade no pranto"},{"origem":"Eva","destino":"Adão","tipo_relacao":"familiar","descricao":"Oferece o fruto e partilha o lamento em uníssono (L0118, L0159-L0160)"},{"origem":"Serpente","destino":"Eva","tipo_relacao":"antagónica","descricao":"Tentação por pergunta e negação; único diálogo verdadeiramente persuasivo do primeiro terço (L0110-L0113)"},{"origem":"Anjo","destino":"Adão","tipo_relacao":"hierárquica","descricao":"Executa a expulsão em oitava e entrega o homem ao desengano do mundo (L0137-L0144)"},{"origem":"Anjo","destino":"Eva","tipo_relacao":"hierárquica","descricao":"A mesma sentença de expulsão, dirigida ao par"},{"origem":"Coro","destino":"Adão","tipo_relacao":"coral","descricao":"Responde com uma palavra a cada pergunta, convertendo o destino em eco (L0216-L0221)"},{"origem":"Coro","destino":"Eva","tipo_relacao":"coral","descricao":"A mesma função de resposta sentenciosa, repartida entre os dois lamentos"},{"origem":"Caim","destino":"Abel","tipo_relacao":"antagónica","descricao":"Fratricídio motivado por comparação de rebanhos; a inveja precede o golpe (L0233-L0239)"},{"origem":"Abel","destino":"Caim","tipo_relacao":"familiar","descricao":"Responde à hostilidade com submissão declarada, sem defesa (L0234, L0238)"},{"origem":"Padre Eterno","destino":"Caim","tipo_relacao":"hierárquica","descricao":"Interrogatório e condenação ao desamparo errante (L0244-L0248)"},{"origem":"Diabo","destino":"Caim","tipo_relacao":"cómica","descricao":"Aliciamento em registo mundano: oferece chá, criados e companhia infernal (L0250-L0264)"},{"origem":"Caim","destino":"Diabo","tipo_relacao":"antagónica","descricao":"Recusa reiterada da amizade oferecida, que o Diabo trata como descortesia (L0259-L0261)"},{"origem":"Padre Eterno","destino":"Noé","tipo_relacao":"hierárquica","descricao":"Preceito da arca e bênção final; a relação mais consensual do eixo divino (L0283-L0285, L0311)"},{"origem":"Noé","destino":"Sem","tipo_relacao":"familiar","descricao":"Pai que anuncia o retiro e conduz o agradecimento colectivo"},{"origem":"Noé","destino":"Jafé","tipo_relacao":"familiar","descricao":"A mesma relação, com repartição coral do louvor"},{"origem":"Sem","destino":"Noé","tipo_relacao":"devocional","descricao":"Adesão filial ao preceito, formulada como pedido de comiseração pelos fiéis (L0293)"},{"origem":"Jafé","destino":"Noé","tipo_relacao":"devocional","descricao":"Rende graças em nome do grupo antes e depois do dilúvio (L0294, L0306)"},{"origem":"Olofernes","destino":"1.º Capitão","tipo_relacao":"hierárquica","descricao":"Comando militar exercido por tirada retórica, não por ordem concreta (L0326-L0364)"},{"origem":"Olofernes","destino":"2.º Capitão","tipo_relacao":"hierárquica","descricao":"O mesmo comando, dirigido ao par indistinto dos capitães"},{"origem":"1.º Capitão","destino":"Olofernes","tipo_relacao":"servil","descricao":"Obediência formulada em soneto, como se a disciplina tivesse métrica (L0368-L0380)"},{"origem":"2.º Capitão","destino":"Olofernes","tipo_relacao":"servil","descricao":"Completa as réplicas do companheiro; nenhum dos dois se distingue do outro"},{"origem":"1.º Capitão","destino":"2.º Capitão","tipo_relacao":"aliança","descricao":"Falam um soneto a dois, alternando quartetos e tercetos"},{"origem":"Olofernes","destino":"Volante","tipo_relacao":"hierárquica","descricao":"Envia o ultimato a Betúlia, gesto de piedade calculada para não parecer desumano (L0384-L0392)"},{"origem":"Volante","destino":"Olofernes","tipo_relacao":"servil","descricao":"Repete literalmente a mensagem e traz a recusa (L0393-L0399)"},{"origem":"Olofernes","destino":"Mestre-Sala","tipo_relacao":"hierárquica","descricao":"Manda vir os manjares e os dançarinos; trata o criado como extensão da mesa (L0491-L0500)"},{"origem":"Mestre-Sala","destino":"Olofernes","tipo_relacao":"servil","descricao":"Serve e comenta; a fidelidade é real, o respeito é nulo (L0467-L0468, L0573)"},{"origem":"Olofernes","destino":"Judite","tipo_relacao":"amorosa","descricao":"Desejo como forma de guerra: oferece-lhe o exército e a destruição de Betúlia (L0564-L0606)"},{"origem":"Judite","destino":"Olofernes","tipo_relacao":"antagónica","descricao":"Dissimulação calculada que culmina na decapitação; anuncia o desfecho antes de o executar (L0443-L0455, L0688-L0694)"},{"origem":"Judite","destino":"Sacerdote","tipo_relacao":"devocional","descricao":"Pede orações para a empresa e submete a iniciativa individual à autoridade do templo (L0443-L0455)"},{"origem":"Sacerdote","destino":"Judite","tipo_relacao":"devocional","descricao":"Legitima a acção e mantém o clamor no templo durante a ausência dela (L0456-L0461)"},{"origem":"Judite","destino":"Velha","tipo_relacao":"hierárquica","descricao":"Relação de ama e criada; a Velha segue-a ao acampamento e recolhe a cabeça"},{"origem":"Velha","destino":"Judite","tipo_relacao":"servil","descricao":"Cumplicidade prática no tiranicídio, rebaixada pelo avental (L0695-L0696)"},{"origem":"Mestre-Sala","destino":"Velha","tipo_relacao":"cómica","descricao":"Galanteio grosseiro em latim de fantasia que degenera em injúria (L0619-L0654)"},{"origem":"Velha","destino":"Mestre-Sala","tipo_relacao":"antagónica","descricao":"Responde com ameaça física e reivindicação da autoridade da idade (L0632-L0650)"},{"origem":"Mestre-Sala","destino":"Preto (criado de Olofernes)","tipo_relacao":"hierárquica","descricao":"Manda na cozinha exactamente como Olofernes manda nele; a cadeia servil duplica a cadeia militar"},{"origem":"Preto (criado de Olofernes)","destino":"Mestre-Sala","tipo_relacao":"servil","descricao":"Nega sucessivamente cada pedido e acaba por o remeter à despensa do amo (L0661-L0674)"},{"origem":"Soldado","destino":"Mestre-Sala","tipo_relacao":"cómica","descricao":"Acorre ao alarme e recebe a notícia da decapitação em linguagem de insulto (L0704-L0708)"},{"origem":"Anjo","destino":"Alceto","tipo_relacao":"devocional","descricao":"Convocação a Belém dirigida aos pastores adormecidos (L0733-L0740)"},{"origem":"Anjo","destino":"Anfriso","tipo_relacao":"devocional","descricao":"A mesma convocação, recebida como prodígio pelo grupo"},{"origem":"Anjo","destino":"Amador","tipo_relacao":"devocional","descricao":"A mesma convocação; a dúvida sobre a sua natureza é resolvida por verificação"},{"origem":"Anjo","destino":"Florindo","tipo_relacao":"devocional","descricao":"A mesma convocação, que o pastor traduz em pressa de partir (L0758)"},{"origem":"Alceto","destino":"Anfriso","tipo_relacao":"aliança","descricao":"Companheirismo pastoril sem hierarquia; repartem entre si os modos de oferecer"},{"origem":"Amador","destino":"Florindo","tipo_relacao":"aliança","descricao":"Fecham a adoração em décimas sucessivas e no verso conjunto final (L0808)"},{"origem":"Chantre","destino":"Freira","tipo_relacao":"amorosa","descricao":"Galanteio de grade, com soneto, canto e queixa de ausência; paródia do amor cortês transposto para o convento"},{"origem":"Freira","destino":"Chantre","tipo_relacao":"amorosa","descricao":"Corresponde com o mesmo vocabulário cortês e com censura pelo desacato ao seu respeito (L0952, L1013)"},{"origem":"Chantre","destino":"Doutor","tipo_relacao":"aliança","descricao":"Amizade declarada que o Doutor retribui com troça permanente (L0869)"},{"origem":"Doutor","destino":"Chantre","tipo_relacao":"cómica","descricao":"Alvo principal do escárnio: chama-lhe asno por silogismo e boneco por comparação (L0883, L0962)"},{"origem":"Doutor","destino":"Freira","tipo_relacao":"cómica","descricao":"Galanteio irónico em estilo cultista e contra-encómio da voz em soneto (L0958, L1048-L1063)"},{"origem":"Freira","destino":"Doutor","tipo_relacao":"cómica","descricao":"Solicita-lhe o canto e o cumprimento, dando-lhe o palco de que ele se serve para a ridicularizar"},{"origem":"Doutor","destino":"Rodeira","tipo_relacao":"cómica","descricao":"Insulto cortês sobre a idade, formulado como voto de vida longa (L0900-L0904)"},{"origem":"Rodeira","destino":"Chantre","tipo_relacao":"servil","descricao":"Medeia o acesso à prima e informa do estado dela; guarda que franqueia a clausura (L0894)"},{"origem":"Galego","destino":"Chantre","tipo_relacao":"servil","descricao":"Traz três vezes o recado da ama enferma, com urgência crescente e sem ser atendido"},{"origem":"Chantre","destino":"Galego","tipo_relacao":"hierárquica","descricao":"Manda-o calar e afasta-o quando a notícia se torna comprometedora (L1009)"},{"origem":"Doutor","destino":"Galego","tipo_relacao":"cómica","descricao":"Usa o criado como matéria de piada sobre o amo (L0924)"},{"origem":"Preto (vendedor de cacau)","destino":"Freira","tipo_relacao":"comercial","descricao":"Oferece cacau à grade e fica para louvar o canto; a mercadoria colonial entra no convento (L1065-L1088)"},{"origem":"Galego","destino":"Preto (vendedor de cacau)","tipo_relacao":"antagónica","descricao":"Altercação final entre criados, feita sobre os ofícios atribuídos a cada tipo (L1178-L1186)"},{"origem":"Preto (vendedor de cacau)","destino":"Galego","tipo_relacao":"antagónica","descricao":"Réplica simétrica; a peça acaba em conflito entre subalternos e não entre senhores"}],"vernaculo":[{"expressao":"perceito","significado_epoca":"Preceito, mandamento. Metátese de /r/ sistemática nesta cópia, própria da fala vulgar e frequentemente registada como incorrecção por Bluteau","grau_certeza":"seguro","localizacao":"L0105; L0140; L0285","n_ocorrencias":"6"},{"expressao":"tromento","significado_epoca":"Tormento. Mesma metátese; forma corrente em textos populares e teatrais de setecentos","grau_certeza":"seguro","localizacao":"L0048; L0274","n_ocorrencias":"2"},{"expressao":"cubrantar","significado_epoca":"Quebrantar, transgredir. Usado sempre com preceito por complemento, no sentido jurídico de violar a norma","grau_certeza":"seguro","localizacao":"L0127; L0130","n_ocorrencias":"3"},{"expressao":"prigar","significado_epoca":"Perigar, correr risco de morte; e prigo por perigo. Vocalismo popular pré-tónico","grau_certeza":"seguro","localizacao":"L0113; L0304","n_ocorrencias":"3"},{"expressao":"molher","significado_epoca":"Mulher. Grafia corrente até ao século XIX; conservada por marcar o registo do copista","grau_certeza":"seguro","localizacao":"L0129; L0694","n_ocorrencias":"4"},{"expressao":"clausurar","significado_epoca":"Recolher em clausura, no sentido monástico e não no moderno de encerramento genérico. Aplicado à arca de Noé, transporta o episódio bíblico para o vocabulário conventual português","grau_certeza":"seguro","localizacao":"L0292","n_ocorrencias":"1"},{"expressao":"pensões","significado_epoca":"Encargos, tributos devidos — não rendimentos. A vida é dita como dívida a pagar, sentido divergente do actual","grau_certeza":"seguro","localizacao":"L0224","n_ocorrencias":"1"},{"expressao":"bexigas","significado_epoca":"Varíola. Designação corrente da doença, aqui em anedota sobre a melancolia inglesa","grau_certeza":"seguro","localizacao":"L0254","n_ocorrencias":"1"},{"expressao":"valete de chambri","significado_epoca":"Valet de chambre, criado de quarto. Galicismo cru que marca a moda cortesã da segunda metade de setecentos","grau_certeza":"seguro","localizacao":"L0264","n_ocorrencias":"1"},{"expressao":"Poltão","significado_epoca":"Plutão, deformação cómica do nome do deus infernal, tratado como conhecido de sociedade","grau_certeza":"seguro","localizacao":"L0262; L0263","n_ocorrencias":"2"},{"expressao":"topete alto à Zamperina","significado_epoca":"Penteado alto à moda de Anna Zamperini, cantora de ópera activa em Lisboa nos anos 1770. É o indício interno mais útil para a datação relativa do papel","grau_certeza":"provável","localizacao":"L0503-L0504","n_ocorrencias":"1"},{"expressao":"Cotovia","significado_epoca":"Bairro alto de Lisboa; a alusão às pedradas dos rapazes reduz o arrasamento de Betúlia a rixa de bairro","grau_certeza":"provável","localizacao":"L0570; L1086","n_ocorrencias":"2"},{"expressao":"sá","significado_epoca":"Forma invariável por é ou está, traço central da convenção teatral da língua de preto, estabilizada no teatro português desde Gil Vicente","grau_certeza":"seguro","localizacao":"L0663; L1159","n_ocorrencias":"3"},{"expressao":"malufo","significado_epoca":"Bebida fermentada; voz de origem africana, aplicada aqui ao vinho da despensa do general","grau_certeza":"provável","localizacao":"L0672; L0678","n_ocorrencias":"2"},{"expressao":"bangalé","significado_epoca":"Dança de negros praticada em Lisboa; termo do léxico festivo afro-lisboeta","grau_certeza":"provável","localizacao":"L1088","n_ocorrencias":"1"},{"expressao":"cristaleira","significado_epoca":"A que aplica clisteres. Injúria que reduz o corpo feminino envelhecido a função escatológica","grau_certeza":"seguro","localizacao":"L0654","n_ocorrencias":"1"},{"expressao":"Pantalisea","significado_epoca":"Pentesileia, rainha das Amazonas. Comparação erudita na boca da criada, imediatamente desfeita pelo avental que se lhe segue","grau_certeza":"seguro","localizacao":"L0695","n_ocorrencias":"1"},{"expressao":"alguidar","significado_epoca":"Vasilha larga de barro para amassar ou lavar; medida hiperbólica da fome do criado","grau_certeza":"seguro","localizacao":"L0659","n_ocorrencias":"1"},{"expressao":"caganita","significado_epoca":"Excremento miúdo de gado miúdo; insulto de rua aplicado a Judite pelo Mestre-Sala","grau_certeza":"seguro","localizacao":"L0707-L0708","n_ocorrencias":"1"},{"expressao":"famelga","significado_epoca":"Moça, rapariga, no calão marítimo de Lisboa. Registo baixo e afectuoso","grau_certeza":"provável","localizacao":"L0825; L0841","n_ocorrencias":"2"},{"expressao":"galério","significado_epoca":"Chapéu de abas largas; peça do trajo popular masculino, aqui integrada na alegoria náutica do vestir","grau_certeza":"provável","localizacao":"L0841","n_ocorrencias":"2"},{"expressao":"alzibeira","significado_epoca":"Algibeira, bolso. Metátese característica da fala popular lisboeta","grau_certeza":"seguro","localizacao":"L0841","n_ocorrencias":"1"},{"expressao":"embornais","significado_epoca":"Aberturas por onde a água escoa do convés; transferidas por metáfora para os buracos dos sapatos","grau_certeza":"seguro","localizacao":"L0841","n_ocorrencias":"1"},{"expressao":"balravento","significado_epoca":"Barlavento, o lado de onde sopra o vento. Termo náutico aplicado ao modo de cingir a capa","grau_certeza":"seguro","localizacao":"L0841","n_ocorrencias":"1"},{"expressao":"ensárcias","significado_epoca":"Enxárcias, o cordame que sustenta os mastros; aqui, parte do arranjo do trajo","grau_certeza":"seguro","localizacao":"L0841","n_ocorrencias":"1"},{"expressao":"trismalho","significado_epoca":"Trasmalho, rede de três malhas; trocadilho com tresmalhar-se, perder-se","grau_certeza":"seguro","localizacao":"L0839","n_ocorrencias":"1"},{"expressao":"lanço","significado_epoca":"Lance da rede e, simultaneamente, lance de leilão. O afecto é dito como transacção em que o falante não se deixa cobrir","grau_certeza":"seguro","localizacao":"L0833","n_ocorrencias":"1"},{"expressao":"despigo","significado_epoca":"Despojo ou refugo do pescado, em jogo com despicar-se, vingar-se. Paronomásia técnico-afectiva","grau_certeza":"provável","localizacao":"L0821-L0822","n_ocorrencias":"2"},{"expressao":"arraias, safios e caxuxos","significado_epoca":"Espécies da pesca da costa portuguesa — raia, congro e caxuxo. Inventário que serve de prova de amor","grau_certeza":"seguro","localizacao":"L0818","n_ocorrencias":"1"},{"expressao":"mal cozinhado","significado_epoca":"Casas de comida barata da Ribeira de Lisboa, junto ao Terreiro do Paço","grau_certeza":"seguro","localizacao":"L0841","n_ocorrencias":"1"},{"expressao":"praia d'Alfamia","significado_epoca":"Alfama, bairro ribeirinho dos pescadores; praia designa aqui a frente de rio, não areal balnear","grau_certeza":"seguro","localizacao":"L0818","n_ocorrencias":"1"},{"expressao":"Penha","significado_epoca":"Penha de França, romaria suburbana de Lisboa e destino corrente de merenda em dia de folga","grau_certeza":"provável","localizacao":"L0818","n_ocorrencias":"1"},{"expressao":"chafurdando","significado_epoca":"Andar na lama, trabalhar sujo. Usado a propósito da máquina cénica do dilúvio, em queixa metateatral","grau_certeza":"seguro","localizacao":"L0818","n_ocorrencias":"1"},{"expressao":"adufe","significado_epoca":"Pandeiro quadrado de origem mourisca, instrumento próprio das folias natalícias peninsulares","grau_certeza":"seguro","localizacao":"L0816","n_ocorrencias":"1"},{"expressao":"cachopa","significado_epoca":"Rapariga, moça. Regionalismo do Norte e das Beiras, adequado ao tipo cómico do galego","grau_certeza":"seguro","localizacao":"L1141","n_ocorrencias":"1"},{"expressao":"esfolar","significado_epoca":"Esfolar reses; ofício pesado atribuído por convenção cómica ao galego, como o carreto","grau_certeza":"provável","localizacao":"L1182","n_ocorrencias":"1"},{"expressao":"frete","significado_epoca":"Carreto, transporte pago; e, por extensão de calão, serviço ou proveito. Ambos os sentidos activos na altercação final","grau_certeza":"provável","localizacao":"L1148; L1180","n_ocorrencias":"2"},{"expressao":"àque del rei","significado_epoca":"Acuda-me el-rei — grito de socorro em via pública, fórmula fixa de apelo à justiça régia","grau_certeza":"seguro","localizacao":"L1110; L1186","n_ocorrencias":"3"},{"expressao":"pau do Brasil","significado_epoca":"Madeira dura de tinturaria vinda da colónia; serve de equívoco obsceno a partir do adjectivo rija","grau_certeza":"seguro","localizacao":"L0871","n_ocorrencias":"1"},{"expressao":"romendão","significado_epoca":"Remendão: músico ou artífice de má qualidade, em jogo com remendo de costura","grau_certeza":"provável","localizacao":"L0875","n_ocorrencias":"2"},{"expressao":"charola","significado_epoca":"Andor de procissão; cantar os passos da charola é actuar nas procissões da Quaresma","grau_certeza":"provável","localizacao":"L1063","n_ocorrencias":"1"},{"expressao":"goloseis","significado_epoca":"Glosar, desenvolver um mote em verso. Forma popular do termo técnico da poesia de sociedade","grau_certeza":"provável","localizacao":"L1114","n_ocorrencias":"1"},{"expressao":"bribiário","significado_epoca":"Breviário, livro das horas canónicas. Deformação que caracteriza a distracção amorosa do clérigo","grau_certeza":"seguro","localizacao":"L0977","n_ocorrencias":"1"},{"expressao":"almário","significado_epoca":"Armário. Metátese popular, usada aqui para o bathos final do soneto","grau_certeza":"seguro","localizacao":"L0982","n_ocorrencias":"1"},{"expressao":"gorgomilos","significado_epoca":"Goelas, gargantas. Termo baixo inserido em período de estilo cultista, para denunciar a impostura do ornamento","grau_certeza":"seguro","localizacao":"L0958","n_ocorrencias":"1"}],"frequencias":[{"tipo_recurso":"metáfora","n_ocorrencias":"31"},{"tipo_recurso":"ironia","n_ocorrencias":"19"},{"tipo_recurso":"hipérbole","n_ocorrencias":"18"},{"tipo_recurso":"antítese","n_ocorrencias":"12"},{"tipo_recurso":"comparação","n_ocorrencias":"11"},{"tipo_recurso":"trocadilho","n_ocorrencias":"11"},{"tipo_recurso":"anáfora","n_ocorrencias":"9"},{"tipo_recurso":"apóstrofe","n_ocorrencias":"8"},{"tipo_recurso":"personificação","n_ocorrencias":"6"},{"tipo_recurso":"sátira","n_ocorrencias":"6"},{"tipo_recurso":"enumeração","n_ocorrencias":"5"},{"tipo_recurso":"anacronismo","n_ocorrencias":"4"},{"tipo_recurso":"alegoria","n_ocorrencias":"2"},{"tipo_recurso":"eufemismo","n_ocorrencias":"2"},{"tipo_recurso":"provérbio","n_ocorrencias":"1"}],"validacao":{"valido":true,"erros":[],"avisos":["Rubricas de fala presentes na transcrição mas ausentes de `personagens.csv`: Ambos, Jodid, Judid, Os dois, Todos. Podem ser variantes de grafia ou omissões da análise."],"notas":["`frequencias_recursos.csv` foi recalculada a partir de `recursos_expressivos.csv` (anáfora: declarado 10, real 9; hipérbole: declarado 17, real 18; antítese: declarado 15, real 12; ironia: declarado 20, real 19; enumeração: declarado 6, real 5; trocadilho: declarado 12, real 11; sátira: declarado 8, real 6)."],"metricas":{"citacoes_testadas":145,"citacoes_verificadas":145,"citacoes_deslocadas":0,"citacoes_nao_encontradas":0,"citacoes_sem_localizacao":0,"citacoes_verificadas_pct":100.0,"n_recursos":145,"n_tipos_recurso":15,"n_personagens":35,"n_relacoes":63,"n_vernaculo":45,"n_tipos_relacao":10,"n_linhas_peca":1188,"densidade_recursos_por_100_linhas":12.21}},"analise":{"personagens":"## Nota preliminar: o que é este papel\n\nAs linhas L0001–L0018 não pertencem à representação. São dois requerimentos do\nempresário Henrique da Costa Passos, «Empresário do Teatro da Calçada da Graça»\n(L0003), e o despacho que lhes responde: «Concedemos licença para o dia de hoje\nsomente, sendo o papel que se há de representar o mesmo que já em outro tempo\nteve as licenças necessárias. / Para os mais dias requeira à Real Mesa Censória.\n/ Lisboa, 27 de Janeiro de 1779» (L0009–L0011). Este paratexto é decisivo para\nler o que se segue, e por três razões.\n\nPrimeira: fixa a datação da *representação* — Janeiro de 1779, véspera do\nEntrudo (L0003) — mas não a da *composição*. O suplicante alega expressamente\nque «este é o mesmo papel que com licença do Santo Ofício se costumou sempre\nrepresentar publicamente nos teatros de Lisboa» (L0003) e que «se acha com\naprovações anigas do Santo Ofício» (L0016). O texto é, por confissão do próprio\nempresário, repertório antigo em reposição. *Grau: seguro.*\n\nSegunda: explica a forma da peça. Um papel de repertório que se repõe todos os\nanos acumula passos, e é exactamente isso que se observa: não há intriga única,\nhá uma sequência de núcleos autónomos, cada um com o seu elenco, o seu metro e o\nseu registo. Alguns são anunciados como tal — «Passo de Manuel Gonçalves»\n(L0289), «Passo de Olefernes» (L0315), «Passo dos Pastores» (L0723), «Passo da\nFreira» (L0848). *Grau: seguro.*\n\nTerceira: documenta a fricção censória. A representação foi embargada «pela\nfalta de licença» (L0003) e foi preciso mandar «examinar aquela obra pelo prior\nde S. Tomé» (L0016). Ora, a peça contém uma sátira de convento (Passo da\nFreira), figuras diabólicas cómicas e um monólogo de calão marítimo — matéria\nque justifica a cautela. A leitura do conjunto ganha em ser feita à luz desta\nnegociação com o Santo Ofício. *Grau: provável.*\n\n## Elenco por passo\n\n### I. Vista de Glória (L0023–L0061)\n\n**Luzbel** — Antagonista inaugural; abre a peça. Função dramática: instaurar o\nconflito cosmológico que todos os passos seguintes reencenam. Carga simbólica:\nsoberba como erro de medida, formulada em linguagem de hierarquia e de trono —\n«ao sólio subirei no mesmo instante / ocupando da glória o sacro assento / para\nem tudo ficar seu similante» (L0039–L0041). A ambição é dita como *semelhança*\nusurpada, o que a põe em espelho invertido com a criação do homem «à nossa\nimagem e semelhança» (L0092): o que em Adão é dom, em Luzbel é roubo. *Grau da\nleitura do espelho: provável.*\n\n**São Miguel** — Executor da sentença divina. Fala em soneto simétrico ao de\nLuzbel, o que faz do passo um díptico formal. Carga simbólica: a justiça como\nresposta imediata e proporcional; nota-se que sentencia sem consultar — «desde\njá te sepulta no tromento» (L0048). A palavra de Miguel repõe a ordem que a\npalavra de Luzbel tentou subverter. *Grau: seguro.*\n\n### II. Criação, Queda e Fratricídio (L0063–L0278)\n\n**Padre Eterno** — A personagem estruturante do primeiro terço. Função dramática\ntripla: criador (fala performativa, «Desterrem-se as trevas», L0065), legislador\n(«desta não comerás», L0105) e juiz («Adão, adão , aonde te escondes», L0123).\nCarga simbólica: a ordem enquanto palavra eficaz — cada fala sua é seguida de\numa didascália de máquina («Aparece o Sol», L0067; «Aparecem as árvores»,\nL0083), de modo que a omnipotência se traduz materialmente em tramoia. É a\npersonagem que menos dialoga e mais determina. *Grau: seguro.*\n\n**Adão** — Criatura, transgressor e penitente. Percorre os três estados numa\nprogressão métrica visível: fala em prosa enquanto está no Paraíso, e passa a\nverso — décimas e redondilhas — depois da queda (L0148 em diante). O verso\nentra com a dor. Carga simbólica: o homem como sujeito da culpa e da esperança;\na sua penitência antecipa a Redenção que a peça só cumprirá em Belém. *Grau da\ncorrelação prosa/verso: provável.*\n\n**Eva** — Interlocutora da Serpente e primeira transgressora. Carga simbólica\ndupla e desigual: recebe a maldição mais concreta e socialmente mais pesada de\ntoda a peça — «naçarás filho algum sem empulsos de dores, será sojeita aos\nperceitos do homem, e debaixo do seu domínio vivirás» (L0132) — enquanto Adão\nrecebe a do trabalho. A hierarquia doméstica setecentista é aqui declarada como\nsentença divina. Note-se, porém, que na lamentação Eva fala em pé de igualdade\ncom Adão e que é dela a pergunta que abre o coro tríplice (L0214). *Grau: seguro.*\n\n**Serpente** — Função dramática: tentadora e sofista. Carga simbólica: a palavra\nque engana pela forma da pergunta — começa por inquirir («Qual é destas árvores\nque Deus te pôs de perceito», L0110) antes de negar. É o primeiro dos vários\nenganadores da peça, série que continua no Diabo cómico e culmina, invertida, na\ndissimulação virtuosa de Judite. *Grau: provável.*\n\n**Anjo** — Rubrica que cobre duas entidades distintas: o anjo da expulsão\n(L0136–L0144) e o anjo anunciador dos pastores (L0725, L0731). Trato-as como uma\nsó entrada por a transcrição não as distinguir, mas simbolicamente são inversas:\no primeiro expulsa em oitava («vai que o mundo te dará o desengano», L0144), o\nsegundo convoca em oitava («ide logo a Belém a ver nascido», L0735). A peça\nfecha, com a mesma voz e a mesma estrofe, o arco que abriu. *Grau: provável.*\n\n**Coro** — Voz colectiva sentenciosa. Intervém uma única vez, com três palavras\nisoladas — «Morrer.» (L0216), «Sentir.» (L0219), «Chorar.» (L0221) — que Adão e\nEva recolhem no dístico final: «poi são as pensões da vida: / morrer, sentir e\nchorar» (L0224–L0225). Carga simbólica: o destino como eco, isto é, como algo\nque não se argumenta, apenas se repete. *Grau: seguro.*\n\n**Abel** — Vítima e modelo de submissão devota: «Em mim nunca dominou vaidade,\nsou escravo do senhor, e mais não sei» (L0238). Carga simbólica: a obediência\nque não pergunta, explicitamente contraposta à curiosidade de Caim. *Grau: seguro.*\n\n**Caim** — Fratricida. Função dramática: repetir em escala humana o gesto de\nLuzbel — a comparação invejosa («acaso julgas-te mais saprior qu'eu?», L0237)\né a mesma pretensão de igualdade. Carga simbólica: o desespero que recusa até o\namparo, e que por isso se torna presa cómica do Diabo. É a única personagem\ntrágica a quem a peça retira a dignidade, entregando-a a um entremez. *Grau: provável.*\n\n**Diabo** — A primeira grande ruptura de registo da peça, e a mais reveladora.\nFala em prosa cómica e moderna a uma personagem que acaba de falar em prosa\nbíblica. Oferece a Caim «uma sala onde tome chá com o meu amigo Poltão» (L0262)\ne apresenta um criado «que o tomei por valete de chambri» (L0264): o Inferno é\ndesenhado como casa nobre lisboeta de setecentos, com criadagem, chá e visitas.\nCarga simbólica: o mal domesticado em mundanidade — mais perigoso por ser\nconvidativo. *Grau: seguro.*\n\n### III. Perceito de Noé (L0280–L0311)\n\n**Noé** — Obediente exemplar; o seu passo é o mais breve e o menos dramatizado\n(o dilúvio ocorre entre duas falas, na elipse de L0296–L0298). Carga simbólica:\na arca como clausura — «samos mandados clausurar em uma arca» (L0292) — o que\ntransporta o episódio para o vocabulário conventual português. *Grau: seguro.*\n\n**Sem** e **Jafé** — Filhos; função coral, distribuindo o agradecimento por\nvozes. Cam está ausente, o que é significativo mas pode ser lacuna da cópia.\n*Grau da ausência intencional: hipotético.*\n\n### IV. Passo de Olofernes (L0315–L0721)\n\nO passo mais longo e mais elaborado, com lista de personagens explícita\n(L0317–L0324) e alternância rigorosa entre o registo heróico em verso e o\nregisto cómico em prosa.\n\n**Olofernes** — Tirano. Função dramática: antagonista de escala política, o\núnico da peça. Carga simbólica: o poder como excesso de linguagem — a sua\nprimeira fala é uma tirada de vinte e tal versos, e a sua ameaça termina numa\ntríade («tudo em pó, tudo em cinza e tudo em fogo», L0435) que é pura potência\nverbal. O que o derruba não é um exército: é uma mulher e um jantar. *Grau: seguro.*\n\n**Judite** (rubricas *Judis*, L0319; *Judid*, L0443; *Jodid*, L0512) —\nProtagonista. Função dramática: agente único da reviravolta. Carga simbólica\ndensa e tipológica: mulher forte que decapita o tirano, figura tradicionalmente\nlida como prefiguração de Maria esmagando a serpente — o que explica a sua\npresença num presépio. A peça sublinha-o ao pôr-lhe na boca a inversão de género\nno momento do golpe: «não blazones de atrevido quando / uma molher te osurpa os\nassentos» (L0693–L0694). *Grau da leitura tipológica: provável.*\n\n**Sacerdote** — Autoridade religiosa que legitima a acção de Judite e a devolve\nà liturgia («não cessem os clamores no templo», L0459–L0461). Função dramática:\nconverter iniciativa individual em causa colectiva. *Grau: seguro.*\n\n**Mestre-Sala** — O *gracioso* do passo e uma das personagens mais interessantes\ndo papel. Função dramática: comentador cómico que acompanha toda a acção séria e\na desmonta por baixo. Carga simbólica: o criado que vê o que o senhor não vê;\nsabe que o amo é avaro («já meu amo tira hoje a ferruge ao seu dinheiro»,\nL0467–L0468), reduz a ameaça de arrasar Betúlia a uma piada de bairro («E que\nfunção terão os rapazes na Cotovia com tanta pedra?», L0569–L0570) e reduz a\ndecapitação a um insulto («aquela caganita que lhe levou a cabeça», L0707–L0708).\nÉ por ele que o sublime bíblico é continuamente rebaixado a Lisboa. *Grau: seguro.*\n\n**1.º Capitão** e **2.º Capitão** — Função dramática: coro militar; falam um\nsoneto a dois, em alternância de quartetos e tercetos (L0368–L0380). Carga\nsimbólica: a obediência armada como forma métrica — o encaixe perfeito das\nréplicas é a própria imagem da disciplina. *Grau: provável.*\n\n**Volante** — Arauto. Existe para uma só função: levar o ultimato e trazer a\nrecusa (L0393–L0399). Sublinha, pela brevidade, que a guerra já estava decidida.\n*Grau: seguro.*\n\n**Velha** — Criada de Judite e figura cómica de segunda linha. Duas funções: no\nplano sério, cúmplice silenciosa que recolhe a cabeça no avental (L0695–L0696);\nno plano cómico, adversária do Mestre-Sala numa cena de insultos (L0619–L0651).\nCarga simbólica: a velhice popular como língua solta e corpo desqualificado —\nrecebe do Mestre-Sala a injúria «negra cristaleira do inferno» (L0654) e\nresponde com ameaça física. É também a personagem que produz o maior *bathos* da\npeça, ao saudar Judite como «valerosa Pantalisea» (L0695) e logo lhe mandar pôr\na cabeça no avental. *Grau: seguro.*\n\n**Preto (criado de Olofernes)** — Cozinheiro. Fala na convenção teatral da\n«língua de preto» («Inda não sá alinhavado», L0663). Função dramática: negar\nsucessivamente ao Mestre-Sala tudo o que ele pede, numa gradação cómica que\ntermina no vinho do amo. Carga simbólica: a escassez vista de baixo, e a\nhierarquia entre criados — o Mestre-Sala manda no Preto exactamente como\nOlofernes manda no Mestre-Sala. *Grau: provável.*\n\n**Soldado** — Descobre o corpo; função de desencadear o desfecho.\n\n### V. Passo dos Pastores (L0723–L0808)\n\n**Anjo** (ver acima), **Alceto**, **Anfriso** (também *Amfriso*, L0753),\n**Amador**, **Florindo** — Os quatro pastores têm nomes de tradição arcádica, não\npopular, o que os separa nitidamente dos rústicos cómicos da peça: não fazem rir.\nFunção dramática: executar a adoração em décimas, uma por pastor\n(L0765–L0804). Carga simbólica repartida com clareza — Alceto oferece bens\n(«Quanto posso e quanto tenho / desde já fica ofrecido», L0771–L0772), Anfriso\noferece a pobreza («chega este pobre pastor», L0778), Amador oferece o louvor\n(L0789–L0790), Florindo formula a doutrina («para ter fim todo o mal, / é\nnascido o nosso bem», L0797–L0798). É o único passo em que ninguém é ridículo.\n*Grau: seguro.*\n\n### VI. Passo de Manuel Gonçalves (L0289, L0814–L0842)\n\n**Manuel Gonçalves** — Caso especial. O nome aparece três vezes: como anúncio de\npasso dentro da sequência de Noé (L0289), como nota do transcritor («PARTE DE\nMel. GONÇALVES??», L0297) e como assinatura depois do «Fim» dos Pastores\n(L0814). O monólogo de L0818–L0842 é, quase de certeza, essa «parte»: um solo\ncómico de pescador lisboeta. A prova interna é metateatral e está no próprio\ntexto — o falante queixa-se de que os outros folgam «e que eu ande chafurdando\nna obra da arca» (L0818), isto é, do trabalho que lhe dá a máquina do dilúvio.\nFunção dramática: entremez de actor, autónomo da intriga. Carga simbólica: a\nLisboa ribeirinha entra na peça pela boca de quem a trabalha. *Grau: provável.*\n\n### VII. Passo da Freira (L0848–L1188)\n\n**Chantre** — Clérigo enamorado da prima freira. Função dramática: protagonista\ndo entremez e alvo principal da sátira. Carga simbólica: o *freirático*, figura\nsocial bem documentada na Lisboa setecentista — o eclesiástico que faz da grade\ndo convento salão de galanteio. Fala em soneto quando quer ser levado a sério\n(L0974–L0984, L1031–L1044), o que o torna duplamente ridículo. *Grau: seguro.*\n\n**Freira** — Prima e objecto do galanteio. Função dramática: sustenta a cena,\npede o canto, distribui as vezes. Carga simbólica: a clausura como espaço de\nsociabilidade mundana — canta, recebe visitas, compra chocolate. Não é\ncensurada pelo texto; o riso recai sobre os homens que a cortejam. *Grau: provável.*\n\n**Doutor** (Estevão, L0865) — Médico e verdadeiro motor cómico do passo. Função:\ncomentador satírico universal — troça do Chantre, da Rodeira, da voz da Freira\ne da própria medicina. Carga simbólica: o saber como impostura verbal. A sua\nparódia de silogismo escolástico é o núcleo intelectual da sátira: «Tudo o que é\nasneira é despidido juízo, pois na loucura não se dá acto de descurso Ergo; é\nvossa mercê um pedaço d'asno» (L0883). *Grau: seguro.*\n\n**Rodeira** — A irmã da roda, porteira do convento. Função dramática: mediar o\nacesso. Carga simbólica: o guarda da clausura que na prática a franqueia.\nRecebe do Doutor o insulto mais fino da peça (L0900). *Grau: seguro.*\n\n**Galego** — Criado do Chantre. Função dramática: portador de más notícias, que\nrepete três vezes com urgência crescente (L0908, L0934, L0999). Carga simbólica:\no galego como tipo cómico fixo do teatro português — servil, de fala\nregionalizada («Sim, benha deprissa», L0918), associado aos ofícios pesados\n(«aqui não há que esfolar», L1182). *Grau: seguro.*\n\n**Preto (vendedor de cacau)** — Vendedor ambulante. Função: entrar com a\nmercadoria colonial e ficar para a glosa. Carga simbólica: a presença negra\nurbana em Lisboa, tratada pela convenção cómica da língua e do canto, mas com\numa consciência explícita de condição — «todo o preto sá cativo» (L1159), verso\nque, no contexto de uma glosa amorosa, produz um sentido duplo que o texto não\ndesenvolve mas também não apaga. *Grau da leitura do duplo sentido: provável.*\n\n## Mapa de relações\n\n**Eixo vertical (hierárquico-divino).** Padre Eterno → São Miguel → Luzbel;\nPadre Eterno → Adão/Eva/Serpente/Caim/Noé. É a relação dominante do primeiro\nterço e funciona sempre por *preceito e sanção*, nunca por diálogo: as\npersonagens divinas ordenam e julgam, não negoceiam. A única fala em que Deus\nhesita — «Quasi me arrependo de o haver formado» (L0285) — é imediatamente\nresolvida em decisão.\n\n**Eixo fraterno e conjugal.** Adão ↔ Eva, Abel ↔ Caim, Noé → Sem/Jafé. A peça\nopõe metodicamente dois modelos de par: o que se solidariza na culpa (Adão e Eva\nlamentam-se em uníssono, L0159–L0160) e o que se destrói pela comparação (Caim\nmata precisamente porque compara rebanhos, L0233).\n\n**Eixo tirânico.** Olofernes → Capitães, Volante, Mestre-Sala: pura verticalidade\nmilitar, com respostas de obediência formular («Já prontos obedecemos», L0576).\nA relação Olofernes → Judite começa como galanteio de poder («todo este exército\nestá ao teu mando», L0584–L0585) e é justamente esse desarmamento que a mata.\n\n**Eixo servil e cómico.** É o mais denso da peça e o que produz quase todo o\nriso: Mestre-Sala ↔ Velha, Mestre-Sala → Preto, Galego → Chantre, Preto ↔ Galego.\nEstrutura-se por cadeias: cada criado tem abaixo de si outro criado. O Mestre-Sala\nserve Olofernes e manda no Preto; o Galego serve o Chantre e ameaça o Preto. A\npeça reproduz assim, no plano cómico, a mesma verticalidade que o plano sério\nrepresenta como ordem divina — e é aí, na duplicação, que se torna crítica.\n*Grau: provável.*\n\n**Eixo devocional.** Anjo → pastores; Sacerdote ↔ Judite. Relações de convocação\ne de confirmação, sem conflito. São as únicas relações horizontais e\nconsensuais do papel.\n\n**Eixo amoroso.** Chantre ↔ Freira (paródia do amor cortês transposto para a\ngrade); Olofernes → Judite (desejo como forma de guerra). Os dois são o mesmo\nesquema com sinal trocado: no primeiro o galanteio é ridículo e inofensivo, no\nsegundo é letal — para quem o exerce.","vernaculo_recursos":"## Vernáculo, regionalismos e arcaísmos\n\nA camada lexical do papel divide-se com nitidez entre os passos bíblicos, cujo\nvernáculo é sobretudo *gráfico e fonético* (metáteses e vocalismos populares\nfixados pelo copista), e os passos cómicos, cujo vernáculo é *lexical e social*\n(calão marítimo, língua de preto, fala galega, referências topográficas\nlisboetas). A distribuição é ela própria um dado: a peça marca linguisticamente\na fronteira entre o sagrado e o riso.\n\n### 1. Variação gráfica e fonética (passos bíblicos)\n\nNão são erros isolados, são um sistema. Predomina a **metátese** de /r/:\n*perceito* por preceito (L0105, L0140, L0285), *tromento* por tormento (L0048,\nL0274), *prigo/prigar* por perigo/perigar (L0113, L0304), *cubrantar/cobrantar*\npor quebrantar (L0127, L0130), *fromará* por formará (L0053), *porpoção* por\nproporção (L0359, L1037). Junta-se-lhe o vocalismo popular — *molher* (L0129,\nL0694), *devina* (L0303, L0717), *emensos* (L0276, L0721), *naçarás* (L0132) — e\nformas latinizantes de época como *idifício* (L0356, L0766) e *thuribulo*.\nBluteau regista já muitas destas variantes como próprias da «gente vulgar».\n*Grau: seguro.* Não normalizei nenhuma delas nas citações.\n\n### 2. Calão marítimo de Lisboa (monólogo de Manuel Gonçalves)\n\nA passagem mais rica do papel do ponto de vista lexicográfico. Reúne, num só\nperíodo, nomes de pescado — «20 arraias, 18 safios, 30 eroses , 60 caxuxos, e de\nsardinhas 500» (L0818) —, artes de pesca — *lanço* (L0833), *trismalho*\n(L0839), *redes* (L0818) —, e todo o vocabulário de bordo aplicado por metáfora\nao vestuário e ao corpo: *balravento*, *embornais*, *gajeiro*, *ensárcias*,\n*galério*, *alzibeira* (L0841). Acrescem os topónimos da Lisboa ribeirinha:\n«praia d'Alfamia» (L0818), «a Penha» (L0818), «as tavernas do mal cozinhado»\n(L0841). *Grau: seguro para os termos náuticos; provável para «famelga» (moça)\ne «galério» (chapéu).*\n\n### 3. Língua de preto\n\nConvenção teatral estabilizada no teatro português desde Gil Vicente, aqui usada\nem dois passos distintos. Traços: cópula invariável *sá* por «é/está» («Inda não\nsá alinhavado», L0663; «todo o preto sá cativo», L1159); negação dupla («Já nã\nhá paio não», L0661); concordância não marcada («um garrafa de marufo», L0674;\n«essa vozo é um trovão», L1079). Regista-se ainda *malufo/marufo* (L0672,\nL0678), voz de origem africana para bebida fermentada, e *bangalé* (L1088),\ndança. *Grau: seguro quanto à convenção; provável quanto à etimologia de\nmalufo.*\n\n### 4. Fala galega\n\nMarcada por *b* por *v* («o que eu bi», L0914; «Sim, benha deprissa», L0918),\npor vocalismo («deprissa») e por léxico do Norte peninsular — *cachopa* por\nrapariga (L1141). O tipo vem acompanhado da sua caracterização social: o Galego\né o que carrega e o que esfola (L1182). *Grau: seguro.*\n\n### 5. Latim macarrónico e paródia de saber\n\nDuas ocorrências, ambas cómicas: o Mestre-Sala finge latim para namorar a Velha\n— «acessório séquito porém cipa-me cipale» (L0625–L0626), «cá com ego mei mihi»\n(L0631), a que ela responde «ei sei cá latim!» (L0627) — e o Doutor arremeda a\nlógica das escolas com um *Ergo* (L0883). Em ambos os casos o latim não\ncomunica: exibe. *Grau: seguro.*\n\n### 6. Realia setecentistas\n\n*Bexigas* (varíola, L0254); *valete de chambri* (L0264); *topete alto à\nZamperina* (L0504), penteado à moda da cantora de ópera Anna Zamperini, activa\nem Lisboa nos anos 1770 — a datação relativa que este verso permite é o dado\ncronológico interno mais útil do papel; *pau do Brasil* (L0871); *charola*\n(L1063); *cacau* e *chicolate* (L1066, L1071); *àque del rei* (L1110, L1186),\ngrito de socorro. *Grau: seguro, excepto a identificação de Zamperini\n(provável).*\n\n## Recursos expressivos\n\n### Armação geral\n\nA peça é construída sobre **antíteses** de grande amplitude, que atravessam\npassos diferentes e se respondem à distância. Três cadeias organizam o conjunto:\n\n1. **Alto/baixo.** O «sacro assento» que Luzbel quer ocupar (L0040) e o\n   «assento» que Miguel lhe destina «no horrendo lugar da escuridade»\n   (L0052–L0053); depois, invertida, a sentença de Judite: «uma molher te osurpa\n   os assentos» (L0694). A mesma palavra, três posições.\n2. **Ruína/salvação.** «arruinado idifício» dito do portal de Belém, e logo «em\n   ti nasce o prencípio / para a nossa salvação» (L0766–L0768). A queda material\n   é a condição da elevação espiritual.\n3. **Água que mata / água que salva.** «O mundo flutua em um lago de tropezas»\n   (L0285) prepara literalmente o dilúvio; depois do dilúvio, «a bênção chova em\n   nós da mão divina» (L0307). A mesma imagem, o sinal trocado.\n\n*Grau: seguro para 1 e 3; provável para 2.*\n\n### Metáfora\n\nDomina em número. Distinguem-se três campos: o **jurídico-político** aplicado ao\ndivino e à condição humana («como réu da culpa me escondi», L0127; «poi são as\npensões da vida», L0224, em que *pensão* tem o valor coevo de encargo ou tributo\ndevido), o **agrícola-pastoril**\n(«Chora regando essa terra», L0162; «ao vosso santo rebenho», L0774) e o\n**doméstico-mercantil**, que é o mais produtivo nos passos cómicos («já meu amo\ntira hoje a ferruge ao seu dinheiro», L0467–L0468; «teatro de mercancias»,\nL0861). A metáfora de época que mais diverge do uso actual é *clausurar* aplicado\nà arca (L0292): o valor é o da clausura monástica, não o de encerramento\ngenérico.\n\n### Comparação\n\nFrequentemente mitológica no registo heróico — «cujos peitos / excedem ao de\nMartem» (L0326–L0327) — e deliberadamente prosaica no cómico, onde serve o\n*bathos*: «uma delas era mocetona como um barco» (L0818), «Oh valerosa\nPantalisea» seguido de «bote, bote aqui neste avental» (L0695–L0696). O contraste\nentre os dois usos é o mecanismo cómico central do papel.\n\n### Ironia e sátira\n\nConcentram-se no Passo da Freira e no Mestre-Sala. A ironia é quase sempre de\ncortesia invertida — o Doutor deseja à Rodeira «dilatados anos só para vir a ser\ndesengano das idades» (L0900) — e o contra-encómio é levado a soneto inteiro:\ndepois de o Chantre louvar a voz da prima em catorze versos (L1031–L1044), o\nDoutor responde com outros catorze que a demolem, «bem pode acompanhar qualquer\ndefunto» (L1050–L1051). Os dois sonetos formam um díptico encómio/vitupério que\né a peça mais bem construída de todo o papel do ponto de vista retórico.\n*Grau: seguro.*\n\n### Anacronismo\n\nNão é acidente: é procedimento. O Inferno serve chá (L0262), tem *valete de\nchambre* (L0264) e conhece os ingleses e as bexigas (L0254); Judite entra na\ntenda assíria com penteado da ópera de Lisboa (L0504); a destruição de Betúlia\nevoca as pedradas dos rapazes na Cotovia (L0570). O efeito é duplo — faz rir e\nactualiza o exemplo moral, trazendo a fábula bíblica para a rua do espectador.\n*Grau: seguro.*\n\n### Anáfora e enumeração\n\nEstruturam os momentos de maior solenidade e os de maior comicidade, sem\ndistinção. Solenes: a série criadora «Produza a terra… Produza o mar…\nProduzam todas as aves… Produzam-se todos os animais» (L0082–L0087); a tríade\nde Olofernes «tudo em pó, tudo em cinza e tudo em fogo» (L0435). Cómicas: as\nmaldições em eco do Mestre-Sala, que devolve ao criado cada palavra que ele diz\n— «Queimado sejas tu» (L0667), «Apodrecidos sejam os teus olhos» (L0669); e a\nglosa de truísmos do Doutor (L1129–L1132).\n\n### Eufemismo\n\nDois, ambos sobre a morte e ambos em boca de quem mata: Caim, «com a tua morte\nporarei fim a tantos cuidados» (L0239), e Judite, «dormindo está, eterno há de\nser o seu descanso» (L0690). A simetria entre o assassino condenado e a heroína\nsantificada não é comentada pelo texto, mas está lá. *Grau da leitura: hipotético.*\n\n### Trocadilho\n\nConcentra-se no Passo da Freira e no monólogo do pescador: *rija/pau do Brasil*\n(L0871), *romendão/romendo* (L0875), *despigo/despigo* (L0821–L0822),\n*lanço* de rede e de leilão (L0833), *trismalho* como rede e como\n«tresmalhar-se» (L0839), e o obsceno *cacau/chicolate* (L1066–L1071). É o\nrecurso mais denso por linha em todo o papel.\n\n### Fórmulas reaproveitadas\n\nObservação filológica com consequências: a oitava do Anjo da expulsão e a oitava\nfinal de Judite partilham o mesmo molde. Compare-se «nem pode merecer mais tempo\ngraça / que não pode guardar um só perceito» (L0139–L0140) com «nem pode mercer\nmais tempo graças / quem espera o favor da mão devina» (L0716–L0717). O verso é\no mesmo, com o segundo hemistíquio trocado. Isto confirma materialmente o que os\nrequerimentos declaram: estamos perante um papel de compilação, montado a partir\nde material formulário reutilizável. *Grau: provável.*","limitacoes":"- **Paratexto vs. texto dramático.** As linhas L0001–L0018 são requerimentos e\n  despachos administrativos, não peça. Foram usados para datação, proveniência e\n  contexto censório, e excluídos das tabelas de personagens, relações e recursos.\n\n- **Passagens ilegíveis assinaladas pelo transcritor.** Registam-se com XX ou\n  XXX e não foram objecto de conjectura: «posta em tremXX / em etrra» (L0415),\n  «eu XXX mandi-lhe umas espinhas» (L0841), «o meu vistido de XX» (L0841).\n  Também «Siollo» (L0658), primeira fala do Preto, é de leitura incerta.\n\n- **Leituras alternativas do transcritor.** A transcrição regista com barra as\n  hipóteses concorrentes: «sito/dito» (L0863), «pregoa/prego-a» (L0896),\n  «parmor/purmor» (L0825), «também/tão bem» (L0799), «caraça/carraça» (L1137),\n  «sá/sô» (L1157), «lá/já» (L0944), «excer/exercer» (L0422), «a/à Penha»\n  (L0818), «sacerdote / sacarladote» (L0324), «neguei/ninguém» (L0818). Onde\n  citei, mantive a barra tal como está no ficheiro. Nenhuma foi resolvida.\n\n- **Quebras de palavra.** A transcrição conserva as mudanças de linha do\n  manuscrito, que partem palavras a meio (por exemplo «a sua mes / ma cabeça»,\n  L0450–L0451). As localizações indicam por isso intervalos de linha com\n  frequência.\n\n- **Duas personagens com a mesma rubrica.** «Anjo» designa o anjo da expulsão\n  (L0136) e o anjo dos pastores (L0725); «Preto» designa o cozinheiro de\n  Olofernes (L0658 e ss.) e o vendedor de cacau do Passo da Freira (L1065 e ss.).\n  Nas tabelas desdobrei os «Pretos» em duas entradas e mantive «Anjo» como uma\n  só, por a função ser análoga (mensageiro celeste) enquanto a dos Pretos não é.\n  A decisão é discutível em ambos os casos.\n\n- **Rubricas colectivas.** «Todos», «Ambos», «Os dois», «Dentro» e «Soldados»\n  aparecem como rubricas de fala mas não são personagens: não foram incluídas em\n  `personagens.csv`. As falas assim atribuídas foram imputadas ao grupo que fala\n  no contexto, ou marcadas como «(didascália)» quando isso não era seguro.\n\n- **Variação onomástica.** Judite surge como *Judis* (L0319), *Judid* (L0443) e\n  *Jodid* (L0512); Olofernes como *Olefernes* (L0315), *Olafernes* (L0400),\n  *Olofornes* (L0381) e *Oslofernes* (L0671); Anfriso como *Amfriso* (L0753).\n  Nas tabelas uniformizei para a forma mais corrente, conservando a variação nas\n  citações. O validador assinalará a divergência — é o comportamento desejado.\n\n- **Cam ausente do passo de Noé.** Falam apenas Sem e Jafé (L0293, L0294).\n  Não é possível determinar, só pelo texto, se se trata de opção do compilador,\n  de lacuna da cópia ou de corte de representação.\n\n- **Autoria do monólogo do pescador.** A atribuição a Manuel Gonçalves apoia-se\n  em três indícios convergentes (L0289, L0297, L0814) e num indício interno\n  metateatral (L0818), mas o próprio transcritor marcou a passagem com dúvida\n  («PARTE DE Mel. GONÇALVES??», L0297). Leitura provável, não segura.\n\n- **Música perdida.** O papel remete várias vezes para números cantados sem dar\n  a letra ou o tom: «Canta a Freira» (L1027), «Canta e vai-se» (L0683), «Canta-se\n  dentro uma cantiga com viola e adufe» (L0816). A dimensão musical do presépio\n  — que era provavelmente substancial — não é recuperável a partir desta fonte.\n\n- **Estado do texto.** Trata-se de transcrição «sem revisões». Algumas\n  irregularidades métricas e sintácticas podem ser do copista, do transcritor ou\n  do original, e não foram distinguidas. As leituras semânticas propostas para\n  passagens visivelmente corruptas (por exemplo o soneto de Luzbel, L0027–L0041,\n  cuja sintaxe não fecha) são assinaladas como hipotéticas nas tabelas.\n\n- A conversão em tabelas não introduziu nenhuma ocorrência que não estivesse já\n  identificada na Ronda 1, nem omitiu nenhuma das que aí ficaram registadas com\n  citação e localização.\n\n- **Falas colectivas.** As rubricas «Todos», «Ambos» e «Os dois» não são\n  personagens e não constam de `personagens.csv`. As ocorrências assim\n  atribuídas foram imputadas à personagem que conduz o grupo naquele passo —\n  Adão em L0159-L0160 e L0224-L0225, Noé em L0305 e L0307, Alceto em\n  L0747-L0748 — e o facto está declarado na coluna `interpretacao` de cada uma.\n  A decisão distorce ligeiramente as contagens por personagem no mapa de calor.\n\n- **Duas personagens sob a rubrica «Preto».** Desdobradas em «Preto (criado de\n  Olofernes)» e «Preto (vendedor de cacau)», por serem papéis distintos em\n  passos distintos. A rubrica «Anjo», pelo contrário, foi mantida como entrada\n  única apesar de cobrir o anjo da expulsão e o anjo dos pastores, por a função\n  ser análoga. Ambas as decisões são discutíveis e afectam o grafo de relações.\n\n- **Uniformização onomástica.** Nas tabelas usam-se as formas Judite, Olofernes\n  e Anfriso; nas citações conservam-se as grafias do manuscrito (Judid, Jodid,\n  Judis; Olefernes, Olafernes, Olofornes, Oslofernes; Amfriso). O validador\n  assinalará a divergência entre as rubricas detectadas e o elenco — é o\n  comportamento pretendido e o aviso deve ser lido como registo da variação, não\n  como erro.\n\n- **Contagem de ocorrências do vernáculo.** Os valores de `n_ocorrencias`\n  referem-se às ocorrências efectivamente localizadas e citadas, não a uma\n  concordância exaustiva do termo em toda a peça. Formas de altíssima frequência\n  como `perceito` e `molher` estão subcontadas por esse motivo.\n\n- **Entradas de leitura incerta.** Mantêm-se com grau `provável` as\n  identificações que dependem de conhecimento externo ao texto: Zamperini\n  (L0503-L0504), a etimologia africana de `malufo` (L0672), `bangalé` (L1088) e\n  os sentidos de calão de `frete` (L1180) e `famelga` (L0825).\n\n- **Passagens excluídas.** Não foram convertidos em ocorrências os passos\n  visivelmente corruptos onde a sintaxe não fecha — em especial o soneto de\n  Luzbel (L0027-L0041) para além dos três lugares citados, e a fala truncada de\n  Adão em L0103 («já que de mim se pordus»), que o transcritor deixou\n  interrompida. As passagens com XX e XXX (L0415, L0841) não foram objecto de\n  conjectura."}}</script>
+<script>
+(function(){
+"use strict";
+/* Arranque dos dados e utilitários partilhados. */
+
+const D = JSON.parse(document.getElementById("dados").textContent);
+const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const esc = s => String(s==null?"":s).replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const NS = "http://www.w3.org/2000/svg";
+const el = (n, a) => { const e = document.createElementNS(NS, n);
+  for (const k in (a||{})) e.setAttribute(k, a[k]); return e; };
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* ------------------------------------------------------------------ estado */
+const F = {personagem:"", tipo:"", relacao:"", certeza:"", texto:""};
+let selNo = null;
+
+/* Estado dos filtros e selecção dos registos visíveis. */
+
+/* --------------------------------------------------------------- filtragem */
+function passaTexto(campos){
+  if (!F.texto) return true;
+  const q = F.texto.toLowerCase();
+  return campos.some(c => String(c||"").toLowerCase().includes(q));
+}
+function recursosFiltrados(){
+  return D.recursos.filter(r =>
+    (!F.personagem || r.personagem === F.personagem) &&
+    (!F.tipo || r.tipo_recurso === F.tipo) &&
+    passaTexto([r.citacao, r.interpretacao, r.personagem, r.tipo_recurso, r.localizacao]));
+}
+function relacoesFiltradas(){
+  return D.relacoes.filter(r =>
+    (!F.relacao || r.tipo_relacao === F.relacao) &&
+    (!F.personagem || r.origem === F.personagem || r.destino === F.personagem) &&
+    passaTexto([r.origem, r.destino, r.tipo_relacao, r.descricao]));
+}
+function vernaculoFiltrado(){
+  return D.vernaculo.filter(v =>
+    (!F.certeza || v.grau_certeza === F.certeza) &&
+    passaTexto([v.expressao, v.significado_epoca, v.localizacao]));
+}
+function personagensFiltradas(){
+  return D.personagens.filter(p =>
+    (!F.personagem || p.personagem === F.personagem) &&
+    passaTexto([p.personagem, p.funcao_dramatica, p.simbologia]));
+}
+
+/* Camada de passagem do cursor, comum a todos os gráficos. */
+
+/* ---------------------------------------------------------------- tooltip */
+const tip = $("#tip");
+function mostrarTip(ev, html){
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const r = tip.getBoundingClientRect();
+  let x = ev.clientX + 14, y = ev.clientY + 14;
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - 14;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - 14;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function esconderTip(){ tip.style.opacity = 0; }
+function ligarTip(node, html){
+  node.addEventListener("mousemove", e => mostrarTip(e, html));
+  node.addEventListener("mouseleave", esconderTip);
+  node.addEventListener("focus", e => {
+    const b = node.getBoundingClientRect();
+    mostrarTip({clientX:b.left+b.width/2, clientY:b.top+b.height/2}, html);
+  });
+  node.addEventListener("blur", esconderTip);
+}
+
+/* Gráfico de barras horizontais e escala de eixo. */
+
+/* ------------------------------------------------------- barras horizontais
+   Marca: ≤24px de espessura, extremidade arredondada a 4px do lado do valor,
+   assente numa única linha de base; rótulo do valor na ponta.              */
+function barras(svgSel, dados, opts){
+  opts = opts || {};
+  const svg = $(svgSel);
+  svg.textContent = "";
+  if (!dados.length){
+    svg.setAttribute("viewBox", "0 0 600 60");
+    const t = el("text", {x:12, y:34, class:"lbl-mark"});
+    t.textContent = "Sem dados para os filtros activos.";
+    svg.appendChild(t); return;
+  }
+  const W = 600, ML = opts.margemEsq || 150, MR = 54, MT = 8, MB = 26;
+  const passo = 30, esp = Math.min(24, passo - 10);
+  const H = MT + dados.length * passo + MB;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.maxHeight = (H * 1.25) + "px";
+  const max = Math.max.apply(null, dados.map(d => d.valor)) || 1;
+  const x = v => ML + (v / max) * (W - ML - MR);
+
+  // grelha: hairline sólida, recessiva
+  const ticks = escalaBonita(max, 4);
+  ticks.forEach(t => {
+    svg.appendChild(el("line", {x1:x(t), x2:x(t), y1:MT, y2:MT + dados.length*passo, class:"gridline"}));
+    const tx = el("text", {x:x(t), y:H - 8, class:"tick", "text-anchor":"middle"});
+    tx.textContent = t; svg.appendChild(tx);
+  });
+  svg.appendChild(el("line", {x1:ML, x2:ML, y1:MT, y2:MT + dados.length*passo, class:"axisline"}));
+
+  dados.forEach((d, i) => {
+    const y = MT + i*passo + (passo - esp)/2;
+    const larg = Math.max(2, x(d.valor) - ML);
+    const g = el("g", {tabindex:"0", role:"listitem"});
+    // extremidade do valor arredondada (4px), base quadrada
+    const r = Math.min(4, larg);
+    g.appendChild(el("path", {
+      d:`M${ML},${y} H${ML+larg-r} a${r},${r} 0 0 1 ${r},${r} V${y+esp-r} a${r},${r} 0 0 1 ${-r},${r} H${ML} Z`,
+      fill: opts.cor || cssv("--series-1")
+    }));
+    const lab = el("text", {x:ML-10, y:y+esp/2+4, class:"lbl-mark", "text-anchor":"end"});
+    lab.textContent = truncar(d.rotulo, opts.maxRotulo || 22);
+    g.appendChild(lab);
+    const val = el("text", {x:ML+larg+8, y:y+esp/2+4, class:"val-mark"});
+    val.textContent = d.valor; g.appendChild(val);
+    ligarTip(g, `<b>${esc(d.rotulo)}</b>${d.valor} ${d.valor===1?"ocorrência":"ocorrências"}` +
+      (d.extra ? `<div class="q">${esc(d.extra)}</div>` : ""));
+    if (opts.aoClicar) { g.style.cursor = "pointer"; g.addEventListener("click", () => opts.aoClicar(d)); }
+    svg.appendChild(g);
+  });
+}
+function escalaBonita(max, n){
+  // contagens são inteiras: nunca produzir marcas fraccionárias (0,5 / 1,5 …)
+  const bruto = Math.max(1, max / n), mag = Math.pow(10, Math.floor(Math.log10(bruto)));
+  let passo = [1,2,2.5,5,10].map(m => m*mag).find(p => p >= bruto) || mag*10;
+  passo = Math.max(1, Math.round(passo));
+  const out = []; for (let v = 0; v <= max + 1e-9; v += passo) out.push(v);
+  return out;
+}
+function truncar(s, n){ s = String(s||""); return s.length > n ? s.slice(0, n-1) + "…" : s; }
+
+/* Mapa de calor personagem x tipo de recurso. */
+
+/* ------------------------------------------------------------------ heatmap
+   Escala sequencial de um só matiz, clara→escura (invertida em tema escuro);
+   2px de folga da cor da superfície entre células.                          */
+const RAMPA = () => [0,1,2,3,4,5,6].map(i => cssv("--seq-"+i));
+function luminancia(hex){
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex).trim());
+  if (!m) return 1;
+  const n = parseInt(m[1], 16);
+  const c = [(n>>16)&255, (n>>8)&255, n&255].map(v => {
+    v /= 255; return v <= 0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055, 2.4);
+  });
+  return 0.2126*c[0] + 0.7152*c[1] + 0.0722*c[2];
+}
+function heatmap(){
+  const svg = $("#svg-heat"); svg.textContent = "";
+  const recs = recursosFiltrados();
+  const pers = [...new Set(recs.map(r => r.personagem).filter(Boolean))]
+    .sort((a,b) => recs.filter(r=>r.personagem===b).length - recs.filter(r=>r.personagem===a).length)
+    .slice(0, 22);
+  const tipos = [...new Set(recs.map(r => r.tipo_recurso).filter(Boolean))]
+    .sort((a,b) => recs.filter(r=>r.tipo_recurso===b).length - recs.filter(r=>r.tipo_recurso===a).length)
+    .slice(0, 18);
+  $("#escala-heat").innerHTML = "";
+  if (!pers.length || !tipos.length){
+    svg.setAttribute("viewBox","0 0 600 60");
+    const t = el("text",{x:12,y:34,class:"lbl-mark"});
+    t.textContent = "Sem dados para os filtros activos."; svg.appendChild(t); return;
+  }
+  const ML = 150, MT = 78, cel = Math.max(26, Math.min(46, Math.floor(700/tipos.length)));
+  const W = ML + tipos.length*cel + 16, H = MT + pers.length*cel + 10;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.style.maxHeight = (H*1.15) + "px";
+  const conta = (p,t) => recs.filter(r => r.personagem===p && r.tipo_recurso===t).length;
+  let max = 0; pers.forEach(p => tipos.forEach(t => { max = Math.max(max, conta(p,t)); }));
+  const rampa = RAMPA();
+  const cor = v => v === 0 ? "transparent" : rampa[Math.min(rampa.length-1,
+      Math.floor((v-1)/Math.max(1,max) * (rampa.length-1) + 0.5))];
+
+  tipos.forEach((t,j) => {
+    const x = ML + j*cel + cel/2;
+    const tx = el("text", {x:x, y:MT-10, class:"tick", "text-anchor":"start",
+                           transform:`rotate(-42 ${x} ${MT-10})`});
+    tx.textContent = truncar(t, 16); svg.appendChild(tx);
+  });
+  pers.forEach((p,i) => {
+    const y = MT + i*cel;
+    const lab = el("text", {x:ML-10, y:y+cel/2+4, class:"lbl-mark", "text-anchor":"end"});
+    lab.textContent = truncar(p, 20); svg.appendChild(lab);
+    tipos.forEach((t,j) => {
+      const v = conta(p,t), x = ML + j*cel;
+      const g = el("g", {tabindex: v ? "0" : "-1"});
+      g.appendChild(el("rect", {x:x+1, y:y+1, width:cel-2, height:cel-2, rx:3,
+        fill: cor(v), stroke: v ? "none" : cssv("--grid"), "stroke-width":1}));
+      if (v && cel >= 28){
+        // cor do rótulo escolhida pela luminância do próprio preenchimento
+        const t2 = el("text", {x:x+cel/2, y:y+cel/2+4, "text-anchor":"middle",
+          "font-size":"11.5", "font-weight":"600",
+          fill: luminancia(cor(v)) < 0.5 ? "#ffffff" : "#0b0b0b"});
+        t2.textContent = v; g.appendChild(t2);
+      }
+      if (v) ligarTip(g, `<b>${esc(p)} · ${esc(t)}</b>${v} ${v===1?"ocorrência":"ocorrências"}`);
+      svg.appendChild(g);
+    });
+  });
+  // legenda de escala
+  const passos = rampa.map(c => `<i style="background:${c}"></i>`).join("");
+  $("#escala-heat").innerHTML =
+    `<span>menos</span><span class="steps">${passos}</span><span>mais (máx. ${max})</span>`;
+}
+
+/* Grafo de relações: componentes, disposição e desenho. */
+
+/* --------------------------------------------------------------------- rede
+   Layout determinístico (semente fixa): a mesma peça produz sempre o mesmo
+   grafo, condição para o usar como figura reproduzível.                     */
+function prng(semente){ let s = semente >>> 0;
+  return () => { s = (s*1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
+
+function rede(){
+  const svg = $("#svg-rede"); svg.textContent = "";
+  const arestas = relacoesFiltradas().filter(r => r.origem && r.destino && r.origem !== r.destino);
+  const nomes = [...new Set(arestas.flatMap(r => [r.origem, r.destino]))];
+  $("#leg-rede").innerHTML = "";
+  if (nomes.length < 2){
+    svg.setAttribute("viewBox","0 0 600 60");
+    const t = el("text",{x:12,y:34,class:"lbl-mark"});
+    t.textContent = "Sem relações suficientes para os filtros activos."; svg.appendChild(t); return;
+  }
+  const W = 820;
+  let H = 400;                       // altura definida pela disposição, adiante
+  const grau = {}; nomes.forEach(n => grau[n] = 0);
+  arestas.forEach(a => { grau[a.origem]++; grau[a.destino]++; });
+  const rnd = prng(20260818);
+  const nos = nomes.map(n => ({id:n, x:0, y:0, grau:grau[n]}));
+  const idx = {}; nos.forEach((n,i) => idx[n.id] = i);
+
+  const PADX = 96, PADY = 46, ITS = 420;
+  const peso = {};   // arestas paralelas contam uma vez para a força
+  arestas.forEach(e => { const c = e.origem < e.destino ? e.origem+"|"+e.destino : e.destino+"|"+e.origem;
+    peso[c] = (peso[c]||0)+1; });
+
+  // Uma peça por passos produz um grafo com vários componentes desligados —
+  // as personagens do Passo da Freira não têm relação com as do de Noé. Uma
+  // simulação global empurra-os para as margens e degenera; por isso cada
+  // componente é disposto por si e os componentes são depois arrumados lado a
+  // lado. O agrupamento visual passa a corresponder à estrutura da peça.
+  const adj = {}; nomes.forEach(n => adj[n] = []);
+  arestas.forEach(a => { adj[a.origem].push(a.destino); adj[a.destino].push(a.origem); });
+  const compDe = {}, comps = [];
+  nomes.forEach(n => {
+    if (compDe[n] !== undefined) return;
+    const id = comps.length, fila = [n], membros = [];
+    compDe[n] = id;
+    while (fila.length){
+      const u = fila.pop(); membros.push(u);
+      adj[u].forEach(v => { if (compDe[v] === undefined){ compDe[v] = id; fila.push(v); } });
+    }
+    comps.push(membros);
+  });
+  comps.sort((a,b) => b.length - a.length);
+
+  // Fruchterman–Reingold por componente, com comprimento de aresta ideal = 1
+  const caixas = comps.map(membros => {
+    const sub = membros.map(id => nos[idx[id]]);
+    const raio = Math.sqrt(sub.length) * 0.6;
+    sub.forEach((n,i) => {
+      const ang = (i/sub.length)*Math.PI*2 + rnd()*0.2;
+      n.x = Math.cos(ang)*raio; n.y = Math.sin(ang)*raio;
+    });
+    const dentro = new Set(membros);
+    const pares = Object.keys(peso).map(c => c.split("|"))
+                        .filter(([o,d]) => dentro.has(o) && dentro.has(d));
+    if (sub.length > 1){
+      let t = Math.sqrt(sub.length) * 0.35;
+      for (let it = 0; it < ITS; it++){
+        sub.forEach(a => { a.dx = 0; a.dy = 0; });
+        for (let i=0;i<sub.length;i++) for (let j=i+1;j<sub.length;j++){
+          const a=sub[i], b=sub[j];
+          let dx=a.x-b.x, dy=a.y-b.y, d=Math.hypot(dx,dy)||0.01;
+          const f = 1/(d*d);                      // repulsão k²/d, com k=1
+          dx*=f; dy*=f; a.dx+=dx; a.dy+=dy; b.dx-=dx; b.dy-=dy;
+        }
+        pares.forEach(([o,de]) => {
+          const a=nos[idx[o]], b=nos[idx[de]];
+          let dx=a.x-b.x, dy=a.y-b.y, d=Math.hypot(dx,dy)||0.01;
+          dx=dx/d*d*d; dy=dy/d*d*d;               // atracção d²/k
+          a.dx-=dx; a.dy-=dy; b.dx+=dx; b.dy+=dy;
+        });
+        sub.forEach(n => {
+          const m = Math.hypot(n.dx, n.dy) || 1;
+          n.x += n.dx/m * Math.min(m, t);
+          n.y += n.dy/m * Math.min(m, t);
+        });
+        t *= 0.992;
+      }
+    }
+    const xs = sub.map(n=>n.x), ys = sub.map(n=>n.y);
+    const x0 = Math.min(...xs), y0 = Math.min(...ys);
+    sub.forEach(n => { n.x -= x0; n.y -= y0; });   // origem na própria caixa
+    return {membros,
+            larg: Math.max(...xs) - x0 + 1.4,
+            alt:  Math.max(...ys) - y0 + 1.4};
+  });
+
+  // arrumação em prateleiras, do maior componente para o menor
+  const alvo = Math.sqrt(caixas.reduce((s,c) => s + c.larg*c.alt, 0)) * 1.7;
+  let cx = 0, cy = 0, alturaLinha = 0;
+  caixas.forEach(c => {
+    if (cx > 0 && cx + c.larg > alvo){ cx = 0; cy += alturaLinha + 1.0; alturaLinha = 0; }
+    c.membros.forEach(id => { const n = nos[idx[id]]; n.x += cx; n.y += cy; });
+    cx += c.larg + 1.0;
+    alturaLinha = Math.max(alturaLinha, c.alt);
+  });
+
+  // A altura do cartão sai da disposição, e não do número de nós: assim o
+  // grafo ocupa o espaço que tem e não sobra faixa vazia por baixo.
+  (function ajustar(){
+    const xs = nos.map(n => n.x), ys = nos.map(n => n.y);
+    const x0 = Math.min(...xs), x1 = Math.max(...xs);
+    const y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const largura = Math.max(0.5, x1-x0), altura = Math.max(0.5, y1-y0);
+    const e = (W - 2*PADX) / largura;
+    H = Math.max(300, Math.min(820, Math.round(altura*e) + 2*PADY));
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    svg.style.maxHeight = (H*1.05) + "px";
+    const ef = Math.min(e, (H - 2*PADY)/altura);
+    nos.forEach(n => {
+      n.x = W/2 + (n.x - (x0+x1)/2) * ef;
+      n.y = H/2 + (n.y - (y0+y1)/2) * ef;
+    });
+  })();
+
+  const gArestas = el("g", {}), gNos = el("g", {});
+  const destacado = a => F.relacao && a.tipo_relacao === F.relacao;
+  arestas.forEach(a => {
+    const s = nos[idx[a.origem]], d = nos[idx[a.destino]];
+    if (!s || !d) return;
+    const linha = el("line", {x1:s.x, y1:s.y, x2:d.x, y2:d.y,
+      stroke: destacado(a) ? cssv("--series-1") : cssv("--axis"),
+      "stroke-width": destacado(a) ? 2 : 1.25, "stroke-linecap":"round"});
+    const alvo = el("line", {x1:s.x, y1:s.y, x2:d.x, y2:d.y,
+      stroke:"transparent", "stroke-width":14, tabindex:"0"});
+    ligarTip(alvo, `<b>${esc(a.origem)} → ${esc(a.destino)}</b>` +
+      `<div>${esc(a.tipo_relacao)}</div>` +
+      (a.descricao ? `<div class="q">${esc(a.descricao)}</div>` : ""));
+    gArestas.appendChild(linha); gArestas.appendChild(alvo);
+  });
+  const rmax = Math.max.apply(null, nos.map(n => n.grau)) || 1;
+  // Coloca cada rótulo acima ou abaixo do nó, o que colidir menos com os já
+  // colocados; as personagens com mais relações escolhem primeiro.
+  const posRotulo = {}, colocados = [];
+  [...nos].sort((a,b) => b.grau - a.grau).forEach(n => {
+    const r = 6 + 10*Math.sqrt(n.grau/rmax);
+    const meia = (truncar(n.id,16).length * 6.0 + 4) / 2;
+    let melhor = n.y - r - 6, menor = Infinity;
+    [n.y - r - 6, n.y + r + 14].forEach(y => {
+      const c = {x0:n.x-meia, x1:n.x+meia, y0:y-10, y1:y+3};
+      let area = 0;
+      colocados.forEach(p => {
+        const ox = Math.min(c.x1,p.x1) - Math.max(c.x0,p.x0);
+        const oy = Math.min(c.y1,p.y1) - Math.max(c.y0,p.y0);
+        if (ox > 0 && oy > 0) area += ox*oy;
+      });
+      if (area < menor){ menor = area; melhor = y; }
+    });
+    colocados.push({x0:n.x-meia, x1:n.x+meia, y0:melhor-10, y1:melhor+3});
+    posRotulo[n.id] = melhor;
+  });
+  nos.forEach(n => {
+    const r = 6 + 10 * Math.sqrt(n.grau / rmax);
+    const sel = selNo === n.id || F.personagem === n.id;
+    const g = el("g", {tabindex:"0", role:"listitem"});
+    g.appendChild(el("circle", {cx:n.x, cy:n.y, r:r,
+      fill: sel ? cssv("--series-2") : cssv("--series-1"),
+      stroke: cssv("--surface-1"), "stroke-width":2}));
+    // o mesmo princípio do anel de superfície, aplicado ao rótulo: um contorno
+    // da cor do fundo mantém o nome legível quando cruza arestas ou vizinhos
+    const t = el("text", {x:n.x, y:posRotulo[n.id], "text-anchor":"middle", class:"lbl-mark",
+      "paint-order":"stroke", stroke:cssv("--surface-1"), "stroke-width":"3.5",
+      "stroke-linejoin":"round"});
+    t.textContent = truncar(n.id, 16); g.appendChild(t);
+    ligarTip(g, `<b>${esc(n.id)}</b>${n.grau} ${n.grau===1?"relação":"relações"}` +
+      `<div class="q">clique para filtrar por esta personagem</div>`);
+    g.style.cursor = "pointer";
+    g.addEventListener("click", () => {
+      $("#f-personagem").value = (F.personagem === n.id) ? "" : n.id;
+      lerFiltros(); render();
+    });
+    gNos.appendChild(g);
+  });
+  svg.appendChild(gArestas); svg.appendChild(gNos);
+
+  // O tipo de relação não é codificado por cor (todas as arestas são hairlines
+  // neutras): estes são botões de filtro que destacam o tipo escolhido.
+  const tipos = {};
+  arestas.forEach(a => tipos[a.tipo_relacao] = (tipos[a.tipo_relacao]||0)+1);
+  const leg = $("#leg-rede");
+  leg.innerHTML = "";
+  Object.entries(tipos).sort((a,b) => b[1]-a[1]).forEach(([t,n]) => {
+    const b = document.createElement("button");
+    b.className = "chip"; b.type = "button";
+    b.setAttribute("aria-pressed", String(F.relacao === t));
+    b.textContent = `${t} · ${n}`;
+    b.addEventListener("click", () => {
+      $("#f-relacao").value = (F.relacao === t) ? "" : t; lerFiltros(); render();
+    });
+    leg.appendChild(b);
+  });
+  const nota = document.createElement("span");
+  nota.className = "key muted";
+  nota.textContent = "escolhe um tipo para o destacar no grafo";
+  leg.appendChild(nota);
+}
+
+/* Tabelas ordenáveis e marca de cotejo das citações. */
+
+/* ------------------------------------------------------------------ tabelas */
+function tabela(alvo, colunas, linhas, opts){
+  opts = opts || {};
+  const cab = colunas.map(c => `<th data-k="${c.k}">${esc(c.t)}</th>`).join("");
+  const corpo = linhas.map(l => "<tr>" + colunas.map(c => {
+    const v = c.render ? c.render(l) : esc(l[c.k]);
+    return `<td class="${c.cls||""}">${v}</td>`;
+  }).join("") + "</tr>").join("");
+  $(alvo).innerHTML = linhas.length
+    ? `<div class="tbl-wrap"><table><thead><tr>${cab}</tr></thead><tbody>${corpo}</tbody></table></div>`
+    : `<p class="muted" style="font-size:13px">Sem registos para os filtros activos.</p>`;
+  // ordenação por clique no cabeçalho
+  $$(alvo + " th").forEach(th => th.addEventListener("click", () => {
+    const k = th.dataset.k;
+    opts.estado = opts.estado || {};
+    const asc = opts.estado.k === k ? !opts.estado.asc : true;
+    opts.estado = {k, asc};
+    linhas.sort((a,b) => {
+      const va = a[k], vb = b[k];
+      const na = parseFloat(va), nb = parseFloat(vb);
+      const cmp = (!isNaN(na) && !isNaN(nb)) ? na-nb : String(va||"").localeCompare(String(vb||""), "pt");
+      return asc ? cmp : -cmp;
+    });
+    tabela(alvo, colunas, linhas, opts);
+  }));
+}
+
+const SIMBOLO_VERIF = {
+  "verificada":  ["●", "--good", "citação localizada na transcrição, na posição indicada"],
+  "deslocada":   ["◐", "--warning", "citação existe no texto, mas fora da localização declarada"],
+  "não encontrada": ["✕", "--critical", "citação não encontrada na transcrição — rever manualmente"],
+  "sem localização": ["○", "--text-muted", "sem marcador de linha utilizável"]
+};
+function marcaVerificacao(v){
+  const s = SIMBOLO_VERIF[v]; if (!s) return "";
+  return `<span class="badge" title="${esc(s[2])}"><span style="color:${cssv(s[1])}">${s[0]}</span>${esc(v)}</span>`;
+}
+
+/* Redesenho de tudo o que depende dos filtros. */
+
+/* -------------------------------------------------------------------- render */
+function render(){
+  const recs = recursosFiltrados();
+  const vern = vernaculoFiltrado();
+  const rels = relacoesFiltradas();
+
+  // contador do filtro
+  $("#contador").textContent =
+    `${recs.length} ocorrências · ${rels.length} relações · ${vern.length} termos`;
+
+  // barras de frequência
+  const freq = {};
+  recs.forEach(r => { if (r.tipo_recurso) freq[r.tipo_recurso] = (freq[r.tipo_recurso]||0)+1; });
+  const dadosFreq = Object.entries(freq).sort((a,b) => b[1]-a[1])
+    .map(([t,n]) => ({rotulo:t, valor:n}));
+  barras("#svg-freq", dadosFreq, {aoClicar: d => {
+    $("#f-tipo").value = (F.tipo === d.rotulo) ? "" : d.rotulo; lerFiltros(); render();
+  }});
+  tabela("#tbl-freq", [{k:"tipo_recurso",t:"Tipo de recurso"},{k:"n_ocorrencias",t:"Ocorrências",cls:"num"}],
+    dadosFreq.map(d => ({tipo_recurso:d.rotulo, n_ocorrencias:d.valor})));
+
+  // barras de vernáculo
+  const dadosVern = vern.map(v => ({rotulo:v.expressao, valor:+v.n_ocorrencias||1, extra:v.significado_epoca}))
+    .sort((a,b) => b.valor-a.valor).slice(0,15);
+  barras("#svg-vern", dadosVern, {margemEsq:180, maxRotulo:26});
+  tabela("#tbl-vern", [{k:"expressao",t:"Expressão"},{k:"n_ocorrencias",t:"Ocorrências",cls:"num"}],
+    dadosVern.map(d => ({expressao:d.rotulo, n_ocorrencias:d.valor})));
+
+  heatmap();
+  // tabela-gémea do mapa de calor
+  const parPers = {};
+  recs.forEach(r => { const k = (r.personagem||"—") + "\u0001" + (r.tipo_recurso||"—");
+    parPers[k] = (parPers[k]||0)+1; });
+  tabela("#tbl-heat",
+    [{k:"personagem",t:"Personagem"},{k:"tipo_recurso",t:"Tipo de recurso"},{k:"n",t:"Ocorrências",cls:"num"}],
+    Object.entries(parPers).map(([k,n]) => {
+      const [p,t] = k.split("\u0001"); return {personagem:p, tipo_recurso:t, n:n};
+    }).sort((a,b) => b.n-a.n));
+
+  rede();
+  tabela("#tbl-rede",
+    [{k:"origem",t:"Origem"},{k:"destino",t:"Destino"},{k:"tipo_relacao",t:"Tipo"},{k:"descricao",t:"Interpretação"}],
+    rels.slice());
+
+  tabela("#tbl-recursos", [
+    {k:"id", t:"Id"},
+    {k:"tipo_recurso", t:"Recurso"},
+    {k:"personagem", t:"Personagem"},
+    {k:"localizacao", t:"Local", cls:"loc"},
+    {k:"citacao", t:"Citação", render: r => `<span class="cit">${esc(r.citacao)}</span>`},
+    {k:"interpretacao", t:"Interpretação"},
+    {k:"verificacao", t:"Cotejo", render: r => marcaVerificacao(r.verificacao)}
+  ], recs.slice());
+
+  tabela("#tbl-pers", [
+    {k:"personagem", t:"Personagem"},
+    {k:"funcao_dramatica", t:"Função dramática"},
+    {k:"simbologia", t:"Carga simbólica"}
+  ], personagensFiltradas().slice());
+
+  tabela("#tbl-vernaculo", [
+    {k:"expressao", t:"Expressão"},
+    {k:"significado_epoca", t:"Significado de época"},
+    {k:"grau_certeza", t:"Certeza"},
+    {k:"localizacao", t:"Local", cls:"loc"},
+    {k:"n_ocorrencias", t:"N.º", cls:"num"}
+  ], vern.slice());
+}
+
+/* Cartões de topo, prosa da análise e relatório de validação. */
+
+/* -------------------------------------------------------------------- topo */
+function tiles(){
+  const m = D.metricas || {}, v = D.validacao && D.validacao.metricas || {};
+  const pct = v.citacoes_verificadas_pct;
+  let estado = ["--text-muted", "○", "cotejo não executado"];
+  if (typeof pct === "number")
+    estado = pct >= 95 ? ["--good","●","citações confirmadas no original"]
+           : pct >= 80 ? ["--warning","◐","rever as citações assinaladas"]
+                       : ["--critical","✕","revisão manual necessária"];
+  const cards = [
+    {cls:"hero", lbl:"Ocorrências de recursos expressivos", val:m.n_recursos||0,
+     note:(m.densidade_recursos_por_100_linhas!=null ? m.densidade_recursos_por_100_linhas+" por 100 linhas" : "")},
+    {lbl:"Tipos de recurso", val:m.n_tipos_recurso||0},
+    {lbl:"Personagens", val:m.n_personagens||0},
+    {lbl:"Relações mapeadas", val:m.n_relacoes||0, note:(m.n_tipos_relacao||0)+" tipos"},
+    {lbl:"Entradas de vernáculo", val:m.n_vernaculo||0},
+    {lbl:"Citações verificadas", val:(typeof pct==="number" ? pct+"%" : "—"),
+     note:`<span class="badge"><span style="color:${cssv(estado[0])}">${estado[1]}</span>${estado[2]}</span>`}
+  ];
+  $("#tiles").innerHTML = cards.map(c =>
+    `<div class="tile ${c.cls||""}"><div class="lbl">${c.lbl}</div>` +
+    `<div class="val">${c.val}</div>${c.note?`<div class="note">${c.note}</div>`:""}</div>`).join("");
+}
+
+function markdownLeve(txt){
+  if (!txt) return "";
+  // A análise vem com mudança de linha fixa; junta-se cada parágrafo numa só
+  // linha para o texto refluir com a largura da coluna em vez de herdar as
+  // quebras do ficheiro.
+  const linhas = esc(txt).split("\n");
+  let out = "", lista = false, buf = [];
+  const despejar = () => { if (buf.length){ out += `<p>${inline(buf.join(" "))}</p>`; buf = []; } };
+  for (let l of linhas){
+    const h = l.match(/^(#{1,6})\s+(.*)$/);
+    const li = l.match(/^\s*[-*•]\s+(.*)$/);
+    if (li){
+      despejar();
+      if (!lista){ out += "<ul>"; lista = true; }
+      out += "<li>" + inline(li[1]) + "</li>"; continue;
+    }
+    if (lista && l.trim() && /^\s{2,}\S/.test(l)){        // continuação do item
+      out = out.replace(/<\/li>$/, " " + inline(l.trim()) + "</li>"); continue;
+    }
+    if (lista){ out += "</ul>"; lista = false; }
+    if (h){ despejar(); out += `<h4>${inline(h[2])}</h4>`; continue; }
+    if (!l.trim()){ despejar(); continue; }
+    buf.push(l.trim());
+  }
+  despejar();
+  if (lista) out += "</ul>";
+  return out;
+  function inline(s){
+    return s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+            .replace(/(^|[\s(])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+            .replace(/`([^`]+)`/g, "<code>$1</code>");
+  }
+}
+
+function prosa(){
+  const a = D.analise || {};
+  const blocos = [
+    ["Personagens, simbologia e relações", a.personagens],
+    ["Vernáculo e recursos expressivos", a.vernaculo_recursos]
+  ].filter(b => b[1]);
+  $("#prosa").innerHTML = blocos.map((b,i) =>
+    `<details ${i===0?"open":""}><summary>${esc(b[0])}</summary>` +
+    `<div class="prosa">${markdownLeve(b[1])}</div></details>`).join("")
+    || `<p class="muted">Sem prosa registada.</p>`;
+
+  $("#limitacoes").innerHTML = markdownLeve(a.limitacoes) ||
+    `<p class="muted">Nenhuma limitação assinalada pela análise.</p>`;
+
+  const val = D.validacao || {};
+  const bloco = (t, arr, marca) => (arr && arr.length)
+    ? `<details><summary>${t} (${arr.length})</summary><ul class="aviso-list">` +
+      arr.map(x => `<li>${marca} ${esc(x)}</li>`).join("") + "</ul></details>" : "";
+  $("#validacao").innerHTML =
+    bloco("Erros de validação", val.erros, "✗") +
+    bloco("Avisos", val.avisos, "!") +
+    bloco("Normalizações aplicadas", val.notas, "·");
+}
+
+/* Controlos: filtros, tema, impressão e exportações. */
+
+/* ------------------------------------------------------------------ chrome */
+function preencherFiltros(){
+  const add = (sel, vals) => {
+    const s = $(sel);
+    vals.filter(Boolean).sort((a,b) => String(a).localeCompare(String(b), "pt"))
+        .forEach(v => { const o = document.createElement("option"); o.value = v; o.textContent = v; s.appendChild(o); });
+  };
+  add("#f-personagem", [...new Set(D.personagens.map(p => p.personagem))]);
+  add("#f-tipo", [...new Set(D.recursos.map(r => r.tipo_recurso))]);
+  add("#f-relacao", [...new Set(D.relacoes.map(r => r.tipo_relacao))]);
+  add("#f-certeza", [...new Set(D.vernaculo.map(v => v.grau_certeza))]);
+}
+function lerFiltros(){
+  F.personagem = $("#f-personagem").value;
+  F.tipo = $("#f-tipo").value;
+  F.relacao = $("#f-relacao").value;
+  F.certeza = $("#f-certeza").value;
+  F.texto = $("#f-texto").value.trim();
+}
+function descarregar(nome, conteudo, tipo){
+  const b = new Blob([conteudo], {type: tipo});
+  const u = URL.createObjectURL(b);
+  const a = document.createElement("a");
+  a.href = u; a.download = nome; document.body.appendChild(a); a.click();
+  a.remove(); setTimeout(() => URL.revokeObjectURL(u), 1000);
+}
+function paraCSV(linhas, colunas){
+  const q = v => { v = String(v==null?"":v); return /[",\n;]/.test(v) ? '"'+v.replace(/"/g,'""')+'"' : v; };
+  return "﻿" + [colunas.join(",")].concat(
+    linhas.map(l => colunas.map(c => q(l[c])).join(","))).join("\n");
+}
+
+function ligarChrome(){
+  $$(".card header .acts button[data-view]").forEach(b => b.addEventListener("click", () => {
+    const card = b.closest(".card");
+    card.querySelectorAll("button[data-view]").forEach(x =>
+      x.setAttribute("aria-pressed", String(x === b)));
+    card.querySelector(".view-chart").classList.toggle("hidden", b.dataset.view !== "chart");
+    card.querySelector(".view-table").classList.toggle("hidden", b.dataset.view !== "table");
+  }));
+  $$("button[data-svg]").forEach(b => b.addEventListener("click", () => {
+    const svg = $("#svg-" + b.dataset.svg).cloneNode(true);
+    svg.setAttribute("xmlns", NS);
+    svg.setAttribute("style", `background:${cssv("--surface-1")};font-family:${cssv("--sans")}`);
+    // fixa as cores dos textos (as variáveis CSS não sobrevivem à exportação)
+    svg.querySelectorAll("text").forEach(t => {
+      const c = t.getAttribute("class")||"";
+      t.setAttribute("fill", t.getAttribute("fill") ||
+        (c.includes("tick") ? cssv("--text-muted") : cssv("--text-secondary")));
+      t.setAttribute("font-size", c.includes("tick") ? "11" : "11.5");
+    });
+    svg.querySelectorAll(".gridline").forEach(l => l.setAttribute("stroke", cssv("--grid")));
+    svg.querySelectorAll(".axisline").forEach(l => l.setAttribute("stroke", cssv("--axis")));
+    descarregar(`${D.meta.slug||"peca"}-${b.dataset.svg}.svg`,
+      new XMLSerializer().serializeToString(svg), "image/svg+xml");
+  }));
+  const mapaCSV = {
+    recursos: [D.recursos, ["id","tipo_recurso","citacao","localizacao","personagem","interpretacao","verificacao"]],
+    personagens: [D.personagens, ["personagem","funcao_dramatica","simbologia"]],
+    vernaculo: [D.vernaculo, ["expressao","significado_epoca","grau_certeza","localizacao","n_ocorrencias"]]
+  };
+  $$("button[data-csv]").forEach(b => b.addEventListener("click", () => {
+    const [linhas, cols] = mapaCSV[b.dataset.csv];
+    descarregar(`${D.meta.slug||"peca"}-${b.dataset.csv}.csv`, paraCSV(linhas, cols), "text/csv");
+  }));
+  ["#f-personagem","#f-tipo","#f-relacao","#f-certeza"].forEach(s =>
+    $(s).addEventListener("change", () => { lerFiltros(); render(); }));
+  let t; $("#f-texto").addEventListener("input", () => {
+    clearTimeout(t); t = setTimeout(() => { lerFiltros(); render(); }, 180); });
+  $("#limpar").addEventListener("click", () => {
+    ["#f-personagem","#f-tipo","#f-relacao","#f-certeza"].forEach(s => $(s).value = "");
+    $("#f-texto").value = ""; selNo = null; lerFiltros(); render();
+  });
+  $("#tema").addEventListener("click", () => {
+    const actual = document.documentElement.getAttribute("data-theme");
+    const escuroSO = matchMedia("(prefers-color-scheme: dark)").matches;
+    const proximo = actual ? (actual === "dark" ? "light" : "dark") : (escuroSO ? "light" : "dark");
+    document.documentElement.setAttribute("data-theme", proximo);
+    render();
+  });
+  $("#imprimir").addEventListener("click", () => window.print());
+}
+
+/* Título, metadados da peça e rodapé. */
+
+function cabecalho(){
+  const m = D.meta || {};
+  document.title = (m.titulo || "Peça") + " — análise";
+  $("#titulo").textContent = m.titulo || "Peça sem título";
+  $("#subtitulo").textContent = [m.genero, m.datacao].filter(Boolean).join(" · ");
+  const campos = [
+    ["Proveniência", m.proveniencia], ["Transcrição", m.ficheiro],
+    ["Linhas", m.n_linhas], ["Modelo", m.modelo], ["Análise", m.data_execucao]
+  ].filter(c => c[1]);
+  $("#meta").innerHTML = campos.map(c => `<span><b>${esc(c[0])}:</b> ${esc(c[1])}</span>`).join("");
+  $("#rodape").innerHTML =
+    `Gerado por <b>presepios</b> a partir de ${esc(m.ficheiro||"")}. ` +
+    `As tabelas e os gráficos derivam exclusivamente dos CSVs validados; ` +
+    `as citações foram cotejadas automaticamente com a transcrição. ` +
+    `Toda a leitura interpretativa carece de confirmação por especialista.`;
+}
+
+/* Ordem de arranque. Tem de ser o último ficheiro. */
+
+cabecalho(); tiles(); preencherFiltros(); ligarChrome(); prosa(); lerFiltros(); render();
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render);
+
+})();
+</script>
+</body>
+</html>
